@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context="com.bigdropinc.selfieking.activities.editimages.CropActivity" >
+
+    <RelativeLayout
+        android:id="@+id/topbutton"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <Button
+            android:id="@+id/back"
+            style="@style/customButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:text="Back"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/next"
+            style="@style/customButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="5dp"
+            android:text="Next"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topbutton"
+        android:padding="3dp" >
+
+        <com.edmodo.cropper.CropImageView
+
+            android:id="@+id/bigcropImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </com.edmodo.cropper.CropImageView>
+    </LinearLayout>
+
+</RelativeLayout>

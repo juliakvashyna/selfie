@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Selfie</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+
+    <!-- registration -->
+    <string name="title_reg">Registration Form</string>
+    <string name="signIn">Sign in</string>
+    <string name="signUp">Sign up</string>
+    <string name="singFB">Sign up with FB</string>
+    <string name="resetPass">Reset pass</string>
+    <string name="member">Not a member?</string>
+    <string name="errorNitSign">Not correct username or password!</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+
+    <!-- signUp -->
+    <string name="userName">Username</string>
+    <string name="email">Email</string>
+    <string name="pass">Password</string>
+    <string name="repeatPass">Confirm Password</string>
+    <string name="title_activity_reset_pass">Reset Pass Form</string>
+    <string name="euserName">Username is not valid</string>
+    <string name="eEmail">Email is not valid</string>
+    <string name="ePass">Passwords are not valid</string>
+    <string name="erepeat">Passwords are not equal</string>
+    <!-- reset -->
+    <string name="send">Send</string>
+    <string name="link">a link was sent to email to reset password</string>
+
+    <!-- main -->
+    <string name="title_activity_main">MainActivity</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="croptool">Crop tool</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_profile_fragment">Profile_fragment</string>
+
+    <!-- profile -->
+    <string name="coutSelfie">No of selfies :</string>
+    <string name="editProfile">Edit profile</string>
+    <string name="edit">Edit</string>
+    <string name="changePassword">Change Password</string>
+    <string name="deleteAccount">Delete Account</string>
+    <string name="title_activity_profile_edit_fragment">ProfileEditFragment</string>
+    <string name="title_activity_change_password_fragment">ChangePasswordFragment</string>
+    <string name="curPass">Current password</string>
+    <string name="newPass">New password</string>
+    <string name="newPassAgain">New password, again</string>
+    <string name="title_activity_select">SelectActivity</string>
+
+    <!-- select image -->
+    <string name="eselectImage">Please, select photo</string>
+    <string name="crop">Crop</string>
+    <string name="backgroud">Background</string>
+    <string name="filters">Filters</string>
+    <string name="f1">Normal</string>
+    <string name="f2">Amaro</string>
+    <string name="f3">MayFair</string>
+    <string name="f4">Rise</string>
+    <string name="f5">Hudson</string>
+    <string name="f6">Hefe</string>
+    <string name="f7">Valencia</string>
+    <string name="f8">X-pro</string>
+    <string name="f9">Sierra</string>
+    <string name="f10">Willow</string>
+    <string name="f11">Lo-fi</string>
+    <string name="f12">Earlybird</string>
+    <string name="f13">Sytro</string>
+    <string name="f14">Toaster</string>
+    <string name="f15">Brannan</string>
+    <string name="b1">Desert</string>
+    <string name="b2">Sea</string>
+    <string name="b3">Mountains</string>
+    <string name="b4">Forest</string>
+    <string name="b5">Green</string>
+    <string name="buy">Buy</string>
+    <string name="camera">Camera</string>
+    <string name="Gallery">Gallery</string>
+    <string name="Standart">Standart</string>
+    <!-- fb -->
+    <string name="facebook_app_id">1463519287247044</string>
+    <string name="title_activity_feed">FeedActivity</string>
+    <string name="title_activity_big_crop">BigCropActivity</string>
+    <string name="title_activity_cut">CutActivity</string>
+    <string name="title_activity_content_fragment">ContentFragment</string>
+    <string name="contest">Contest</string>
+    <string name="notifications">Notifications</string>
+    <string name="title_activity_share">ShareActivity</string>
+
+    <!-- one selfie -->
+    <string name="deleteOneSelfie">Are you sure to delete selfie?</string>
+    <string name="deleteDone">Selfie is deleted</string>
+    <string name="title_activity_one_selfie">OneSelfieActivity</string>
+    <string name="title_activity_comments">CommentsActivity</string>
+
+</resources>

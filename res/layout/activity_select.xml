@@ -1,0 +1,78 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:padding="5dp"
+    tools:context="com.bigdropinc.selfieking.activities.editimages.SelectImageActivity" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:padding="2dp" >
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/selectedImageL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="6" >
+
+        <FrameLayout
+            android:id="@+id/camera_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <ImageView
+                android:id="@+id/selectedImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+               
+                android:scaleType="fitXY"
+                android:visibility="invisible" >
+            </ImageView>
+        </FrameLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:id="@+id/tabs"
+            android:layout_width="fill_parent"
+            android:layout_height="140dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="2dp" >
+
+            <Button
+                android:id="@+id/gallery"
+                style="@style/customButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:text="Gallery" />
+
+            <Button
+                android:id="@+id/photo"
+                style="@style/customButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Photo" />
+
+            <Button
+                android:id="@+id/cameraRotate"
+                style="@style/customButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Rotate" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

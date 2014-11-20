@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffff</color>
+    <color name="grey">#dcdcdc</color>
+    <color name="transparent">#00000000</color>
+    <color name="light_fiolet">#FFE4C4</color>
+    <color name="dark_fiolet">#D3D3D3</color>
+    <color name="normal">#111111</color>
+    <color name="ohra">#BDB76B</color>
+    <color name="ohra2">#D2B48C</color>
+    <color name="fiolet">#9370DB</color>
+    <color name="greyf">#8B8378</color>
+    <color name="greyf2">#CDB7B5</color>
+    <color name="greyf3">#8B7D7B</color>
+    <color name="rosy">#FFC1C1</color>
+    <color name="rosy2">#CD6839</color>
+    <color name="yellow">#ADFF2F</color>
+    <color name="rosy_brown">#BC8F8F</color>
+    <color name="fiolet2">#9932CC</color>
+
+</resources>

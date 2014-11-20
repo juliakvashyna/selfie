@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.bigdropinc.selfieking.activities.social.ContestFragment" >
+
+    <com.makeramen.segmented.SegmentedRadioGroup
+        android:id="@+id/segment_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checkedButton="@+id/button_one"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@id/button_one"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:minHeight="60dp"
+            android:minWidth="30dp"
+            android:text="@string/contest"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@drawable/radio_colors" />
+
+        <RadioButton
+            android:id="@+id/button_two"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:minHeight="60dp"
+            android:minWidth="30dp"
+            android:text="@string/notifications"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@drawable/radio_colors" />
+    </com.makeramen.segmented.SegmentedRadioGroup>
+
+    <ViewSwitcher
+        android:id="@+id/contestSwitcher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/contestViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="1dp" >
+        </android.support.v4.view.ViewPager>
+
+        <ListView
+            android:id="@+id/notificationsListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="1dp" >
+        </ListView>
+    </ViewSwitcher>
+
+</LinearLayout>
