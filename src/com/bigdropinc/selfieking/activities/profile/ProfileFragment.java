@@ -79,6 +79,10 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         getLoaderManager().destroyLoader(loader.getId());
     }
 
+    @Override
+    public void onLoaderReset(android.content.Loader<StatusCode> arg0) {
+    }
+
     private void updateGridview(StatusCode statusCode) {
         if (statusCode.isSuccess()) {
             more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
@@ -89,16 +93,6 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         } else {
             Toast.makeText(getActivity(), statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onLoaderReset(android.content.Loader<StatusCode> arg0) {
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-       
     }
 
     private void initFeed() {
@@ -128,7 +122,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void initListeners() {
-        editProfileButton.setOnClickListener(new OnClickListener() { 
+        editProfileButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 startEditActivity(user.getId());

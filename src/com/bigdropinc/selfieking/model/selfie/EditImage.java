@@ -100,8 +100,8 @@ public class EditImage {
         this.height = (int) (height);
     }
 
-    private Bitmap doOverlayBackdround(Bitmap bitmap) {
-        return overlay(background, bitmap);
+    private Bitmap doOverlayBackdround(Bitmap bitmap, boolean filterclick) {
+        return overlay(background, bitmap, filterclick);
     }
 
     public Bitmap getOriginalImage() {
@@ -126,7 +126,7 @@ public class EditImage {
         }
         return background;
     }
-  
+
     public void setBackground(Bitmap background) {
         this.background = background;
     }
@@ -137,7 +137,7 @@ public class EditImage {
         Bitmap result = Bitmap.createBitmap(cropImage.getWidth(), cropImage.getHeight(), Bitmap.Config.ARGB_8888);
         canvas.setBitmap(result);
         Paint paint = new Paint();
-        // paint.setFilterBitmap(false); 
+        // paint.setFilterBitmap(false);
         // Color
 
         paint.setColorFilter(colorFilter);
@@ -214,13 +214,14 @@ public class EditImage {
     }
 
     public Bitmap getSelfieWithBackground() {
+
         Bitmap bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
         if (background != null && croppedBitmap != null) {
             if (colorFilter != null) {
-                bitmap = doOverlayBackdround(croppedBitmap);
+                bitmap = doOverlayBackdround(croppedBitmap,true);
                 bitmap = createFilterImage(bitmap);
             } else {
-                bitmap = doOverlayBackdround(croppedBitmap);
+                bitmap = doOverlayBackdround(croppedBitmap,false);
             }
 
         } else {
@@ -228,7 +229,7 @@ public class EditImage {
         }
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        bitmap.compress(Bitmap.CompressFormat.PNG, 45, stream);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 15, stream);
 
         // byte[] byteArray = stream.toByteArray();
 
@@ -236,10 +237,11 @@ public class EditImage {
         return bitmap;
     }
 
-    private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
+    private Bitmap overlay(Bitmap bmp1, Bitmap bmp2, boolean filter) {
         Bitmap bmOverlay = Bitmap.createScaledBitmap(bmp1, width, height, true);
         Canvas canvas = new Canvas(bmOverlay);
-        // canvas.drawBitmap(bmp1, new Matrix(), null);
+//        if (!filter)
+//            canvas.drawBitmap(bmp1, new Matrix(), null);
         canvas.drawBitmap(bmp2, matrix, null);
         return bmOverlay;
     }

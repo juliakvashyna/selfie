@@ -58,15 +58,8 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     }
 
     @Override
-    public void notifyDataSetChanged() {
-
-        super.notifyDataSetChanged();
-    }
-
-    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-
         SelfieImage feedItem = getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(r, parent, false);
@@ -82,7 +75,6 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             holder.commentButton = (Button) convertView.findViewById(R.id.fcomment);
             holder.commentsTextView = (TextView) convertView.findViewById(R.id.commentsListTextView);
             holder.commentEditText = (EditText) convertView.findViewById(R.id.commentEditText);
-            // holder.commentEditText.setSelectAllOnFocus(true);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
             holder.sendCommentButton = (Button) convertView.findViewById(R.id.commentButton);
             holder.commentLayout = (LinearLayout) convertView.findViewById(R.id.commentLayout);
@@ -96,8 +88,8 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         User user = DatabaseManager.getInstance().findUser(token);
         holder.nameTextView.setText(user.getUserName());
         if (feedItem != null) {
-
-            CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + feedItem.getImage()).resize(IMAGE_SIZE, IMAGE_SIZE).noFade().error(R.drawable.notfound).into(holder.imageView);
+            String imageUrl = getImageUrl(feedItem);
+            CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).noFade().error(R.drawable.notfound).into(holder.imageView);
             holder.likes.setText(String.valueOf(feedItem.getLikes()));
             holder.comments.setText(String.valueOf(feedItem.getComment()));
             if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
@@ -105,17 +97,22 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
                 holder.descTextView.setVisibility(View.VISIBLE);
             }
             holder.timeTextView.setText(getTimeString(feedItem.getDate()));
-            // holder.nameTextView.setText(feedItem.)
-
             CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").resize(AVATAR_SIZE, AVATAR_SIZE).into(holder.avatar);
-
         }
         return convertView;
     }
 
+    private String getImageUrl(SelfieImage feedItem) {
+        String imageUrl;
+        if (feedItem.getImageMedium()!= null && !feedItem.getImageMedium().equals("false"))
+            imageUrl = feedItem.getImageMedium();
+        else
+            imageUrl = feedItem.getImage();
+        return imageUrl;
+    }
+
     @Override
-    public int getCount() {
-     
+    public int getCount() {   
         return objects.size();
     }
 

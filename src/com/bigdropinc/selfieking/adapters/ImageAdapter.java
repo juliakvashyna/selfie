@@ -56,10 +56,18 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
             imageView = (ImageView) convertView;
         }
         SelfieImage image = getItem(position);
-        Log.d("pager", UrlRequest.ADDRESS + image.getImage()
-                );
-        CustomPicasso.getImageLoader(mContext).load(UrlRequest.ADDRESS + image.getImage()).resize(IMAGE_SIZE, IMAGE_SIZE).error(R.drawable.notfound).into(imageView);
+        String imageUrl = getImageUrl(image);
+        CustomPicasso.getImageLoader(mContext).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).error(R.drawable.notfound).into(imageView);
         return imageView;
+    }
+
+    private String getImageUrl(SelfieImage feedItem) {
+        String imageUrl;
+        if (feedItem.getImageSmall() != null && !feedItem.getImageSmall().equals("false"))
+            imageUrl = feedItem.getImageSmall();
+        else
+            imageUrl = feedItem.getImage();
+        return imageUrl;
     }
 
     class ViewHolder {

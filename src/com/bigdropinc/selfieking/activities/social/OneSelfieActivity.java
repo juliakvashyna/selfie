@@ -20,7 +20,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.bigdropinc.selfieking.R;
-import com.bigdropinc.selfieking.activities.profile.ProfileFragment;
 import com.bigdropinc.selfieking.adapters.FeedAdapter;
 import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
@@ -64,35 +63,6 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         getLoaderManager().destroyLoader(loader.getId());
     }
 
-    private void initSelfie() {
-        selfieImage = ((CommandLoader) loader).getCommentSelfieImage();
-        feedList.add(selfieImage);
-        feedAdapter.notifyDataSetChanged();
-    }
-
-    private void startLoaderForSelfie() {
-        bundle = new Bundle();
-        command = new Command(Command.GET_SELFIE);
-        int id = getIntent().getExtras().getInt(INTENT_SELFIE_ID);
-        selfieImage = new SelfieImage(id);
-        selfieImage.setToken(LoginManagerImpl.getInstance().getToken());
-        command.setSelfieImage(selfieImage);
-        bundle.putParcelable(Command.BUNDLE_NAME, command);
-        getLoaderManager().initLoader(LOADER_ID_ONESELFIE, bundle, OneSelfieActivity.this).forceLoad();
-    }
-
-    private void updateSelfie(Loader<StatusCode> loader, StatusCode statusCode) {
-        if (statusCode.isSuccess()) {
-            if (loader.getId() == LOADER_ID_CONTEST) {
-                Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
-            } else {
-                updateGridView(loader);
-            }
-        } else {
-            Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public void onLoaderReset(Loader<StatusCode> arg0) {
     }
@@ -132,11 +102,6 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         }
     }
 
-    private void resetLoader(Like like, int id) {
-        if (getLoaderManager().getLoader(id + like.getPostId()) != null)
-            getLoaderManager().getLoader(id + like.getPostId()).reset();
-    }
-
     public void contest(SelfieImage selfieImage) {
         Bundle bundle = getContestBundle(selfieImage);
         getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, OneSelfieActivity.this).forceLoad();
@@ -150,6 +115,40 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         init();
         initFeed();
 
+    }
+
+    private void initSelfie() {
+        selfieImage = ((CommandLoader) loader).getCommentSelfieImage();
+        feedList.add(selfieImage);
+        feedAdapter.notifyDataSetChanged();
+    }
+
+    private void startLoaderForSelfie() {
+        bundle = new Bundle();
+        command = new Command(Command.GET_SELFIE);
+        int id = getIntent().getExtras().getInt(INTENT_SELFIE_ID);
+        selfieImage = new SelfieImage(id);
+        selfieImage.setToken(LoginManagerImpl.getInstance().getToken());
+        command.setSelfieImage(selfieImage);
+        bundle.putParcelable(Command.BUNDLE_NAME, command);
+        getLoaderManager().initLoader(LOADER_ID_ONESELFIE, bundle, OneSelfieActivity.this).forceLoad();
+    }
+
+    private void updateSelfie(Loader<StatusCode> loader, StatusCode statusCode) {
+        if (statusCode.isSuccess()) {
+            if (loader.getId() == LOADER_ID_CONTEST) {
+                Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
+            } else {
+                updateGridView(loader);
+            }
+        } else {
+            Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void resetLoader(Like like, int id) {
+        if (getLoaderManager().getLoader(id + like.getPostId()) != null)
+            getLoaderManager().getLoader(id + like.getPostId()).reset();
     }
 
     private void updateGridView(Loader<StatusCode> loader) {

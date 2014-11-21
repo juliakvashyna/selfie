@@ -96,7 +96,7 @@ public class CommandLoader extends Loader<StatusCode> {
 
     @Override
     protected void onStartLoading() {
-        Log.d(TAG, hashCode() + " onStartLoading");
+      //  Log.d(TAG, hashCode() + " onStartLoading");
 
         if (takeContentChanged())
             forceLoad();
@@ -105,19 +105,19 @@ public class CommandLoader extends Loader<StatusCode> {
     @Override
     protected void onStopLoading() {
         super.onStopLoading();
-        Log.d(TAG, hashCode() + " onStopLoading");
+      //  Log.d(TAG, hashCode() + " onStopLoading");
     }
 
     @Override
     protected void onAbandon() {
         super.onAbandon();
-        Log.d(TAG, hashCode() + " onAbandon");
+     //   Log.d(TAG, hashCode() + " onAbandon");
     }
 
     @Override
     protected void onReset() {
         super.onReset();
-        Log.d(TAG, hashCode() + " onReset");
+    //    Log.d(TAG, hashCode() + " onReset");
     }
 
     void getResultFromTask(StatusCode result) {
@@ -128,7 +128,7 @@ public class CommandLoader extends Loader<StatusCode> {
     protected void onForceLoad() {
         super.onForceLoad();
         if (InternetChecker.isNetworkConnected()) {
-            Log.d(TAG, hashCode() + " onForceLoad");
+        //    Log.d(TAG, hashCode() + " onForceLoad");
             if (registrTask != null)
                 registrTask.cancel(true);
             registrTask = new RegistrAsyncTask();
@@ -152,7 +152,7 @@ public class CommandLoader extends Loader<StatusCode> {
                 } else if (Command.DELETE_SELFIE.equals(commandName)) {
                     statusCode = helper.deleteSelfie(selfieImage);
                 } else if (Command.GET_SELFIES.equals(commandName)) {
-                    setSelfies(helper.getSelfies(user.getToken(), command.getOffset()));
+                    setSelfies(helper.getSelfies(command.getOffset()));
 
                 } else if (Command.LOGIN.equals(commandName)) {
                     user = helper.getUser(user.getEmail(), user.getPassword());
@@ -179,7 +179,7 @@ public class CommandLoader extends Loader<StatusCode> {
                 } else if (Command.GET_CONTEST.equals(commandName)) {
                     setSelfies(helper.getContest(command.getContest()));
                 } else if (Command.GET_LIKED.equals(commandName)) {
-                    setSelfies(helper.getLikedSelfies(user.getToken(), command.getOffset()));
+                    setSelfies(helper.getLikedSelfies(command.getOffset()));
                 }
             } catch (ApiException e) {
                 statusCode.setCode(e.status);

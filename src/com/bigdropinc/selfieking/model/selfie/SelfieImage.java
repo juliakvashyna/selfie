@@ -1,7 +1,5 @@
 package com.bigdropinc.selfieking.model.selfie;
 
-import java.util.Arrays;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -21,6 +19,10 @@ public class SelfieImage implements Parcelable {
     private int id;
     @DatabaseField
     private String image;
+    @DatabaseField
+    private String imageSmall;
+    @DatabaseField
+    private String imageMedium;
     @DatabaseField
     private String token;
     @DatabaseField
@@ -101,6 +103,22 @@ public class SelfieImage implements Parcelable {
 
     public void setLike(int like) {
         this.like = like;
+    }
+
+    public String getImageSmall() {
+        return imageSmall;
+    }
+
+    public void setImageSmall(String imageSmall) {
+        this.imageSmall = imageSmall;
+    }
+
+    public String getImageMedium() {
+        return imageMedium;
+    }
+
+    public void setImageMedium(String imageMedium) {
+        this.imageMedium = imageMedium;
     }
 
     public boolean isLiked() {

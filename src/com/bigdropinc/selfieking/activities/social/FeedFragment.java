@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +35,6 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     public static final int LIMIT = EndlessScrollListener.VISIBLETHRESHOLD;
     private static final int LOADER_ID = 5;
     private static final String TAG = "tag";
-    private static final String TAG_PAGE = "tagPage";
     private ArrayList<SelfieImage> feedList = new ArrayList<SelfieImage>();
     private FeedAdapter feedAdapter;
     private GridView gridView;
@@ -50,28 +49,26 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     private boolean liked;
     private ImageAdapter adapter;
     private Button tileButton;
+
     private boolean tile;
     private boolean end;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
         loader = new CommandLoader(getActivity(), args);
-        Log.d(TAG, "onCreateLoader: " + loader.hashCode());
         return loader;
     }
 
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode code) {
         if (code.isSuccess()) {
-            Log.d(TAG, "onLoadFinished: " + loader.hashCode());
             more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
             if (more.size() > 0) {
                 feedList.addAll(more);
-                if (liked) {
-                    adapter.notifyDataSetChanged();
-                } else {
-                    feedAdapter.notifyDataSetChanged();
-                }
+
+                feedAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
+
             } else {
                 end = true;
             }
@@ -84,25 +81,35 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoaderReset(Loader<StatusCode> loader) {
-        Log.d(TAG, "onLoaderReset: " + loader.hashCode());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_feed, container, false);
-        String commandName = getCommandName();
-        command = new Command(commandName, LoginManagerImpl.getInstance().getUser());
-        if (InternetChecker.isNetworkConnected()) {
-            init();
-        } else {
-            InternetChecker.showNotInternetError(getActivity());
-        }
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        feedList.clear();
+        init();
     }
 
     void updateGridView(int index, SelfieImage selfieImage) {
         feedList.set(index, selfieImage);
         feedAdapter.notifyDataSetChanged();
+    }
+
+    private void init() {
+        liked = checkFragment();
+        String commandName = getCommandName();
+        command = new Command(commandName, LoginManagerImpl.getInstance().getUser());
+        if (InternetChecker.isNetworkConnected()) {
+            initViews();
+        } else {
+            InternetChecker.showNotInternetError(getActivity());
+        }
     }
 
     private String getCommandName() {
@@ -113,21 +120,18 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
         return (getTag().equals(MyActionBarActivity.TAB_LIKED));
     }
 
-    private void init() {
+    private void initViews() {
         listView = (ListView) rootView.findViewById(R.id.feedListView);
         gridView = (GridView) rootView.findViewById(R.id.likedGridView);
         tileButton = (Button) rootView.findViewById(R.id.tile);
         initListeners();
-        liked = checkFragment();
         if (liked) {
             title = (LinearLayout) rootView.findViewById(R.id.likedLay);
         } else {
             title = (LinearLayout) rootView.findViewById(R.id.feedLay);
-
         }
         initFeed();
         initGridview();
-        listView.setVisibility(View.VISIBLE);
         title.setVisibility(View.VISIBLE);
     }
 
@@ -153,19 +157,18 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 startOneSelfieActivity(parent, position);
             }
-
         });
-
     }
 
     private void startOneSelfieActivity(AdapterView<?> parent, int position) {
-        // TODO Auto-generated method stub
-
+        SelfieImage selfie = (SelfieImage) parent.getItemAtPosition(position);
+        Intent intent = new Intent(getActivity().getApplicationContext(), OneSelfieActivity.class);
+        intent.putExtra(OneSelfieActivity.INTENT_SELFIE_ID, selfie.getId());
+        getActivity().startActivity(intent);
     }
 
     private void initFeed() {
         feedAdapter = new FeedAdapter(getActivity(), R.layout.feed_item, feedList);
-
         listView.setAdapter(feedAdapter);
         listView.setOnScrollListener(new EndlessScrollListener() {
             @Override
@@ -174,14 +177,12 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
             }
         });
         command.setOffset(0);
-        Log.d(TAG_PAGE, "offset =" + 0);
         bundle.putParcelable("command", command);
         getLoaderManager().initLoader(LOADER_ID, bundle, FeedFragment.this).forceLoad();
     }
 
     private void loadMore(int page) {
         if (!end) {
-            Log.d(TAG_PAGE, "offset =" + page);
             command.setOffset(page);
             bundle.putParcelable("command", command);
             getLoaderManager().initLoader(LOADER_ID + page, bundle, FeedFragment.this).forceLoad();
@@ -192,10 +193,9 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
         if (!tile) {
             gridView.setVisibility(View.VISIBLE);
             listView.setVisibility(View.INVISIBLE);
-
         } else {
-            listView.setVisibility(View.VISIBLE);
             gridView.setVisibility(View.INVISIBLE);
+            listView.setVisibility(View.VISIBLE);
         }
         tile = !tile;
     }

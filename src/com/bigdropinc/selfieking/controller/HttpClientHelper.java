@@ -66,7 +66,8 @@ public class HttpClientHelper {
     public static final String NEW_PASSWORD = "newPassword";
     public static final String YEAR = "year";
     public static final String MONTH = "month";
-
+    public static final String IMAGEEXT = "imageExt";
+    public static final String PNG = "png";
     private static final String TAG = "tag";
     private JsonHelper jsonHelper = new JsonHelper();
     private String token = LoginManagerImpl.getInstance().getToken();
@@ -107,11 +108,9 @@ public class HttpClientHelper {
         String content = convertStreamToString(inputStream);
         Log.d(TAG, "responce from server  " + content);
         StatusCode code = jsonHelper.parseMessage(content);
-
         if (code.isSuccess()) {
             user = getUser(user.getEmail(), user.getPassword());
         }
-
         return user;
     }
 
@@ -122,7 +121,6 @@ public class HttpClientHelper {
         String responce = convertStreamToString(inputStream);
         Log.d(TAG, "responce from server  " + responce);
         StatusCode str = jsonHelper.parseMessage(responce);
-        Log.d(TAG, "status code from server  " + str.getCode());
         return str;
     }
 
@@ -138,14 +136,14 @@ public class HttpClientHelper {
         String responce = convertStreamToString(inputStream);
         Log.d(TAG, "responce from server  " + responce);
         StatusCode str = jsonHelper.parseMessage(responce);
-        Log.d(TAG, "status code from server  " + str.getCode());
         return getUser(user.getToken());
-    }
+    } 
 
     public StatusCode postSelfie(SelfieImage selfieImage) throws ApiException {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(TOKEN, selfieImage.getToken()));
         params.add(new BasicNameValuePair(DESCRIPTION, selfieImage.getDescription()));
+        params.add(new BasicNameValuePair(IMAGEEXT, PNG));
         params.add(new BasicNameValuePair(IMAGE, Base64.encodeToString(selfieImage.getBytesImage(), 0)));
         InputStream inputStream = postData(UrlRequest.POST_SELFIE, params);
         String content = convertStreamToString(inputStream);
@@ -169,13 +167,11 @@ public class HttpClientHelper {
     }
 
     public SelfieImage likeSelfie(Like like, String url) throws ApiException {
-        Log.d("like", "url  " + url);
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(TOKEN, like.getToken()));
         params.add(new BasicNameValuePair(POST_ID, String.valueOf(like.getPostId())));
         InputStream inputStream = postData(url, params);
         String content = convertStreamToString(inputStream);
-        Log.d("like", "content  " + content);
         StatusCode code = jsonHelper.parseMessage(content);
         SelfieImage image = new SelfieImage();
         image.setToken(like.getToken());
@@ -187,28 +183,12 @@ public class HttpClientHelper {
         return image;
     }
 
-    public List<SelfieImage> getSelfies(String token, int offset) throws ApiException {
-        List<NameValuePair> params = new ArrayList<NameValuePair>(5);
-        params.add(new BasicNameValuePair(TOKEN, token));
-        params.add(new BasicNameValuePair(FIELDS, "basic, extended"));
-        params.add(new BasicNameValuePair(OFFSET, String.valueOf(offset)));
-        params.add(new BasicNameValuePair(LIMIT, String.valueOf(5)));
-        InputStream inputStream = postData(UrlRequest.GET_SELFIES, params);
-        String content = convertStreamToString(inputStream);
-        List<SelfieImage> list = jsonHelper.parseSelfies(content);
-        return list;
+    public List<SelfieImage> getSelfies(int offset) throws ApiException {
+        return getSelfies(UrlRequest.GET_SELFIES, offset);
     }
-    
-    public List<SelfieImage> getLikedSelfies(String token, int offset) throws ApiException {
-        List<NameValuePair> params = new ArrayList<NameValuePair>(5);
-        params.add(new BasicNameValuePair(TOKEN, token));
-        params.add(new BasicNameValuePair(FIELDS, "basic, extended"));
-        params.add(new BasicNameValuePair(OFFSET, String.valueOf(offset)));
-        params.add(new BasicNameValuePair(LIMIT, String.valueOf(5)));
-        InputStream inputStream = postData(UrlRequest.GET_SELFIES, params);
-        String content = convertStreamToString(inputStream);
-        List<SelfieImage> list = jsonHelper.parseSelfies(content);
-        return list;
+
+    public List<SelfieImage> getLikedSelfies(int offset) throws ApiException {
+        return getSelfies(UrlRequest.GET_LIKED, offset);
     }
 
     public StatusCode deleteSelfie(SelfieImage selfieImage) throws ApiException {
@@ -231,7 +211,7 @@ public class HttpClientHelper {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(TOKEN, String.valueOf(selfieImage.getToken())));
         params.add(new BasicNameValuePair(POST_ID, String.valueOf(selfieImage.getId())));
-        params.add(new BasicNameValuePair(FIELDS, "basic, extended"));
+        params.add(new BasicNameValuePair(FIELDS, "basic, extended, imageSmall, imageMedium"));
         InputStream inputStream = postData(UrlRequest.GET_POST, params);
         String content = convertStreamToString(inputStream);
         SelfieImage statusCode = jsonHelper.parseSelfie(content);
@@ -243,7 +223,7 @@ public class HttpClientHelper {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(TOKEN, token));
         params.add(new BasicNameValuePair(POST_ID, String.valueOf(selfieImage.getId())));
-        params.add(new BasicNameValuePair(FIELDS, "basic, extended"));
+        params.add(new BasicNameValuePair(FIELDS, "basic, extended, imageSmall, imageMedium"));
         params.add(new BasicNameValuePair(WITH, "comments"));
         InputStream inputStream = postData(UrlRequest.GET_POST, params);
         String content = convertStreamToString(inputStream);
@@ -298,6 +278,19 @@ public class HttpClientHelper {
         String content = convertStreamToString(inputStream);
         List<SelfieImage> list = jsonHelper.parseSelfies(content);
         return list;
+    }
+
+    private List<SelfieImage> getSelfies(String command, int offset) throws ApiException {
+        List<NameValuePair> params = new ArrayList<NameValuePair>(5);
+        params.add(new BasicNameValuePair(TOKEN, token));
+        params.add(new BasicNameValuePair(FIELDS, "basic, extended, imageSmall, imageMedium"));
+        params.add(new BasicNameValuePair(OFFSET, String.valueOf(offset)));
+        params.add(new BasicNameValuePair(LIMIT, String.valueOf(5)));
+        InputStream inputStream = postData(command, params);
+        String content = convertStreamToString(inputStream);
+        List<SelfieImage> list = jsonHelper.parseSelfies(content);
+        return list;
+
     }
 
     private JSONObject getSelfieJSONImage(SelfieImage selfieImage) {

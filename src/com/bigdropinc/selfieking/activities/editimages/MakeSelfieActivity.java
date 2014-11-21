@@ -1,6 +1,5 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,16 +8,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PointF;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.FloatMath;
 import android.util.Log;
@@ -33,6 +28,8 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import cn.Ragnarok.BitmapFilter;
 
+import com.bidgropinc.biling.util.IabHelper;
+import com.bidgropinc.biling.util.IabResult;
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.adapters.BottomMenuAdapter;
@@ -41,8 +38,6 @@ import com.bigdropinc.selfieking.controller.managers.FileManager;
 import com.bigdropinc.selfieking.model.constants.BackGroundConstants;
 import com.bigdropinc.selfieking.model.constants.FilterConstants;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
-import com.bigdropinc.selfieking.views.CutView;
-import com.bigdropinc.selfieking.views.Point;
 import com.devsmart.android.ui.HorizontalListView;
 
 public class MakeSelfieActivity extends Activity implements OnTouchListener {
@@ -81,6 +76,45 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private float[] lastEvent;
     private float newRot;
 
+    private IabHelper mHelper;
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        ImageView view = (ImageView) v;
+        view.setScaleType(ScaleType.MATRIX);
+        new PointF();
+        new PointF();
+        dumpEvent(event);
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+        case MotionEvent.ACTION_DOWN:
+            down(event);
+            break;
+        case MotionEvent.ACTION_POINTER_DOWN:
+            pointerDown(event);
+            break;
+        case MotionEvent.ACTION_POINTER_UP:
+            pointerUp();
+            break;
+        case MotionEvent.ACTION_MOVE:
+            move(event, view);
+            break;
+        default:
+            break;
+        }
+        view.setImageMatrix(matrix);
+        BitmapFilter.matrix = matrix;
+        return true;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mHelper != null)
+            mHelper.dispose();
+        mHelper = null;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +123,23 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         initImage();
         initListeners();
         initMenu();
+        initIabHelper();
+    }
+
+    private void initIabHelper() {
+        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAppnnGKdUh/6nuk2BL1LZuyN9r60w0q/Zqx3Hkmw6IKZLj/MhpN/+KygSSlje5IlasacAd5r1fw9uQWdL3VlmWHgJ16RAkAyeqGqXT+MH43zGEdiHrKCfUJZGOvbo6jTe/rnzAvpdZl1BCLZ0G2CuY/tr2VDIUcOCTk4AHkj8V13zqekqQBK8TuNP2Eq86B17fwQtqlrLRIQOIyVcHVphGVIaDYy5VqkyH5Erfb5oMh+KLFlCUXz72mHxPINp1yYFJ/Xp4hCuHxpmCK9F+mqnSPA8+7zWaWXbWLneMDXa+AZnnKi5XGEjjHAat0fXZR76Hj6/NDyKUq03ll5V+YvJOwIDAQAB";
+        mHelper = new IabHelper(this, base64EncodedPublicKey);
+        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+            public void onIabSetupFinished(IabResult result) {
+                if (!result.isSuccess()) {
+                    // Oh noes, there was a problem.
+                    Log.d(TAG, "Problem setting up In-app Billing: " + result);
+                } else {
+                    Log.d(TAG, "Setting up In-app Billing: SUCCESS DONE");
+                }
+                // Hooray, IAB is fully set up!
+            }
+        });
     }
 
     private void init() {
@@ -281,12 +332,21 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
         // byte[] byteArray = stream.toByteArray();
 
-        selfieImage.getSelfieWithBackground();
+        int size = sizeOf(selfieImage.getSelfieWithBackground());
+        Log.d("tag", "size " + size);
         selfieImage = DatabaseManager.getInstance().addSelfie(selfieImage);
 
         // intent.putExtra("image", byteArray);
         intent.putExtra("id", selfieImage.getId());
         return intent;
+    }
+
+    private int sizeOf(Bitmap data) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
+            return data.getRowBytes() * data.getHeight();
+        } else {
+            return data.getByteCount();
+        }
     }
 
     private void onFilterClick(boolean crop) {
@@ -359,35 +419,6 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         resultImageView.setImageBitmap(selfieImage.getSelfieWithOutBackground());
         backImageView.setImageBitmap(selfieImage.getBackground());
 
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        ImageView view = (ImageView) v;
-        view.setScaleType(ScaleType.MATRIX);
-        new PointF();
-        new PointF();
-        dumpEvent(event);
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-        case MotionEvent.ACTION_DOWN:
-            down(event);
-            break;
-        case MotionEvent.ACTION_POINTER_DOWN:
-            pointerDown(event);
-            break;
-        case MotionEvent.ACTION_POINTER_UP:
-            pointerUp();
-            break;
-        case MotionEvent.ACTION_MOVE:
-            move(event, view);
-            break;
-        default:
-            break;
-        }
-        view.setImageMatrix(matrix);
-        BitmapFilter.matrix = matrix;
-        return true;
     }
 
     private void pointerUp() {
