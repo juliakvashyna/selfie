@@ -154,10 +154,15 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         emailEditText = (EditText) findViewById(R.id.editPofileEmail);
         phoneEditText = (EditText) findViewById(R.id.editPofilePhone);
         genderSpinner = (Spinner) findViewById(R.id.editPofileMale);
-        SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, new String[] { "Female", "Male" });
-        // genderSpinner.setPopupBackgroundResource(R.drawable.spinner);
-        // adapter.setDropDownViewResource(R.layout.spinner_item);
-        genderSpinner.setAdapter(spinnerAdapter);
+        // SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this,
+        // android.R.layout.simple_list_item_1, );
+
+        String[] data = new String[] { "Female", "Male" };
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, data);
+        adapter.setDropDownViewResource(R.layout.spinner_item);
+        genderSpinner.setAdapter(adapter);
+        genderSpinner.setSelection(0);
+        genderSpinner.setPrompt("Female");
         editButton = (Button) findViewById(R.id.editProfileButton);
         backButton = (Button) findViewById(R.id.editProfileBack);
         changePassword = (Button) findViewById(R.id.changePassword);

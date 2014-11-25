@@ -1,20 +1,29 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    -->
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="AppTheme" parent="android:Theme.Light" />
+
+    <style name="customButton" parent="@android:style/Widget.Button">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textSize">@dimen/feedSp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:padding">3dp</item>
+    </style>
+
+    <style name="MyAppTheme" parent="AppTheme">
+        <item name="android:buttonStyle">@style/customButton</item>
     </style>
 
     <style name="NewDialog" parent="@android:Theme.Dialog">
@@ -27,13 +36,6 @@
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:background">@android:color/transparent</item>
-    </style>
-
-    <style name="customButton" parent="@android:style/Widget.Button">
-        <item name="android:background">@color/transparent</item>
-        <item name="android:textSize">@dimen/feedSp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:padding">3dp</item>
     </style>
 
     <style name="customEditText" parent="@android:style/Widget.EditText">
@@ -52,7 +54,9 @@
 
     <style name="customSpinner" parent="@android:style/Widget.DropDownItem.Spinner">
         <item name="android:textSize">@dimen/buttonTextSize</item>
+          <item name="android:padding">@dimen/spinnerPadding</item>
         <item name="android:textColor">@color/white</item>
+        <item name="android:popupBackground">@android:color/transparent</item>
         <item name="android:background">@color/transparent</item>
     </style>
 

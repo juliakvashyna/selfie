@@ -12,7 +12,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
+import android.util.Log;
 
+import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -214,14 +216,15 @@ public class EditImage {
     }
 
     public Bitmap getSelfieWithBackground() {
+        Bitmap bitmap = null;
 
-        Bitmap bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
+        bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
         if (background != null && croppedBitmap != null) {
             if (colorFilter != null) {
-                bitmap = doOverlayBackdround(croppedBitmap,true);
+                bitmap = doOverlayBackdround(croppedBitmap, true);
                 bitmap = createFilterImage(bitmap);
             } else {
-                bitmap = doOverlayBackdround(croppedBitmap,false);
+                bitmap = doOverlayBackdround(croppedBitmap, false);
             }
 
         } else {
@@ -234,14 +237,15 @@ public class EditImage {
         // byte[] byteArray = stream.toByteArray();
 
         imageBytes = stream.toByteArray();
+
         return bitmap;
     }
 
     private Bitmap overlay(Bitmap bmp1, Bitmap bmp2, boolean filter) {
         Bitmap bmOverlay = Bitmap.createScaledBitmap(bmp1, width, height, true);
         Canvas canvas = new Canvas(bmOverlay);
-//        if (!filter)
-//            canvas.drawBitmap(bmp1, new Matrix(), null);
+        // if (!filter)
+        // canvas.drawBitmap(bmp1, new Matrix(), null);
         canvas.drawBitmap(bmp2, matrix, null);
         return bmOverlay;
     }

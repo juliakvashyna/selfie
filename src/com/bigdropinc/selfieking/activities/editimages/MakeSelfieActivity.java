@@ -49,13 +49,14 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private Bitmap image;
     private ImageView resultImageView;
     private ImageView backImageView;
-    private HorizontalListView horizontalListView;
-    private BottomMenuAdapter adapter;
-    private List<MenuItem> menuList;
+    private HorizontalListView horizontalListViewCurrent;
+    private BottomMenuAdapter adapterCurrent;
+    private List<MenuItem> menuListCurrent;
     private Button okButton;
     private Button doneButton;
     private EditImage selfieImage;
-
+    private Button selectBackgroundButton;
+    private Button selectfilterButton;
     // These matrices will be used to move and zoom image
     private Matrix matrix = new Matrix();
     private Matrix savedMatrix = new Matrix();
@@ -146,7 +147,9 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         resultImageView = (ImageView) findViewById(R.id.resultImage);
         resultImageView.setOnTouchListener(this);
         backImageView = (ImageView) findViewById(R.id.backImage);
-        horizontalListView = (HorizontalListView) findViewById(R.id.bottomMenu);
+        selectBackgroundButton = (Button) findViewById(R.id.selectBackground);
+        selectfilterButton = (Button) findViewById(R.id.selectFilter);
+        horizontalListViewCurrent = (HorizontalListView) findViewById(R.id.bottomMenuCurrent);
         okButton = (Button) findViewById(R.id.btnMainOK);
         doneButton = (Button) findViewById(R.id.btnMainNext);
         selfieImage = new EditImage();
@@ -176,10 +179,12 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initMenu() {
-        menuList = new ArrayList<MenuItem>();
-        adapter = new BottomMenuAdapter(this, R.layout.bottom_item, menuList);
-        initMenuList();
-        horizontalListView.setAdapter(adapter);
+        menuListCurrent = new ArrayList<MenuItem>();
+
+        adapterCurrent = new BottomMenuAdapter(this, R.layout.bottom_item, menuListCurrent);
+        initBackAndFiltersButtons();
+
+        horizontalListViewCurrent.setAdapter(adapterCurrent);
         try {
             initOnItemClick();
         } catch (OutOfMemoryError e) {
@@ -187,27 +192,26 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         }
     }
 
-    private void initMenuList() {
-        menuList.clear();
-        menuList.add(new MenuItem(ID_BACK, R.drawable.backgrounds));
-        menuList.add(new MenuItem(ID_FILTER, R.drawable.filters));
-        menuList.add(new MenuItem(R.drawable.buy));
-
-        adapter.notifyDataSetChanged();
+    private void initBackAndFiltersButtons() {
+        selectBackgroundButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackgroundClick();
+            }
+        });
+        selectfilterButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFilterClick();
+            }
+        });
     }
 
     private void initOnItemClick() {
-        horizontalListView.setOnItemClickListener(new OnItemClickListener() {
+        horizontalListViewCurrent.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                boolean crop = false;
                 switch (((MenuItem) parent.getItemAtPosition(position)).getId()) {
-                case ID_FILTER:
-                    onFilterClick(crop);
-                    break;
-                case ID_BACK:
-                    onBackgroundClick();
-                    break;
                 case BackGroundConstants.b1:
                     setBack("1.jpg");
                     break;
@@ -295,10 +299,8 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void okButtonClick() {
-        initMenuList();
+        initBackAndFiltersButtons();
         nextVisible();
-        adapter.notifyDataSetChanged();
-        horizontalListView.setVisibility(View.VISIBLE);
         image = selfieImage.getSelfieWithOutBackground();
         resultImageView.setImageBitmap(image);
     }
@@ -349,34 +351,34 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         }
     }
 
-    private void onFilterClick(boolean crop) {
+    private void onFilterClick() {
         initFilteMenu();
         selfieImage.setFilterclick(true);
         resultImageView.setImageBitmap(selfieImage.getSelfieWithOutBackground());
         okVisible();
-        if (!crop) {
-            resultImageView.setVisibility(View.VISIBLE);
-        }
+
+        resultImageView.setVisibility(View.VISIBLE);
+
     }
 
     private void initFilteMenu() {
-        menuList.clear();
-        menuList.add(new MenuItem(FilterConstants.F1, R.string.f1, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f2, R.string.f2, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f3, R.string.f3, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f4, R.string.f4, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f5, R.string.f5, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f6, R.string.f6, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f7, R.string.f7, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f8, R.string.f8, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f9, R.string.f9, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f10, R.string.f10, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f11, R.string.f11, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f12, R.string.f12, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f13, R.string.f13, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f14, R.string.f14, R.drawable.filters));
-        menuList.add(new MenuItem(FilterConstants.f15, R.string.f15, R.drawable.filters));
-        adapter.notifyDataSetChanged();
+        menuListCurrent.clear();
+        menuListCurrent.add(new MenuItem(FilterConstants.F1, R.string.f1, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f2, R.string.f2, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f3, R.string.f3, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f4, R.string.f4, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f5, R.string.f5, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f6, R.string.f6, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f7, R.string.f7, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f8, R.string.f8, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f9, R.string.f9, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f10, R.string.f10, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f11, R.string.f11, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f12, R.string.f12, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f13, R.string.f13, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f14, R.string.f14, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.f15, R.string.f15, R.drawable.filters));
+        adapterCurrent.notifyDataSetChanged();
     }
 
     private void onBackgroundClick() {
@@ -387,14 +389,14 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initBackgroundMenu() {
-        menuList.clear();
-        menuList.add(new MenuItem(BackGroundConstants.b1, "1.jpg"));
-        menuList.add(new MenuItem(BackGroundConstants.b2, "2.jpg"));
-        menuList.add(new MenuItem(BackGroundConstants.b3, "3.jpg"));
-        menuList.add(new MenuItem(BackGroundConstants.b4, "4.jpg"));
-        menuList.add(new MenuItem(BackGroundConstants.b5, "5.jpg"));
-        menuList.add(new MenuItem(BackGroundConstants.b5, "6.jpg"));
-        adapter.notifyDataSetChanged();
+        menuListCurrent.clear();
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, "1.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, "2.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, "3.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, "4.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, "5.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, "6.jpg"));
+        adapterCurrent.notifyDataSetChanged();
     }
 
     private void nextVisible() {

@@ -176,17 +176,19 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
                 loadMore(page);
             }
         });
-        command.setOffset(0);
-        bundle.putParcelable("command", command);
-        getLoaderManager().initLoader(LOADER_ID, bundle, FeedFragment.this).forceLoad();
+        startLoader(0);
     }
 
     private void loadMore(int page) {
         if (!end) {
-            command.setOffset(page);
-            bundle.putParcelable("command", command);
-            getLoaderManager().initLoader(LOADER_ID + page, bundle, FeedFragment.this).forceLoad();
+            startLoader(page);
         }
+    }
+
+    private void startLoader(int page) {
+        command.setOffset(page);
+        bundle.putParcelable(Command.BUNDLE_NAME, command);
+        getLoaderManager().initLoader(LOADER_ID + page, bundle, FeedFragment.this).forceLoad();
     }
 
     private void initGridOrList() {

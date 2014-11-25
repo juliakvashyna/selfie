@@ -5,5 +5,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="feedSp">14sp</dimen>
     <dimen name="buttonTextSize">18dp</dimen>
+    <dimen name="spinnerTextSize">22dp</dimen>
+    <dimen name="spinnerPadding">5dp</dimen>
+    <dimen name="topButtonPadding">10dp</dimen>
 
 </resources>

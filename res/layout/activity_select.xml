@@ -2,23 +2,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     android:orientation="vertical"
-    android:padding="5dp"
+        android:background="@drawable/background"
     tools:context="com.bigdropinc.selfieking.activities.editimages.SelectImageActivity" >
 
     <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="80dp"
-        android:orientation="horizontal"
-        android:padding="2dp" >
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/camera_top"
+        android:padding="@dimen/topButtonPadding" >
+
+        <Button
+            android:id="@+id/closeCamera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/close_button_selector" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/cameraFlash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/flash" />
+
+            <Button
+                android:id="@+id/cameraRotate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:background="@drawable/icon_change_camera" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/selectedImageL"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="6" >
+        android:layout_height="400dp" >
 
         <FrameLayout
             android:id="@+id/camera_preview"
@@ -29,7 +56,6 @@
                 android:id="@+id/selectedImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-               
                 android:scaleType="fitXY"
                 android:visibility="invisible" >
             </ImageView>
@@ -38,40 +64,40 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@drawable/camera_bottom" >
 
         <LinearLayout
             android:id="@+id/tabs"
-            android:layout_width="fill_parent"
-            android:layout_height="140dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="2dp" >
+            android:orientation="horizontal" >
 
-            <Button
-                android:id="@+id/gallery"
-                style="@style/customButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:singleLine="true"
-                android:text="Gallery" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
 
-            <Button
-                android:id="@+id/photo"
-                style="@style/customButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Photo" />
+                <Button
+                    android:id="@+id/photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/gallery"
+                    android:layout_alignBottom="@+id/gallery"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/make_shot" />
 
-            <Button
-                android:id="@+id/cameraRotate"
-                style="@style/customButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Rotate" />
+                <Button
+                    android:id="@+id/gallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="37dp"
+                    android:background="@drawable/add_image_selector" />
+            </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>
 

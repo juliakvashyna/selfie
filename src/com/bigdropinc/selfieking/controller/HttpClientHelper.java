@@ -84,6 +84,7 @@ public class HttpClientHelper {
         String content = convertStreamToString(inputStream);
         Log.d(TAG, "responce from server  " + content);
         User user = jsonHelper.parseUser(content);
+        user.setToken(token);
         return user;
     }
 
@@ -96,7 +97,7 @@ public class HttpClientHelper {
         Log.d(TAG, "responce from server  " + content);
         User user = jsonHelper.parseUser(content);
         token = user.getToken();
-        return user;
+        return getUser(token);
     }
 
     public User registr(User user) throws ApiException {
@@ -137,7 +138,7 @@ public class HttpClientHelper {
         Log.d(TAG, "responce from server  " + responce);
         StatusCode str = jsonHelper.parseMessage(responce);
         return getUser(user.getToken());
-    } 
+    }
 
     public StatusCode postSelfie(SelfieImage selfieImage) throws ApiException {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);

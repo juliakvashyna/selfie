@@ -233,8 +233,6 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         View view = LayoutInflater.from(this).inflate(R.layout.tabs_icon, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.tab_icon);
         imageView.setImageDrawable(getResources().getDrawable(id));
-        TextView textView = (TextView) view.findViewById(R.id.tab_text);
-        textView.setText(text);
         return view;
     }
 

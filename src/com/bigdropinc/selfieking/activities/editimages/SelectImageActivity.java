@@ -7,6 +7,7 @@ import java.io.IOException;
 import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,6 +38,8 @@ public class SelectImageActivity extends Activity implements OnClickListener {
 
     private Button photoButton;
     private Button galleryButton;
+    private Button flashButton;
+    private Button closeButton;
     private Button rotateCameraButton;
 
     // private ImageView selectedImageView;
@@ -63,6 +66,12 @@ public class SelectImageActivity extends Activity implements OnClickListener {
             break;
         case R.id.gallery:
             openGallery();
+            break;
+        case R.id.cameraFlash:
+            flash();
+            break;
+        case R.id.closeCamera:
+            onBackPressed();
             break;
         default:
             break;
@@ -131,9 +140,24 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         return f.getAbsolutePath();
     }
 
+    private void flash() {
+        Camera.Parameters params = mCamera.getParameters();
+        if (params.getFlashMode() != null) {
+            if (!params.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            } else {
+                params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            }
+            mCamera.setParameters(params);
+            mCamera.startPreview();
+        }
+    }
+
     private void initCamera() {
         mCamera = getCameraInstance();
+
         if (mCamera != null) {
+
             mPreview = new CameraPreview(this, mCamera);
             preview.removeAllViews();
             preview.addView(mPreview);
@@ -266,6 +290,9 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         // STEP #2: Set the 'rotation' parameter
         Camera.Parameters params = mCamera.getParameters();
         params.setRotation(result);
+
+        params.setFlashMode(Parameters.FLASH_MODE_OFF);
+
         mCamera.setParameters(params);
         return result;
     }
@@ -289,6 +316,8 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         photoButton = (Button) findViewById(R.id.photo);
         galleryButton = (Button) findViewById(R.id.gallery);
         rotateCameraButton = (Button) findViewById(R.id.cameraRotate);
+        flashButton = (Button) findViewById(R.id.cameraFlash);
+        closeButton = (Button) findViewById(R.id.closeCamera);
         // selectedImageView = (ImageView) findViewById(R.id.selectedImage);
     }
 
@@ -296,6 +325,8 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         photoButton.setOnClickListener(this);
         galleryButton.setOnClickListener(this);
         rotateCameraButton.setOnClickListener(this);
+        flashButton.setOnClickListener(this);
+        closeButton.setOnClickListener(this);
     }
 
     private void openGallery() {
@@ -326,9 +357,6 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         startActivity(intent);
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
+
 
 }

@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
-import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
