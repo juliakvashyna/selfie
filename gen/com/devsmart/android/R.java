@@ -8,6 +8,6 @@ package com.devsmart.android;
 
 public final class R {
 	public static final class drawable {
-		public static final int icon = 0x7f020095;
+		public static final int icon = 0x7f0200a3;
 	}
 }

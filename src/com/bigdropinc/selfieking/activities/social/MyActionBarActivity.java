@@ -154,7 +154,8 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 return findViewById(R.id.realtabcontent);
             }
         });
-        spec.setIndicator(createTabView(R.drawable.home, "home"));
+        spec.setIndicator(createTabView(R.drawable.home_selector, "home"));
+     
         mTabHost.addTab(spec);
 
         spec = mTabHost.newTabSpec(TAB_LIKED);
@@ -163,7 +164,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 return findViewById(R.id.realtabcontent);
             }
         });
-        spec.setIndicator(createTabView(R.drawable.liked, "liked"));
+        spec.setIndicator(createTabView(R.drawable.liked_selector, "liked"));
         mTabHost.addTab(spec);
 
         spec = mTabHost.newTabSpec(TAB_CAMERA);
@@ -172,7 +173,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 return findViewById(R.id.realtabcontent);
             }
         });
-        spec.setIndicator(createTabView(R.drawable.camera, "camera"));
+        spec.setIndicator(createTabView(R.drawable.icon_make_shot, "camera"));
         mTabHost.addTab(spec);
 
         spec = mTabHost.newTabSpec(TAB_CONTEST);
@@ -181,7 +182,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 return findViewById(R.id.realtabcontent);
             }
         });
-        spec.setIndicator(createTabView(R.drawable.star, "contest"));
+        spec.setIndicator(createTabView(R.drawable.contest_selector, "contest"));
         mTabHost.addTab(spec);
 
         spec = mTabHost.newTabSpec(TAB_PROFILE);
@@ -190,7 +191,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 return findViewById(R.id.realtabcontent);
             }
         });
-        spec.setIndicator(createTabView(R.drawable.profile, "profile"));
+        spec.setIndicator(createTabView(R.drawable.profile_selector, "profile"));
         mTabHost.addTab(spec);
 
     }
@@ -245,6 +246,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         public void onTabChanged(String tabId) {
 
             mCurrentTab = tabId;
+        
 
             if (tabId.equals(TAB_HOME)) {
                 feedFragment = new FeedFragment();

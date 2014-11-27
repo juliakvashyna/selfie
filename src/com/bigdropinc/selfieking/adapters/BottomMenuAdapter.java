@@ -1,6 +1,7 @@
 package com.bigdropinc.selfieking.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +35,9 @@ public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
         imageView = (ImageView) convertView.findViewById(R.id.mimage);
         textView = (TextView) convertView.findViewById(R.id.mtitle);
         MenuItem itemMenu = getItem(position);
-        if (itemMenu.getImageres() != 0) {
+        if (itemMenu.getBitmap() != null) {
+            imageView.setImageBitmap(itemMenu.getBitmap());
+        } else if (itemMenu.getImageres() != 0) {
             imageView.setImageResource(itemMenu.getImageres());
         } else {
             imageView.setImageBitmap(FileManager.getBitmapFromAsset(itemMenu.getPath()));

@@ -8,7 +8,7 @@ public interface UrlRequest {
     String REGISTR_USER = ADDRESS + "/api/register";
     String RESET_PASSWORD = ADDRESS + "/api/resetPassword";
 
-    // profile
+    // profile 
     String EDIT_PROFILE = ADDRESS + "/api/profile/edit";
 
     // selfies

@@ -65,14 +65,11 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
             more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
             if (more.size() > 0) {
                 feedList.addAll(more);
-
                 feedAdapter.notifyDataSetChanged();
                 adapter.notifyDataSetChanged();
-
             } else {
                 end = true;
             }
-
         } else {
             Toast.makeText(getActivity(), code.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
         }
@@ -193,9 +190,11 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private void initGridOrList() {
         if (!tile) {
+            tileButton.setBackgroundResource(R.drawable.icon_bar_view_ontap);
             gridView.setVisibility(View.VISIBLE);
             listView.setVisibility(View.INVISIBLE);
         } else {
+            tileButton.setBackgroundResource(R.drawable.icon_bar_view);
             gridView.setVisibility(View.INVISIBLE);
             listView.setVisibility(View.VISIBLE);
         }

@@ -48,41 +48,44 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp" 
-        android:layout_weight="4">
+        android:layout_height="400dp" >
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/backImage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
-            <ImageView
-                android:id="@+id/backImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-
-            <ImageView
-                android:id="@+id/resultImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </RelativeLayout>
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/resultImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bottom_bar"
+        android:layout_weight="2"
         android:orientation="vertical" >
 
-        <com.devsmart.android.ui.HorizontalListView
-            android:id="@+id/bottomMenuCurrent"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="1"
             android:layout_height="0dp"
-            android:visibility="visible" >
-        </com.devsmart.android.ui.HorizontalListView>
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <com.devsmart.android.ui.HorizontalListView
+                android:id="@+id/bottomMenuCurrent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="0dp"
+                android:visibility="visible" >
+            </com.devsmart.android.ui.HorizontalListView>
+        </LinearLayout>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -91,8 +94,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-           android:layout_weight="1"
             android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="horizontal" >
 
@@ -100,14 +103,15 @@
                 android:id="@+id/selectBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_selector" />
+                android:layout_margin="10dp"
+                android:background="@drawable/icon_bg_active" />
 
             <Button
                 android:id="@+id/selectFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/filter_selector" />
+                android:layout_margin="10dp"
+                android:background="@drawable/icon_filter" />
         </LinearLayout>
     </LinearLayout>
 

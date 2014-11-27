@@ -8,8 +8,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.os.AsyncTask;
@@ -41,8 +45,20 @@ import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.devsmart.android.ui.HorizontalListView;
 
 public class MakeSelfieActivity extends Activity implements OnTouchListener {
-    private static final int ID_FILTER = 3;
-    private static final int ID_BACK = 2;
+    private static final int LIGHT_FIOLET = R.color.light_fiolet;
+    private static final int DARK_FIOLET = R.color.dark_fiolet;
+    private static final int FIOLET = R.color.fiolet;
+    private static final int OHRA = R.color.ohra;
+    private static final int OHRA2 = R.color.ohra2;
+    private static final int GREY = R.color.grey;
+    private static final int GREYF = R.color.greyf;
+    private static final int ROSY = R.color.rosy;
+    private static final int GREYF2 = R.color.greyf2;
+    private static final int ROSY2 = R.color.rosy2;
+    private static final int GREYF3 = R.color.greyf3;
+    private static final int YELLOW = R.color.yellow;
+    private static final int ROSY_BROWN = R.color.rosy_brown;
+    private static final int FIOLET2 = R.color.fiolet2;
     private final String TAG = "tag";
     public static final String EXTRA_IMAGE = "image";
 
@@ -54,6 +70,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private List<MenuItem> menuListCurrent;
     private Button okButton;
     private Button doneButton;
+    private Button backButton;
     private EditImage selfieImage;
     private Button selectBackgroundButton;
     private Button selectfilterButton;
@@ -152,6 +169,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         horizontalListViewCurrent = (HorizontalListView) findViewById(R.id.bottomMenuCurrent);
         okButton = (Button) findViewById(R.id.btnMainOK);
         doneButton = (Button) findViewById(R.id.btnMainNext);
+        backButton = (Button) findViewById(R.id.btnMainBack);
         selfieImage = new EditImage();
     }
 
@@ -190,6 +208,8 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         } catch (OutOfMemoryError e) {
             Log.d(TAG, "OutOfMemoryError initOnItemClick");
         }
+        initBackgroundMenu();
+        okVisible();
     }
 
     private void initBackAndFiltersButtons() {
@@ -234,46 +254,46 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
                     dofilter(0);
                     break;
                 case FilterConstants.f2:
-                    dofilter(getResources().getColor(R.color.light_fiolet));
+                    dofilter(getResources().getColor(LIGHT_FIOLET));
                     break;
                 case FilterConstants.f3:
-                    dofilter(getResources().getColor(R.color.dark_fiolet));
+                    dofilter(getResources().getColor(DARK_FIOLET));
                     break;
                 case FilterConstants.f4:
-                    dofilter(getResources().getColor(R.color.fiolet));
+                    dofilter(getResources().getColor(FIOLET));
                     break;
                 case FilterConstants.f5:
-                    dofilter(getResources().getColor(R.color.ohra));
+                    dofilter(getResources().getColor(OHRA));
                     break;
                 case FilterConstants.f6:
-                    dofilter(getResources().getColor(R.color.ohra2));
+                    dofilter(getResources().getColor(OHRA2));
                     break;
                 case FilterConstants.f7:
-                    dofilter(getResources().getColor(R.color.ohra2));
+                    dofilter(getResources().getColor(GREY));
                     break;
                 case FilterConstants.f8:
-                    dofilter(getResources().getColor(R.color.greyf));
+                    dofilter(getResources().getColor(GREYF));
                     break;
                 case FilterConstants.f9:
-                    dofilter(getResources().getColor(R.color.rosy));
+                    dofilter(getResources().getColor(ROSY));
                     break;
                 case FilterConstants.f10:
-                    dofilter(getResources().getColor(R.color.greyf2));
+                    dofilter(getResources().getColor(GREYF2));
                     break;
                 case FilterConstants.f11:
-                    dofilter(getResources().getColor(R.color.rosy2));
+                    dofilter(getResources().getColor(ROSY2));
                 case FilterConstants.f12:
-                    dofilter(getResources().getColor(R.color.greyf3));
+                    dofilter(getResources().getColor(GREYF3));
                     break;
                 case FilterConstants.f13:
-                    dofilter(getResources().getColor(R.color.yellow));
+                    dofilter(getResources().getColor(YELLOW));
                     break;
                 case FilterConstants.f14:
-                    dofilter(getResources().getColor(R.color.rosy_brown));
+                    dofilter(getResources().getColor(ROSY_BROWN));
                     break;
                 case FilterConstants.f15:
 
-                    dofilter(getResources().getColor(R.color.fiolet2));
+                    dofilter(getResources().getColor(FIOLET2));
                     break;
                 default:
                     break;
@@ -284,7 +304,6 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
     private void initListeners() {
         okButton.setOnClickListener(new OnClickListener() {
-            @SuppressLint("NewApi")
             @Override
             public void onClick(View v) {
                 okButtonClick();
@@ -296,11 +315,21 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
                 gotoFeed();
             }
         });
+        backButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     private void okButtonClick() {
         initBackAndFiltersButtons();
         nextVisible();
+
+    }
+
+    private void createImage() {
         image = selfieImage.getSelfieWithOutBackground();
         resultImageView.setImageBitmap(image);
     }
@@ -352,6 +381,8 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void onFilterClick() {
+        selectBackgroundButton.setBackgroundResource(R.drawable.icon_bg);
+        selectfilterButton.setBackgroundResource(R.drawable.icon_filter_active);
         initFilteMenu();
         selfieImage.setFilterclick(true);
         resultImageView.setImageBitmap(selfieImage.getSelfieWithOutBackground());
@@ -363,27 +394,53 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
     private void initFilteMenu() {
         menuListCurrent.clear();
-        menuListCurrent.add(new MenuItem(FilterConstants.F1, R.string.f1, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f2, R.string.f2, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f3, R.string.f3, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f4, R.string.f4, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f5, R.string.f5, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f6, R.string.f6, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f7, R.string.f7, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f8, R.string.f8, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f9, R.string.f9, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f10, R.string.f10, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f11, R.string.f11, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f12, R.string.f12, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f13, R.string.f13, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f14, R.string.f14, R.drawable.filters));
-        menuListCurrent.add(new MenuItem(FilterConstants.f15, R.string.f15, R.drawable.filters));
+        menuListCurrent.add(new MenuItem(FilterConstants.F1, R.string.f1, selfieImage.getSelfieWithBackgroundWithOutFilter()));
+        menuListCurrent.add(new MenuItem(FilterConstants.f2, R.string.f2, getFilterImage(LIGHT_FIOLET)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f3, R.string.f3, getFilterImage(DARK_FIOLET)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f4, R.string.f4, getFilterImage(FIOLET)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f5, R.string.f5, getFilterImage(OHRA)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f6, R.string.f6, getFilterImage(OHRA2)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f7, R.string.f7, getFilterImage(GREY)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f8, R.string.f8, getFilterImage(GREYF)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f9, R.string.f9, getFilterImage(ROSY)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f10, R.string.f10, getFilterImage(GREYF2)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f11, R.string.f11, getFilterImage(ROSY2)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f12, R.string.f12, getFilterImage(GREYF3)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f13, R.string.f13, getFilterImage(YELLOW)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f14, R.string.f14, getFilterImage(ROSY_BROWN)));
+        menuListCurrent.add(new MenuItem(FilterConstants.f15, R.string.f15, getFilterImage(FIOLET2)));
+
         adapterCurrent.notifyDataSetChanged();
     }
 
+    private Bitmap getFilterImage(int highlightColor) {
+        PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(highlightColor, Mode.DST_IN);
+        Bitmap bitmap = selfieImage.getSelfieWithBackgroundWithOutFilter();
+        
+        Canvas canvas = new Canvas();
+        Bitmap result = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
+        canvas.setBitmap(result);
+        Paint paint = new Paint();
+        // paint.setFilterBitmap(false);
+        // Color
+
+        paint.setColorFilter(colorFilter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+//        paint.setColorFilter(null);
+//        //
+//        paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
+//        canvas.drawBitmap(bitmap, 0, 0, paint);
+//        paint.setXfermode(null);
+        return result;
+    }
+
     private void onBackgroundClick() {
+        selectBackgroundButton.setBackgroundResource(R.drawable.icon_bg_active);
+        selectfilterButton.setBackgroundResource(R.drawable.icon_filter);
         initBackgroundMenu();
         okVisible();
+        if (selfieImage.getColorFilter() != null)
+            createImage();
         resultImageView.setVisibility(View.VISIBLE);
         resultImageView.setImageBitmap(image);
     }
@@ -396,6 +453,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         menuListCurrent.add(new MenuItem(BackGroundConstants.b4, "4.jpg"));
         menuListCurrent.add(new MenuItem(BackGroundConstants.b5, "5.jpg"));
         menuListCurrent.add(new MenuItem(BackGroundConstants.b5, "6.jpg"));
+    
         adapterCurrent.notifyDataSetChanged();
     }
 

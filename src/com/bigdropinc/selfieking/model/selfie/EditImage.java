@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.BlurMaskFilter.Blur;
 import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -124,7 +125,7 @@ public class EditImage {
 
     public Bitmap getBackground() {
         if (background != null && colorFilter != null) {
-            return createFilterImage(background);
+            return createFilterImage(background, colorFilter);
         }
         return background;
     }
@@ -181,7 +182,7 @@ public class EditImage {
         return bmOut;
     }
 
-    private Bitmap createFilterImage(Bitmap image) {
+    public Bitmap createFilterImage(Bitmap image, ColorFilter colorFilter) {
         Canvas canvas = new Canvas();
 
         Bitmap result = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
@@ -210,7 +211,7 @@ public class EditImage {
         } else if (croppedBitmap != null) {
             bitmap = croppedBitmap;
         } else if (colorFilter != null) {
-            bitmap = createFilterImage(originalImage);
+            bitmap = createFilterImage(originalImage, colorFilter);
         }
         return bitmap;
     }
@@ -222,7 +223,7 @@ public class EditImage {
         if (background != null && croppedBitmap != null) {
             if (colorFilter != null) {
                 bitmap = doOverlayBackdround(croppedBitmap, true);
-                bitmap = createFilterImage(bitmap);
+                bitmap = createFilterImage(bitmap, colorFilter);
             } else {
                 bitmap = doOverlayBackdround(croppedBitmap, false);
             }
@@ -241,12 +242,42 @@ public class EditImage {
         return bitmap;
     }
 
+    public Bitmap getSelfieWithBackgroundWithOutFilter() {
+        Bitmap bitmap = null;
+
+        bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
+        if (background != null && croppedBitmap != null) {
+            bitmap = doOverlayBackdround(croppedBitmap, false);
+
+        } else {
+            bitmap = getSelfieWithOutBackgroundithOutFilter();
+        }
+
+        return bitmap;
+    }
+
+    public Bitmap getSelfieWithOutBackgroundithOutFilter() {
+        Bitmap bitmap = croppedBitmap;
+        if (matrix == null) {
+            croppedBitmap = Bitmap.createScaledBitmap(croppedBitmap, width, height, true);
+        } else if (width > 0 && height > 0 && width <= croppedBitmap.getWidth() && height <= croppedBitmap.getHeight()) {
+            croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, width, height, matrix, false);
+        }
+        if (croppedBitmap != null) {
+            bitmap = croppedBitmap;
+        }
+        return bitmap;
+    }
+
     private Bitmap overlay(Bitmap bmp1, Bitmap bmp2, boolean filter) {
         Bitmap bmOverlay = Bitmap.createScaledBitmap(bmp1, width, height, true);
         Canvas canvas = new Canvas(bmOverlay);
         // if (!filter)
         // canvas.drawBitmap(bmp1, new Matrix(), null);
-        canvas.drawBitmap(bmp2, matrix, null);
+        if (matrix != null)
+            canvas.drawBitmap(bmp2, matrix, null);
+        else
+            canvas.drawBitmap(bmp2, new Matrix(), null);
         return bmOverlay;
     }
 
