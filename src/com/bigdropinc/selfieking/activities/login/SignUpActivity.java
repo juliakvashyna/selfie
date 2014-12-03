@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -32,6 +33,7 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
     private EditText passEditText;
     private EditText repeatpassEditText;
     private Button signUpButton;
+    private Button closeButton;
     private int LOADER_ID = 0;
     private CommandLoader loader;
     private String LOG_TAG = "tag";
@@ -96,6 +98,10 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
         passEditText = (EditText) findViewById(R.id.editTextSigUpPass);
         repeatpassEditText = (EditText) findViewById(R.id.editTextSigUpRepeatPass);
         signUpButton = (Button) findViewById(R.id.btnSignUp);
+        closeButton = (Button) findViewById(R.id.signUpCloseButton);
+        // Typeface typeFace = Typeface.createFromAsset(getAssets(),
+        // "font/Mark Simonson - Proxima Nova Semibold Italic.otf");
+        // loginEditText.setTypeface(typeFace);;
 
     }
 
@@ -106,9 +112,14 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
                 if (check()) {
                     user = createUser();
                     registr();
-                } else {
-                    Toast.makeText(SignUpActivity.this, "Registration error", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        closeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+
             }
         });
     }
@@ -124,16 +135,16 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
                     if (pass.equals(repeat)) {
                         return true;
                     } else {
-                        DialogManager.displayAlert(this, R.string.erepeat);
+                        Toast.makeText(SignUpActivity.this, R.string.erepeat, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    DialogManager.displayAlert(this, R.string.ePass);
+                    Toast.makeText(SignUpActivity.this, R.string.ePass, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                DialogManager.displayAlert(this, R.string.eEmail);
+                Toast.makeText(SignUpActivity.this, R.string.eEmail, Toast.LENGTH_SHORT).show();
             }
         } else {
-            DialogManager.displayAlert(this, R.string.euserName);
+            Toast.makeText(SignUpActivity.this, R.string.euserName, Toast.LENGTH_SHORT).show();
         }
         return false;
     }

@@ -21,8 +21,8 @@ public final class R {
 		public static final int dot_size = 0x7f02009f;
 	}
 	public static final class id {
-		public static final int CropOverlayView = 0x7f0a00ab;
-		public static final int ImageView_image = 0x7f0a00aa;
+		public static final int CropOverlayView = 0x7f0a00ac;
+		public static final int ImageView_image = 0x7f0a00ab;
 		public static final int off = 0x7f0a001a;
 		public static final int on = 0x7f0a001b;
 		public static final int onTouch = 0x7f0a001c;

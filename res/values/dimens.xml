@@ -12,5 +12,5 @@
     <dimen name="spinnerPadding">5dp</dimen>
     <dimen name="postButtonsPadding">7dp</dimen>
     <dimen name="topButtonPadding">10dp</dimen>
-
+    <dimen name="iconMarginLeft">30dp</dimen>
 </resources>

@@ -13,7 +13,9 @@
     <string name="signUp">Sign up</string>
     <string name="singFB">Sign up with FB</string>
     <string name="resetPass">Reset pass</string>
-    <string name="member">Not a member?</string>
+    <string name="forgotPass">Forgot your password?</string>
+    <string name="member">Not a member yet?</string>
+    <string name="or">or</string>
     <string name="errorNitSign">Not correct username or password!</string>
     <string name="username">Username</string>
     <string name="password">Password</string>

@@ -12,6 +12,7 @@
         android:padding="10dp" >
 
         <Button
+            android:id="@+id/signUpCloseButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -51,8 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="left"
-                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/iconMarginLeft"
                 android:src="@drawable/icon_user" />
 
             <EditText
@@ -84,8 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="left"
-                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/iconMarginLeft"
                 android:src="@drawable/icon_mail" />
 
             <EditText
@@ -116,8 +117,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="left"
-                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/iconMarginLeft"
                 android:src="@drawable/icon_pass" />
 
             <EditText
@@ -148,8 +149,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="left"
-                android:layout_marginLeft="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/iconMarginLeft"
                 android:src="@drawable/icon_pass" />
 
             <EditText

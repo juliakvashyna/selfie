@@ -1,15 +1,18 @@
 package com.bigdropinc.selfieking;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Typeface;
 import android.provider.Settings;
 import android.provider.Settings.Global;
 import android.util.Base64;
+import android.util.Log;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.controller.CustomPicasso;
@@ -20,7 +23,11 @@ import com.bigdropinc.selfieking.controller.managers.FileManager;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 
 public class MyApplication extends Application {
-
+    private static final String FONT = "font/";
+    private static final String DEFAULT_BOLD_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Bold.otf";
+    private static final String DEFAULT_ITALIC_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Light Italic.otf";
+    private static final String DEFAULT_BOLD_ITALIC_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Semibold Italic.otf";
+    private static final String DEFAULT_NORMAL_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Light.otf";
     private SharedPreferences sharedpreferences;
     private Editor editor;
 
@@ -36,6 +43,7 @@ public class MyApplication extends Application {
         initAuthorization();
         // Settings.Global.putInt(getApplicationContext().getContentResolver(),
         // Global.AIRPLANE_MODE_ON, 1);
+        setDefaultFont();
         super.onCreate();
     }
 
@@ -61,4 +69,41 @@ public class MyApplication extends Application {
         return "Basic " + cred;
     }
 
+    private void setDefaultFont() {
+
+        try {
+            final Typeface bold = Typeface.createFromAsset(getAssets(), DEFAULT_BOLD_FONT_FILENAME);
+            final Typeface italic = Typeface.createFromAsset(getAssets(), DEFAULT_ITALIC_FONT_FILENAME);
+            final Typeface boldItalic = Typeface.createFromAsset(getAssets(), DEFAULT_BOLD_ITALIC_FONT_FILENAME);
+            final Typeface regular = Typeface.createFromAsset(getAssets(), DEFAULT_NORMAL_FONT_FILENAME);
+
+            Field DEFAULT = Typeface.class.getDeclaredField("DEFAULT");
+            DEFAULT.setAccessible(true);
+            DEFAULT.set(null, regular);
+
+            Field DEFAULT_BOLD = Typeface.class.getDeclaredField("DEFAULT_BOLD");
+            DEFAULT_BOLD.setAccessible(true);
+            DEFAULT_BOLD.set(null, bold);
+
+     
+
+            Field sDefaults = Typeface.class.getDeclaredField("sDefaults");
+            sDefaults.setAccessible(true);
+            sDefaults.set(null, new Typeface[] { regular, bold, italic, boldItalic });
+
+        } catch (NoSuchFieldException e) {
+            logFontError(e);
+        } catch (IllegalAccessException e) {
+            logFontError(e);
+        } catch (Throwable e) {
+            // cannot crash app if there is a failure with overriding the
+            // default font!
+            logFontError(e);
+        }
+    }
+
+    private void logFontError(Throwable e) {
+        Log.d("tag", "font error");
+
+    }
 }

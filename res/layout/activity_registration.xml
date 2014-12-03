@@ -2,95 +2,161 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
     android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.login.RegistrationActivity" >
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical" >
+        android:layout_height="match_parent" >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:orientation="vertical" >
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical" >
 
-        <EditText
-            android:id="@+id/editTextRegLogin"
-            style="@style/customEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:hint="@string/email"
-            android:inputType="textEmailAddress" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:layout_marginTop="40dp"
+                    android:src="@drawable/logo" />
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/editTextRegPass"
-            style="@style/customEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="@string/password"
-            android:inputType="textPassword" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/btnRegSignIn"
-            style="@style/customButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:gravity="center"
-            android:text="@string/signIn" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp" >
 
-        <Button
-            android:id="@+id/btnRegResetPass"
-            style="@style/customButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/resetPass" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/iconMarginLeft"
+                        android:gravity="center_vertical"
+                        android:src="@drawable/icon_mail" />
 
-        <TextView
-            style="@style/customEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/member"
-            android:textSize="24sp" />
+                    <EditText
+                        android:id="@+id/editTextRegLogin"
+                        style="@style/customSignupEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:hint="@string/email"
+                        android:inputType="textEmailAddress" />
+                </RelativeLayout>
 
-        <Button
-            android:id="@+id/btnRegSignUp"
-            style="@style/customButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="3dp"
-            android:text="@string/signUp" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/divider_01" />
 
-        <!-- <com.facebook.widget.LoginButton -->
-        <!-- android:id="@+id/authButton" -->
-        <!-- android:background="@color/grey" -->
-        <!-- android:layout_width="wrap_content" -->
-        <!-- android:layout_height="wrap_content" -->
-        <!-- android:layout_gravity="center_horizontal" -->
-        <!-- android:layout_marginTop="30dp" /> -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="10dp" >
 
-        <Button
-            android:id="@+id/btnRegSignFB"
-            style="@style/customButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/singFB" />
-    </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="@dimen/iconMarginLeft"
+                        android:gravity="center_vertical"
+                        android:src="@drawable/icon_pass" />
+
+                    <EditText
+                        android:id="@+id/editTextRegPass"
+                        style="@style/customSignupEditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:ems="10"
+                        android:gravity="center"
+                        android:hint="@string/password"
+                        android:inputType="textPassword" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/divider_01" />
+
+                <Button
+                    android:id="@+id/btnRegSignIn"
+                    style="@style/customButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/butn_main"
+                    android:text="@string/signIn" />
+
+                <Button
+                    android:id="@+id/btnRegResetPass"
+                    style="@style/customSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/forgotPass" />
+
+                <TextView
+                    style="@style/customEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="@string/member"
+                    android:textSize="24sp" />
+
+                <Button
+                    android:id="@+id/btnRegSignUp"
+                    style="@style/customButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/butn_secondary"
+                    android:gravity="center"
+                    android:padding="3dp"
+                    android:text="@string/signUp" />
+
+                <TextView
+                    style="@style/customSmallTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:gravity="center"
+                    android:text="@string/or" />
+
+                <Button
+                    android:id="@+id/btnRegSignFB"
+                    style="@style/customButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/butn_secondary"
+                    android:text="@string/singFB" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
