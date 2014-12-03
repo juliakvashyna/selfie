@@ -4,7 +4,7 @@
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -18,6 +18,13 @@
     <style name="customButton" parent="@android:style/Widget.Button">
         <item name="android:background">@color/transparent</item>
         <item name="android:textSize">@dimen/feedSp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:padding">3dp</item>
+    </style>
+
+    <style name="customTextViewBottom" parent="@android:style/Widget.Button">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textSize">@dimen/bottomTextSize</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:padding">3dp</item>
     </style>
@@ -41,8 +48,16 @@
     <style name="customEditText" parent="@android:style/Widget.EditText">
         <item name="android:background">@color/transparent</item>
         <item name="android:textSize">@dimen/buttonTextSize</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/textViewColor</item>
         <item name="android:padding">1dp</item>
+    </style>
+
+    <style name="customSignupEditText" parent="@android:style/Widget.EditText">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textSize">@dimen/signUpTextSize</item>
+        <item name="android:textColor">@color/textViewColor</item>
+        <item name="android:textColorHint">@color/textViewColor</item>
+        <item name="android:padding">5dp</item>
     </style>
 
     <style name="customTextView" parent="@android:style/Widget.TextView">
@@ -54,7 +69,7 @@
 
     <style name="customSpinner" parent="@android:style/Widget.DropDownItem.Spinner">
         <item name="android:textSize">@dimen/buttonTextSize</item>
-          <item name="android:padding">@dimen/spinnerPadding</item>
+        <item name="android:padding">@dimen/spinnerPadding</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:popupBackground">@android:color/transparent</item>
         <item name="android:background">@color/transparent</item>

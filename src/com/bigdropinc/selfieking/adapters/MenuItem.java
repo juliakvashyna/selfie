@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 public class MenuItem {
     private int id;
     private int titleres;
+    private String title;
     private int imageres;
     private String path;
     private Bitmap bitmap;
@@ -23,7 +24,7 @@ public class MenuItem {
 
     public MenuItem(int id, int textres, int imageres) {
         super();
-        this.setId(id); 
+        this.setId(id);
         this.setTitleres(textres);
         this.imageres = imageres;
     }
@@ -37,6 +38,19 @@ public class MenuItem {
 
     public MenuItem(int imageres) {
         this.imageres = imageres;
+    }
+
+    public MenuItem(int id, String name, int imageres) {
+        super();
+        this.setId(id);
+        this.setTitle(name);
+        this.imageres = imageres;
+    }
+
+    public MenuItem(int id, int imageres, String path) {
+        this.setId(id);
+        this.imageres = imageres;
+        this.setPath(path);
     }
 
     public int getImageres() {
@@ -77,6 +91,14 @@ public class MenuItem {
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }

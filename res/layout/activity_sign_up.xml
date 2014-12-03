@@ -3,90 +3,176 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:gravity="center"
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.login.SignUpActivity" >
 
-    <TableLayout
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp" >
+        android:padding="10dp" >
 
-        <TableRow
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:alpha="90"
+            android:background="@drawable/close_button_selector" />
+
+        <TextView
+            style="@style/customSignupEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/createAccount"
+            android:textSize="@dimen/signUpBigTextSize" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/divider_02" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
-            android:orientation="vertical" >
+            android:orientation="horizontal"
+            android:padding="10dp" >
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="left"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/icon_user" />
 
             <EditText
                 android:id="@+id/editTextSigUpLogin"
-                style="@style/customEditText"
-                android:layout_width="wrap_content"
+                style="@style/customSignupEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:ems="10"
+                android:gravity="center"
                 android:hint="@string/userName"
-                android:inputType="text" />
-        </TableRow>
+                android:inputType="text" >
+            </EditText>
+        </RelativeLayout>
 
-        <TableRow>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/divider_01" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp" >
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="left"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/icon_mail" />
 
             <EditText
                 android:id="@+id/editTextSigUpEmail"
-                style="@style/customEditText"
-                android:layout_width="wrap_content"
+                style="@style/customSignupEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:ems="10"
+                android:gravity="center"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress" />
-        </TableRow>
+        </RelativeLayout>
 
-        <TableRow>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/divider_01" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp" >
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="left"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/icon_pass" />
 
             <EditText
                 android:id="@+id/editTextSigUpPass"
-                style="@style/customEditText"
-                android:layout_width="wrap_content"
+                style="@style/customSignupEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:ems="10"
+                android:gravity="center"
                 android:hint="@string/pass"
                 android:inputType="textPassword" />
-        </TableRow>
+        </RelativeLayout>
 
-        <TableRow>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/divider_01" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp" >
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="left"
+                android:layout_marginLeft="20dp"
+                android:src="@drawable/icon_pass" />
 
             <EditText
                 android:id="@+id/editTextSigUpRepeatPass"
-                style="@style/customEditText"
-                android:layout_width="wrap_content"
+                style="@style/customSignupEditText"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:ems="10"
+                android:gravity="center"
                 android:hint="@string/repeatPass"
                 android:inputType="textPassword" />
-        </TableRow>
-    </TableLayout>
+        </RelativeLayout>
 
-    <Button
-        android:id="@+id/btnSignUp"
-        style="@style/customButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="5dp"
-        android:text="@string/signUp" />
+        <Button
+            android:id="@+id/btnSignUp"
+            style="@style/customButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:background="@drawable/butn_main"
+            android:text="@string/signUp" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -25,7 +25,7 @@ public class MyApplication extends Application {
     private Editor editor;
 
     @SuppressLint("NewApi")
-	@Override
+    @Override
     public void onCreate() {
         DatabaseManager.init(this);
         LoginManagerImpl.init(getApplicationContext());
@@ -34,7 +34,8 @@ public class MyApplication extends Application {
         CustomPicasso.init(getApplicationContext());
         HttpClientHelper.init(getApplicationContext());
         initAuthorization();
-      //  Settings.Global.putInt(getApplicationContext().getContentResolver(), Global.AIRPLANE_MODE_ON,  1);
+        // Settings.Global.putInt(getApplicationContext().getContentResolver(),
+        // Global.AIRPLANE_MODE_ON, 1);
         super.onCreate();
     }
 

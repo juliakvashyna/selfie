@@ -76,13 +76,23 @@ public final class DatabaseManager {
         return tasks;
     }
 
-    public EditImage addSelfie(EditImage task) {
+    public EditImage addSelfie(EditImage editImage) {
         try {
-            return helper.getSelfieDao().createIfNotExists(task);
+            return helper.getSelfieDao().createIfNotExists(editImage);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return task;
+        return editImage;
+    }
+
+    public void updateSelfie(EditImage editImage) {
+        try {
+            int i = helper.getSelfieDao().update(editImage);
+            System.out.println(i);
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
     }
 
     public void addSelfies(List<EditImage> task) {
@@ -135,6 +145,7 @@ public final class DatabaseManager {
     public EditImage findEditImage(int id) {
         try {
 
+
             QueryBuilder<EditImage, Integer> queryBuilder = helper.getSelfieDao().queryBuilder();
 
             queryBuilder.where().eq("id", id);
@@ -142,6 +153,7 @@ public final class DatabaseManager {
             PreparedQuery<EditImage> preparedQuery = queryBuilder.prepare();
 
             List<EditImage> tasks = helper.getSelfieDao().query(preparedQuery);
+            
             if (tasks.size() > 0)
                 return tasks.get(0);
         } catch (SQLException e) {

@@ -21,8 +21,9 @@
     <!-- signUp -->
     <string name="userName">Username</string>
     <string name="email">Email</string>
-    <string name="pass">Password</string>
-    <string name="repeatPass">Confirm Password</string>
+    <string name="pass">Your password</string>
+    <string name="createAccount">Create Account Or Die</string>
+    <string name="repeatPass">Repeat your password</string>
     <string name="title_activity_reset_pass">Reset Pass Form</string>
     <string name="euserName">Username is not valid</string>
     <string name="eEmail">Email is not valid</string>
@@ -98,5 +99,6 @@
     <string name="deleteDone">Selfie is deleted</string>
     <string name="title_activity_one_selfie">OneSelfieActivity</string>
     <string name="title_activity_comments">CommentsActivity</string>
+    <string name="title_activity_add_filter">AddFilterActivity</string>
 
 </resources>

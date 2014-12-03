@@ -65,9 +65,9 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         if (code.isSuccess()) {
             if (loader.getId() == LOADER_ID_CONTEST) {
                 Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
-            } else {
-                updateFeed(loader);
             }
+            updateFeed(loader);
+
         } else {
             Toast.makeText(this, code.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
         }
@@ -97,8 +97,9 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         Log.d("listview", " MyActionBarActivity like selfie id =" + like.getPostId());
     }
 
-    public void comment(Comment comment) {
+    public void comment(Comment comment, int index) {
         this.id = comment.getPostId();
+        this.index = index;
         Bundle bundle = getCommentBundle(comment);
         getLoaderManager().initLoader(LOADER_ID_COMMENT, bundle, MyActionBarActivity.this).forceLoad();
     }
@@ -155,7 +156,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             }
         });
         spec.setIndicator(createTabView(R.drawable.home_selector, "home"));
-     
+
         mTabHost.addTab(spec);
 
         spec = mTabHost.newTabSpec(TAB_LIKED);
@@ -194,6 +195,16 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         spec.setIndicator(createTabView(R.drawable.profile_selector, "profile"));
         mTabHost.addTab(spec);
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (data != null) {
+            Comment comment = data.getExtras().getParcelable("comment");
+            int index = data.getExtras().getInt("position");
+            comment(comment, index);
+        }
     }
 
     @Override
@@ -246,10 +257,10 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         public void onTabChanged(String tabId) {
 
             mCurrentTab = tabId;
-        
 
             if (tabId.equals(TAB_HOME)) {
                 feedFragment = new FeedFragment();
+
                 addArguments(feedFragment);
                 pushFragments(feedFragment, false, false, TAB_HOME);
             } else if (tabId.equals(TAB_LIKED)) {

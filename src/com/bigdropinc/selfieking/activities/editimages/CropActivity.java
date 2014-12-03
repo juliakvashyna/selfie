@@ -77,7 +77,7 @@ public class CropActivity extends Activity {
         byte[] byteArray = stream.toByteArray();
         EditImage selfieImage = new EditImage();
         selfieImage.setResult(byteArray);
-        selfieImage = DatabaseManager.getInstance().addSelfie(selfieImage);
+        selfieImage=   DatabaseManager.getInstance().addSelfie(selfieImage);
         return selfieImage;
     }
 

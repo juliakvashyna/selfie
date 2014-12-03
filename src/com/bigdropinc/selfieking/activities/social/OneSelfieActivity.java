@@ -108,13 +108,17 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_selfie);
         startLoaderForSelfie();
         init();
         initFeed();
-
     }
 
     private void initSelfie() {

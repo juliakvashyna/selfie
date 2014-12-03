@@ -36,6 +36,7 @@ public class CutActivity extends Activity {
     private Button cutButton;
     private Button nextButton;
     private Button clearButton;
+    private EditImage selfieImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +53,12 @@ public class CutActivity extends Activity {
         clearButton = (Button) findViewById(R.id.clear);
         nextButton = (Button) findViewById(R.id.next);
     }
+
     private void initImage() {
         if (getIntent() != null) {
-            byte[] byteArray = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0)).getResult();
+
+            selfieImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
+            byte[] byteArray = selfieImage.getResult();
             w = getIntent().getIntExtra("w", 0);
             h = getIntent().getIntExtra("h", 0);
             Boolean camera = getIntent().getExtras().getBoolean("camera");
@@ -150,9 +154,9 @@ public class CutActivity extends Activity {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG, 45, stream);
         byte[] byteArray = stream.toByteArray();
-        EditImage selfieImage = new EditImage();
+
         selfieImage.setResult(byteArray);
-        selfieImage = DatabaseManager.getInstance().addSelfie(selfieImage);
+        DatabaseManager.getInstance().updateSelfie(selfieImage);
         return selfieImage;
     }
 

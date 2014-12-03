@@ -7,10 +7,10 @@
         android:id="@+id/top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/tab_bar"
+        android:background="@drawable/nav_bar"
         android:padding="@dimen/topButtonPadding" >
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/feedLay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,38 +26,41 @@
                 android:layout_gravity="center"
                 android:src="@drawable/logo_s" >
             </ImageView>
-        </LinearLayout>
+        </RelativeLayout>
 
         <RelativeLayout
+      
+            android:id="@+id/likedLay"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:visibility="invisible" >
 
-            <LinearLayout
-                android:id="@+id/likedLay"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="invisible" >
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Favourites"
+                android:textSize="18sp" >
+            </TextView>
 
-                <TextView
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/tile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Favourites"
-                    android:textSize="18sp" >
-                </TextView>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-
-                    <Button
-                        android:id="@+id/tile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:background="@drawable/icon_bar_view" />
-                </RelativeLayout>
-            </LinearLayout>
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/icon_bar_view" />
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
 

@@ -6,9 +6,9 @@
     android:descendantFocusability="beforeDescendants"
     android:orientation="vertical" >
 
-    <RelativeLayout
+    <RelativeLayout 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:id="@+id/layoutTop"
@@ -125,31 +125,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_alignParentRight="true"
+                        android:layout_margin="3dp"
                         android:orientation="horizontal" >
 
                         <Button
                             android:id="@+id/flike"
-                            style="@style/customButton"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="like" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/postButtonsPadding"
+                            android:background="@drawable/post_like_selector" />
 
                         <Button
                             android:id="@+id/fcontent"
-                            style="@style/customButton"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="content" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/postButtonsPadding"
+                            android:background="@drawable/post_content_selector" />
 
                         <Button
                             android:id="@+id/fcomment"
-                            style="@style/customButton"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="comment" />
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/postButtonsPadding"
+                            android:background="@drawable/post_comment_selector" />
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
@@ -164,26 +162,5 @@
             android:layout_marginLeft="10dp" >
         </com.bigdropinc.selfieking.views.RoundedImageView>
     </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/commentLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:visibility="gone" >
-
-        <EditText
-            android:id="@+id/commentEditText"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="4"
-            android:focusable="true" />
-
-        <Button
-            android:id="@+id/commentButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-    </LinearLayout>
 
 </LinearLayout>

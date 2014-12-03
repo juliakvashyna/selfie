@@ -1,7 +1,8 @@
 package com.bigdropinc.selfieking.adapters;
 
+import java.util.List;
+
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,6 @@ import android.widget.TextView;
 
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.controller.managers.FileManager;
-
-import java.util.List;
 
 public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
 
@@ -46,7 +45,10 @@ public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
             String text = context.getResources().getString((itemMenu.getTitleres()));
 
             textView.setText(text);
+        } else if (itemMenu.getTitle() != null) {
+
         }
+        textView.setText(itemMenu.getTitle());
 
         return convertView;
     }

@@ -7,6 +7,7 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bigdropinc.selfieking.R;
@@ -39,7 +41,7 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     private FeedAdapter feedAdapter;
     private GridView gridView;
     private ListView listView;
-    private LinearLayout title;
+    private RelativeLayout title;
     private CommandLoader loader;
     private View rootView;
     private Bundle bundle = new Bundle();
@@ -83,19 +85,25 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_feed, container, false);
+        feedList.clear();
+        init();
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        feedList.clear();
-        init();
+
     }
 
     void updateGridView(int index, SelfieImage selfieImage) {
-        feedList.set(index, selfieImage);
-        feedAdapter.notifyDataSetChanged();
+        if (feedList.size() > 0) {
+            feedList.set(index, selfieImage);
+            feedAdapter.notifyDataSetChanged();
+        }
+        else{
+            Log.d("tag", "FeedFragment feedList.size()=0");
+        }
     }
 
     private void init() {
@@ -123,9 +131,9 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
         tileButton = (Button) rootView.findViewById(R.id.tile);
         initListeners();
         if (liked) {
-            title = (LinearLayout) rootView.findViewById(R.id.likedLay);
+            title = (RelativeLayout) rootView.findViewById(R.id.likedLay);
         } else {
-            title = (LinearLayout) rootView.findViewById(R.id.feedLay);
+            title = (RelativeLayout) rootView.findViewById(R.id.feedLay);
         }
         initFeed();
         initGridview();
@@ -190,11 +198,11 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private void initGridOrList() {
         if (!tile) {
-            tileButton.setBackgroundResource(R.drawable.icon_bar_view_ontap);
+            tileButton.setBackgroundResource(R.drawable.list_selector);
             gridView.setVisibility(View.VISIBLE);
             listView.setVisibility(View.INVISIBLE);
         } else {
-            tileButton.setBackgroundResource(R.drawable.icon_bar_view);
+            tileButton.setBackgroundResource(R.drawable.tile_selector);
             gridView.setVisibility(View.INVISIBLE);
             listView.setVisibility(View.VISIBLE);
         }

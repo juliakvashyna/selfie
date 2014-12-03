@@ -1,11 +1,20 @@
 package com.bigdropinc.selfieking.activities.social;
 
 import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.view.View;
+import android.view.WindowManager;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.adapters.CommentAdapter;
 import com.bigdropinc.selfieking.controller.InternetChecker;
@@ -24,13 +33,21 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
     private CommentAdapter adapter;
     private int LOADER_ID = 12;
     private int postId;
+    private EditText commentEditText;
+    private Button sendCommentButton;
+    private Context previousActivity;
+    private int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_comments);
         initView();
+        initListeners();
         postId = getIntent().getExtras().getInt("postId");
+        position = getIntent().getExtras().getInt("position");
+        previousActivity = getIntent().getExtras().getParcelable("previous");
         if (InternetChecker.isNetworkConnected()) {
             startLoader();
         } else {
@@ -39,8 +56,47 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
 
     }
 
+    private void initListeners() {
+        sendCommentButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                comment();
+                
+            }
+        });
+
+    }
+
+    private void comment() {
+
+        Comment comment = createComment();
+
+        Intent data = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("comment", comment);
+        bundle.putInt("position", position);
+        data.putExtras(bundle);
+        CommentsActivity.this.setResult(10, data);
+        CommentsActivity.this.finish();
+        // if (previousActivity instanceof OneSelfieActivity) {
+        // ((OneSelfieActivity) ac.).comment(comment);
+        // } else if (previousActivity instanceof MyActionBarActivity) {
+        // ((MyActionBarActivity) getCallingActivity()).comment(comment,
+        // position);
+        // }
+    }
+
+    private Comment createComment() {
+        Comment comment = new Comment();
+        comment.setPostId(postId);
+        comment.setText(commentEditText.getText().toString());
+        return comment;
+    }
+
     private void initView() {
         listView = (ListView) findViewById(R.id.commentsListView);
+        commentEditText = (EditText) findViewById(R.id.commentEditText);
+        sendCommentButton = (Button) findViewById(R.id.commentButton);
 
     }
 

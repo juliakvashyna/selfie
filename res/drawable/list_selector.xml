@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/icon_add_image_active" android:state_selected="true"></item>
-    <item android:drawable="@drawable/icon_add_image_active" android:state_pressed="true"></item>
-    <item android:drawable="@drawable/icon_add_image"></item>
+    <item android:drawable="@drawable/icon_list_view_ontap" android:state_selected="true"></item>
+    <item android:drawable="@drawable/icon_list_view_ontap" android:state_pressed="true"></item>
+    <item android:drawable="@drawable/icon_list_view"></item>
 
 </selector>

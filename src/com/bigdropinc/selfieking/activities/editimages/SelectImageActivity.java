@@ -337,6 +337,7 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     private void save() {
         Intent intent = new Intent(getApplicationContext(), CropActivity.class);
         intent.putExtra(EXTRA_IMAGE_URI, selectedImage);
+  
         startActivity(intent);
     }
 
@@ -356,7 +357,5 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         }
         startActivity(intent);
     }
-
-
 
 }

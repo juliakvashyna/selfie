@@ -35,6 +35,18 @@ public class SelfieImage implements Parcelable {
     private int comment;
     @DatabaseField
     private boolean liked;
+    @DatabaseField
+    public int inContest;
+
+    public boolean isInContest() {
+        return inContest == 1;
+    }
+
+    public void setInContest(int inContest) {
+
+        this.inContest = inContest;
+    }
+
     private byte[] bytesImage;
 
     public SelfieImage() {

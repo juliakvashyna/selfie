@@ -42,13 +42,14 @@ import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 
 public class HttpClientHelper {
 
+    private static final int LIMIT_COUNT = 10;
     private static final String ALL = "all";
     public static final String EMAIL = "email";
     public static final String USER_ID = "user_id";
     public static final String PASSWORD = "password";
     public static final String USER_NAME = "username";
     public static final String PROFESSION = "profession";
-    public static final String PHONE = "phone ";
+    public static final String PHONE = "phone "; 
     public static final String WEBSITE = "website ";
     public static final String GENDER = "gender ";
     public static final String TOKEN = "token";
@@ -198,7 +199,7 @@ public class HttpClientHelper {
         if (selfieImage == null) {
             params.add(new BasicNameValuePair(POST_ID, ALL));
         } else {
-            params.add(new BasicNameValuePair(POST_ID, String.valueOf(selfieImage.getId())));
+            params.add(new BasicNameValuePair(POST_ID, String.valueOf(selfieImage.getId()))); 
         }
         InputStream inputStream = postData(UrlRequest.DELETE_SELFIE, params);
         String content = convertStreamToString(inputStream);
@@ -269,7 +270,7 @@ public class HttpClientHelper {
         StatusCode statusCode = jsonHelper.parseMessage(content);
         return statusCode;
     }
-
+ 
     public List<SelfieImage> getContest(Contest contest) throws ApiException {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(TOKEN, token));
@@ -277,7 +278,7 @@ public class HttpClientHelper {
         params.add(new BasicNameValuePair(MONTH, String.valueOf(contest.getMonth())));
         InputStream inputStream = postData(UrlRequest.GET_CONTEST, params);
         String content = convertStreamToString(inputStream);
-        List<SelfieImage> list = jsonHelper.parseSelfies(content);
+         List<SelfieImage> list = jsonHelper.parseSelfies(content);
         return list;
     }
 
@@ -286,7 +287,7 @@ public class HttpClientHelper {
         params.add(new BasicNameValuePair(TOKEN, token));
         params.add(new BasicNameValuePair(FIELDS, "basic, extended, imageSmall, imageMedium"));
         params.add(new BasicNameValuePair(OFFSET, String.valueOf(offset)));
-        params.add(new BasicNameValuePair(LIMIT, String.valueOf(5)));
+        params.add(new BasicNameValuePair(LIMIT, String.valueOf(LIMIT_COUNT)));
         InputStream inputStream = postData(command, params);
         String content = convertStreamToString(inputStream);
         List<SelfieImage> list = jsonHelper.parseSelfies(content);

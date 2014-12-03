@@ -132,18 +132,24 @@
             android:windowSoftInputMode="stateHidden|adjustPan" >
         </activity>
         <activity
-            android:name="com.bigdropinc.selfieking.activities.social.CommentsActivity"
+            android:name=".activities.social.CommentsActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
 
         <receiver
-            android:name="com.bigdropinc.selfieking.receiver.ConnectionChangeReceiver"
+            android:name=".receiver.ConnectionChangeReceiver"
             android:label="NetworkConnection" >
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="com.bigdropinc.selfieking.activities.editimages.AddFilterActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        </activity>
     </application>
 
 </manifest>

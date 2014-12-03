@@ -13,35 +13,25 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.PorterDuffXfermode;
-import android.util.Log;
 
-import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "selfie")
 public class EditImage {
-    public byte[] getImageBytes() {
-        return imageBytes;
-    }
-
-    public void setImageBytes(byte[] imageBytes) {
-        this.imageBytes = imageBytes;
-    }
 
     @DatabaseField(generatedId = true)
     private int id;
-
-    private Bitmap originalImage;
-
-    private Bitmap croppedBitmap;
-
-    private Bitmap background;
     @DatabaseField(dataType = DataType.BYTE_ARRAY)
     byte[] imageBytes;
-
+    private Bitmap originalImage;
+    private Bitmap croppedBitmap;
+    private Bitmap background;
+    private Filter filter;
+    @DatabaseField
     private int width;
+    @DatabaseField
     private int height;
     private boolean filterclick;
     private Matrix matrix;
@@ -134,6 +124,14 @@ public class EditImage {
         this.background = background;
     }
 
+    public byte[] getImageBytes() {
+        return imageBytes;
+    }
+
+    public void setImageBytes(byte[] imageBytes) {
+        this.imageBytes = imageBytes;
+    }
+
     private Bitmap createFilterCropImage(Bitmap image) {
         Canvas canvas = new Canvas();
         Bitmap cropImage = doHighlightImage(image);
@@ -143,13 +141,14 @@ public class EditImage {
         // paint.setFilterBitmap(false);
         // Color
 
-        paint.setColorFilter(colorFilter);
+        // paint.setColorFilter(colorFilter);
         canvas.drawBitmap(cropImage, 0, 0, paint);
-        paint.setColorFilter(null);
+        // paint.setColorFilter(null);
 
         paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
         canvas.drawBitmap(cropImage, 0, 0, paint);
         paint.setXfermode(null);
+        result = doHighlightImage(result);
         return result;
     }
 
@@ -218,19 +217,25 @@ public class EditImage {
 
     public Bitmap getSelfieWithBackground() {
         Bitmap bitmap = null;
+        if (originalImage != null) {
+            bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
+            if (background != null && croppedBitmap != null) {
+                if (colorFilter != null) {
+                    bitmap = doOverlayBackdround(croppedBitmap, true);
+                    bitmap = createFilterImage(bitmap, colorFilter);
+                } else {
+                    bitmap = doOverlayBackdround(croppedBitmap, false);
+                }
 
-        bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
-        if (background != null && croppedBitmap != null) {
-            if (colorFilter != null) {
-                bitmap = doOverlayBackdround(croppedBitmap, true);
-                bitmap = createFilterImage(bitmap, colorFilter);
             } else {
-                bitmap = doOverlayBackdround(croppedBitmap, false);
+                bitmap = getSelfieWithOutBackground();
             }
-
-        } else {
-            bitmap = getSelfieWithOutBackground();
+            createBytes(bitmap);
         }
+        return bitmap;
+    }
+
+    public void createBytes(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
         bitmap.compress(Bitmap.CompressFormat.PNG, 15, stream);
@@ -238,8 +243,6 @@ public class EditImage {
         // byte[] byteArray = stream.toByteArray();
 
         imageBytes = stream.toByteArray();
-
-        return bitmap;
     }
 
     public Bitmap getSelfieWithBackgroundWithOutFilter() {

@@ -55,12 +55,11 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/tvProfileCountSelfie"
+        android:id="@+id/profileCountTextView"
         style="@style/customEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="20" />
+        android:gravity="center_horizontal" />
 
     <GridView
         android:id="@+id/profileGridView"

@@ -47,6 +47,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private ImageButton backButton;
     private TextView nameTextView;
     private TextView emailTextView;
+    private TextView countTextView;
     private List<SelfieImage> images = new ArrayList<SelfieImage>();
     private User user;
     private String LOG_TAG = "tag";
@@ -88,6 +89,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
             more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
             if (more != null) {
                 images.addAll(more);
+                countTextView.setText(String.valueOf(images.size()));
             }
             adapter.notifyDataSetChanged();
         } else {
@@ -118,6 +120,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         editProfileButton = (ImageButton) rootView.findViewById(R.id.profileEditButton);
         nameTextView = (TextView) rootView.findViewById(R.id.profileUserNameTextView);
         emailTextView = (TextView) rootView.findViewById(R.id.profileEmailTextView);
+        countTextView = (TextView) rootView.findViewById(R.id.profileCountTextView);
         backButton = (ImageButton) rootView.findViewById(R.id.profileBack);
     }
 

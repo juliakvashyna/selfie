@@ -74,15 +74,19 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             holder.contentButton = (Button) convertView.findViewById(R.id.fcontent);
             holder.commentButton = (Button) convertView.findViewById(R.id.fcomment);
             holder.commentsTextView = (TextView) convertView.findViewById(R.id.commentsListTextView);
-            holder.commentEditText = (EditText) convertView.findViewById(R.id.commentEditText);
+            // holder.commentEditText = (EditText)
+            // convertView.findViewById(R.id.commentEditText);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
-            holder.sendCommentButton = (Button) convertView.findViewById(R.id.commentButton);
-            holder.commentLayout = (LinearLayout) convertView.findViewById(R.id.commentLayout);
+            // holder.sendCommentButton = (Button)
+            // convertView.findViewById(R.id.commentButton);
+            // holder.commentLayout = (LinearLayout)
+            // convertView.findViewById(R.id.commentLayout);
 
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+
         initListeners(holder, feedItem, position);
         String token = LoginManagerImpl.getInstance().getToken();
         User user = DatabaseManager.getInstance().findUser(token);
@@ -96,6 +100,10 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
                 holder.descTextView.setText(feedItem.getDescription());
                 holder.descTextView.setVisibility(View.VISIBLE);
             }
+
+            holder.likeButton.setSelected(feedItem.isLiked());
+            holder.contentButton.setSelected(feedItem.isInContest());
+            holder.commentButton.setSelected(feedItem.getComment() != 0);
             holder.timeTextView.setText(getTimeString(feedItem.getDate()));
             CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").resize(AVATAR_SIZE, AVATAR_SIZE).into(holder.avatar);
         }
@@ -104,7 +112,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
     private String getImageUrl(SelfieImage feedItem) {
         String imageUrl;
-        if (feedItem.getImageMedium()!= null && !feedItem.getImageMedium().equals("false"))
+        if (feedItem.getImageMedium() != null && !feedItem.getImageMedium().equals("false"))
             imageUrl = feedItem.getImageMedium();
         else
             imageUrl = feedItem.getImage();
@@ -112,7 +120,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     }
 
     @Override
-    public int getCount() {   
+    public int getCount() {
         return objects.size();
     }
 
@@ -134,27 +142,37 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         holder.commentButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                holder.commentLayout.setVisibility(View.VISIBLE);
+                startComment(selfie, position);
+                // holder.commentLayout.setVisibility(View.VISIBLE);
 
             }
         });
-        holder.sendCommentButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                comment(selfie, holder.commentEditText.getText().toString());
-                holder.commentEditText.setText("");
-                holder.commentLayout.setVisibility(View.GONE);
-                hideKeyboard(holder);
-            }
-        });
+        // holder.sendCommentButton.setOnClickListener(new OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // // comment(selfie,
+        // holder.commentEditText.getText().toString(),position);
+        // Intent intent = new Intent(context.getApplicationContext(),
+        // CommentsActivity.class);
+        // intent.putExtra("postId", selfie.getId());
+        // context.startActivity(intent);
+        //
+        // }
+        // });
         holder.commentsTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Intent intent = new Intent(context.getApplicationContext(), CommentsActivity.class);
-                intent.putExtra("postId", selfie.getId());
-                context.startActivity(intent);
+                startComment(selfie, position);
             }
+
         });
+    }
+
+    private void startComment(final SelfieImage selfie, final int position) {
+        Intent intent = new Intent(context.getApplicationContext(), CommentsActivity.class);
+        intent.putExtra("postId", selfie.getId());
+        intent.putExtra("position", position);
+        context.startActivityForResult(intent, 10);
     }
 
     private String getTimeString(String time) {
@@ -189,22 +207,6 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             e.printStackTrace();
         }
         return date;
-    }
-
-    private void comment(SelfieImage selfie, String text) {
-        Comment comment = createComment(selfie, text);
-        if (context instanceof OneSelfieActivity) {
-            ((OneSelfieActivity) context).comment(comment);
-        } else if (context instanceof MyActionBarActivity) {
-            ((MyActionBarActivity) context).comment(comment);
-        }
-    }
-
-    private Comment createComment(SelfieImage selfie, String text) {
-        Comment comment = new Comment();
-        comment.setPostId(selfie.getId());
-        comment.setText(text);
-        return comment;
     }
 
     private void contest(SelfieImage selfie) {

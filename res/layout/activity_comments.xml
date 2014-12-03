@@ -1,16 +1,35 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-           android:background="@drawable/background"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.social.CommentsActivity" >
+    <LinearLayout
+        android:id="@+id/commentLayout"
 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/commentEditText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:focusable="true" />
+
+        <Button
+            android:id="@+id/commentButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+    </LinearLayout>
     <ListView
         android:id="@+id/commentsListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
     </ListView>
+
 
 </LinearLayout>

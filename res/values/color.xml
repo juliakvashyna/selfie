@@ -3,6 +3,7 @@
 
     <color name="white">#ffffff</color>
     <color name="grey">#dcdcdc</color>
+      <color name="textViewColor">#fec7ba</color>
     <color name="transparent">#00000000</color>
     <color name="light_fiolet">#FFE4C4</color>
     <color name="dark_fiolet">#D3D3D3</color>

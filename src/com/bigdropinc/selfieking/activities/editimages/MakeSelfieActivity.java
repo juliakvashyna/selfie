@@ -166,6 +166,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         backImageView = (ImageView) findViewById(R.id.backImage);
         selectBackgroundButton = (Button) findViewById(R.id.selectBackground);
         selectfilterButton = (Button) findViewById(R.id.selectFilter);
+
         horizontalListViewCurrent = (HorizontalListView) findViewById(R.id.bottomMenuCurrent);
         okButton = (Button) findViewById(R.id.btnMainOK);
         doneButton = (Button) findViewById(R.id.btnMainNext);
@@ -175,7 +176,8 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
     private void initImage() {
         if (getIntent() != null) {
-            byte[] data = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0)).getResult();
+            selfieImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
+            byte[] data = selfieImage.getResult();
             w = getIntent().getIntExtra("w", 0);
             h = getIntent().getIntExtra("h", 0);
             if (data != null) {
@@ -228,76 +230,15 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initOnItemClick() {
+
         horizontalListViewCurrent.setOnItemClickListener(new OnItemClickListener() {
+            MenuItem res;
+
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (((MenuItem) parent.getItemAtPosition(position)).getId()) {
-                case BackGroundConstants.b1:
-                    setBack("1.jpg");
-                    break;
-                case BackGroundConstants.b2:
-                    setBack("2.jpg");
-                    break;
-                case BackGroundConstants.b3:
-                    setBack("3.jpg");
-                    break;
-                case BackGroundConstants.b4:
-                    setBack("4.jpg");
-                    break;
-                case BackGroundConstants.b5:
-                    setBack("5.jpg");
-                    break;
-                case BackGroundConstants.b6:
-                    setBack("6.jpg");
-                    break;
-                case FilterConstants.F1:
-                    dofilter(0);
-                    break;
-                case FilterConstants.f2:
-                    dofilter(getResources().getColor(LIGHT_FIOLET));
-                    break;
-                case FilterConstants.f3:
-                    dofilter(getResources().getColor(DARK_FIOLET));
-                    break;
-                case FilterConstants.f4:
-                    dofilter(getResources().getColor(FIOLET));
-                    break;
-                case FilterConstants.f5:
-                    dofilter(getResources().getColor(OHRA));
-                    break;
-                case FilterConstants.f6:
-                    dofilter(getResources().getColor(OHRA2));
-                    break;
-                case FilterConstants.f7:
-                    dofilter(getResources().getColor(GREY));
-                    break;
-                case FilterConstants.f8:
-                    dofilter(getResources().getColor(GREYF));
-                    break;
-                case FilterConstants.f9:
-                    dofilter(getResources().getColor(ROSY));
-                    break;
-                case FilterConstants.f10:
-                    dofilter(getResources().getColor(GREYF2));
-                    break;
-                case FilterConstants.f11:
-                    dofilter(getResources().getColor(ROSY2));
-                case FilterConstants.f12:
-                    dofilter(getResources().getColor(GREYF3));
-                    break;
-                case FilterConstants.f13:
-                    dofilter(getResources().getColor(YELLOW));
-                    break;
-                case FilterConstants.f14:
-                    dofilter(getResources().getColor(ROSY_BROWN));
-                    break;
-                case FilterConstants.f15:
-
-                    dofilter(getResources().getColor(FIOLET2));
-                    break;
-                default:
-                    break;
-                }
+                res = menuListCurrent.get(position);
+                if (res != null)
+                    setBack(res.getImageres());
             }
         });
     }
@@ -340,14 +281,12 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void gotoFeed() {
-
         new AsyncTask<Void, Void, Intent>() {
             @Override
             protected Intent doInBackground(Void... params) {
                 Intent intent = getShareActivityIntent();
                 return intent;
             }
-
             protected void onPostExecute(Intent result) {
                 startActivity(result);
             };
@@ -355,29 +294,12 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private Intent getShareActivityIntent() {
-        Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
-        // ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Intent intent = new Intent(getApplicationContext(), AddFilterActivity.class);
         selfieImage.setMatrix(matrix);
-        // selfieImage.getSelfieWithBackground().compress(Bitmap.CompressFormat.PNG,
-        // 45, stream);
-
-        // byte[] byteArray = stream.toByteArray();
-
-        int size = sizeOf(selfieImage.getSelfieWithBackground());
-        Log.d("tag", "size " + size);
-        selfieImage = DatabaseManager.getInstance().addSelfie(selfieImage);
-
-        // intent.putExtra("image", byteArray);
+        selfieImage.getSelfieWithBackground();
+        DatabaseManager.getInstance().updateSelfie(selfieImage);
         intent.putExtra("id", selfieImage.getId());
         return intent;
-    }
-
-    private int sizeOf(Bitmap data) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB_MR1) {
-            return data.getRowBytes() * data.getHeight();
-        } else {
-            return data.getByteCount();
-        }
     }
 
     private void onFilterClick() {
@@ -387,9 +309,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         selfieImage.setFilterclick(true);
         resultImageView.setImageBitmap(selfieImage.getSelfieWithOutBackground());
         okVisible();
-
         resultImageView.setVisibility(View.VISIBLE);
-
     }
 
     private void initFilteMenu() {
@@ -416,7 +336,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private Bitmap getFilterImage(int highlightColor) {
         PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(highlightColor, Mode.DST_IN);
         Bitmap bitmap = selfieImage.getSelfieWithBackgroundWithOutFilter();
-        
+
         Canvas canvas = new Canvas();
         Bitmap result = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
         canvas.setBitmap(result);
@@ -426,11 +346,11 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
         paint.setColorFilter(colorFilter);
         canvas.drawBitmap(bitmap, 0, 0, paint);
-//        paint.setColorFilter(null);
-//        //
-//        paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
-//        canvas.drawBitmap(bitmap, 0, 0, paint);
-//        paint.setXfermode(null);
+        // paint.setColorFilter(null);
+        // //
+        // paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
+        // canvas.drawBitmap(bitmap, 0, 0, paint);
+        // paint.setXfermode(null);
         return result;
     }
 
@@ -446,14 +366,15 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initBackgroundMenu() {
-        menuListCurrent.clear();
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, "1.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, "2.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, "3.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, "4.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, "5.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, "6.jpg"));
-    
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, R.drawable.colosseum, "colosseum_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, R.drawable.easter_island, "easter_island_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, R.drawable.moon, "moon_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, R.drawable.paris, "paris_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, R.drawable.petra, "petra_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b6, R.drawable.pyramids, "pyramids_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b7, R.drawable.statue_of_liberty, "statue_of_liberty_55.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b8, R.drawable.stonehenge, "stonehenge_55.jpg"));
+
         adapterCurrent.notifyDataSetChanged();
     }
 
@@ -464,6 +385,12 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
     private void setBack(String filePath) {
         Bitmap back = FileManager.getBitmapFromAsset(filePath);
+        selfieImage.setBackground(back);
+        backImageView.setImageBitmap(selfieImage.getBackground());
+    }
+
+    private void setBack(int res) {
+        Bitmap back = BitmapFactory.decodeResource(getResources(), res);
         selfieImage.setBackground(back);
         backImageView.setImageBitmap(selfieImage.getBackground());
     }
