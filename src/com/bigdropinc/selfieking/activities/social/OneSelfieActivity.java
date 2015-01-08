@@ -110,15 +110,17 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     @Override
     protected void onResume() {
         super.onResume();
+        startLoaderForSelfie();
+        initFeed();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_one_selfie);
-        startLoaderForSelfie();
+      
         init();
-        initFeed();
+       
     }
 
     private void initSelfie() {
@@ -142,9 +144,9 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         if (statusCode.isSuccess()) {
             if (loader.getId() == LOADER_ID_CONTEST) {
                 Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
-            } else {
+            } 
                 updateGridView(loader);
-            }
+            
         } else {
             Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
         }

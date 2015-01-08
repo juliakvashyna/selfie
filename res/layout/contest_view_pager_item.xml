@@ -13,25 +13,30 @@
             android:id="@+id/backMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="back" >
+            android:layout_margin="5dp"
+            android:background="@drawable/back_selector" >
         </Button>
 
         <TextView
             android:id="@+id/monthTextView"
+            style="@style/customEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="month" />
 
         <Button
             android:id="@+id/nextMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="next" >
+            android:layout_margin="5dp"
+            android:background="@drawable/next_selector" >
         </Button>
     </LinearLayout>
 
     <TextView
         android:id="@+id/count"
+        style="@style/customEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" >

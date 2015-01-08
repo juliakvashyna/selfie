@@ -1,23 +1,19 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffColorFilter;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.FloatMath;
 import android.util.Log;
@@ -25,40 +21,27 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 import cn.Ragnarok.BitmapFilter;
 
-import com.bidgropinc.biling.util.IabHelper;
-import com.bidgropinc.biling.util.IabResult;
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.adapters.BottomMenuAdapter;
 import com.bigdropinc.selfieking.adapters.MenuItem;
 import com.bigdropinc.selfieking.controller.managers.FileManager;
 import com.bigdropinc.selfieking.model.constants.BackGroundConstants;
-import com.bigdropinc.selfieking.model.constants.FilterConstants;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.devsmart.android.ui.HorizontalListView;
 
 public class MakeSelfieActivity extends Activity implements OnTouchListener {
-    private static final int LIGHT_FIOLET = R.color.light_fiolet;
-    private static final int DARK_FIOLET = R.color.dark_fiolet;
-    private static final int FIOLET = R.color.fiolet;
-    private static final int OHRA = R.color.ohra;
-    private static final int OHRA2 = R.color.ohra2;
-    private static final int GREY = R.color.grey;
-    private static final int GREYF = R.color.greyf;
-    private static final int ROSY = R.color.rosy;
-    private static final int GREYF2 = R.color.greyf2;
-    private static final int ROSY2 = R.color.rosy2;
-    private static final int GREYF3 = R.color.greyf3;
-    private static final int YELLOW = R.color.yellow;
-    private static final int ROSY_BROWN = R.color.rosy_brown;
-    private static final int FIOLET2 = R.color.fiolet2;
+
     private final String TAG = "tag";
     public static final String EXTRA_IMAGE = "image";
 
@@ -68,12 +51,12 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private HorizontalListView horizontalListViewCurrent;
     private BottomMenuAdapter adapterCurrent;
     private List<MenuItem> menuListCurrent;
-    private Button okButton;
+    private ProgressDialog dialog;
     private Button doneButton;
     private Button backButton;
     private EditImage selfieImage;
-    private Button selectBackgroundButton;
-    private Button selectfilterButton;
+    // private Button selectBackgroundButton;
+    // private Button selectfilterButton;
     // These matrices will be used to move and zoom image
     private Matrix matrix = new Matrix();
     private Matrix savedMatrix = new Matrix();
@@ -94,7 +77,14 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private float[] lastEvent;
     private float newRot;
 
-    private IabHelper mHelper;
+    // private IabHelper mHelper;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (dialog != null)
+            dialog.cancel();
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -128,9 +118,9 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mHelper != null)
-            mHelper.dispose();
-        mHelper = null;
+        // if (mHelper != null)
+        // mHelper.dispose();
+        // mHelper = null;
     }
 
     @Override
@@ -145,30 +135,31 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initIabHelper() {
-        String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAppnnGKdUh/6nuk2BL1LZuyN9r60w0q/Zqx3Hkmw6IKZLj/MhpN/+KygSSlje5IlasacAd5r1fw9uQWdL3VlmWHgJ16RAkAyeqGqXT+MH43zGEdiHrKCfUJZGOvbo6jTe/rnzAvpdZl1BCLZ0G2CuY/tr2VDIUcOCTk4AHkj8V13zqekqQBK8TuNP2Eq86B17fwQtqlrLRIQOIyVcHVphGVIaDYy5VqkyH5Erfb5oMh+KLFlCUXz72mHxPINp1yYFJ/Xp4hCuHxpmCK9F+mqnSPA8+7zWaWXbWLneMDXa+AZnnKi5XGEjjHAat0fXZR76Hj6/NDyKUq03ll5V+YvJOwIDAQAB";
-        mHelper = new IabHelper(this, base64EncodedPublicKey);
-        mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
-            public void onIabSetupFinished(IabResult result) {
-                if (!result.isSuccess()) {
-                    // Oh noes, there was a problem.
-                    Log.d(TAG, "Problem setting up In-app Billing: " + result);
-                } else {
-                    Log.d(TAG, "Setting up In-app Billing: SUCCESS DONE");
-                }
-                // Hooray, IAB is fully set up!
-            }
-        });
+        // String base64EncodedPublicKey =
+        // "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAppnnGKdUh/6nuk2BL1LZuyN9r60w0q/Zqx3Hkmw6IKZLj/MhpN/+KygSSlje5IlasacAd5r1fw9uQWdL3VlmWHgJ16RAkAyeqGqXT+MH43zGEdiHrKCfUJZGOvbo6jTe/rnzAvpdZl1BCLZ0G2CuY/tr2VDIUcOCTk4AHkj8V13zqekqQBK8TuNP2Eq86B17fwQtqlrLRIQOIyVcHVphGVIaDYy5VqkyH5Erfb5oMh+KLFlCUXz72mHxPINp1yYFJ/Xp4hCuHxpmCK9F+mqnSPA8+7zWaWXbWLneMDXa+AZnnKi5XGEjjHAat0fXZR76Hj6/NDyKUq03ll5V+YvJOwIDAQAB";
+        // mHelper = new IabHelper(this, base64EncodedPublicKey);
+        // mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+        // public void onIabSetupFinished(IabResult result) {
+        // if (!result.isSuccess()) {
+        // // Oh noes, there was a problem.
+        // Log.d(TAG, "Problem setting up In-app Billing: " + result);
+        // } else {
+        // Log.d(TAG, "Setting up In-app Billing: SUCCESS DONE");
+        // }
+        // Hooray, IAB is fully set up!
+        // }
+        // });
     }
 
     private void init() {
         resultImageView = (ImageView) findViewById(R.id.resultImage);
         resultImageView.setOnTouchListener(this);
         backImageView = (ImageView) findViewById(R.id.backImage);
-        selectBackgroundButton = (Button) findViewById(R.id.selectBackground);
-        selectfilterButton = (Button) findViewById(R.id.selectFilter);
+        // selectBackgroundButton = (Button)
+        // findViewById(R.id.selectBackground);
+        // selectfilterButton = (Button) findViewById(R.id.selectFilter);
 
         horizontalListViewCurrent = (HorizontalListView) findViewById(R.id.bottomMenuCurrent);
-        okButton = (Button) findViewById(R.id.btnMainOK);
         doneButton = (Button) findViewById(R.id.btnMainNext);
         backButton = (Button) findViewById(R.id.btnMainBack);
         selfieImage = new EditImage();
@@ -181,12 +172,22 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
             w = getIntent().getIntExtra("w", 0);
             h = getIntent().getIntExtra("h", 0);
             if (data != null) {
-                image = BitmapFactory.decodeByteArray(data, 0, data.length);
+                try {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inPurgeable = true;
+                    options.inJustDecodeBounds = false;
+                    // options.inPreferredConfig = Config.RGB_565;
+                    options.inDither = true;
+                    // options.inSampleSize = 2;
+                    image = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+                } catch (OutOfMemoryError e) {
+                    Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
+                }
             } else {
                 Log.d(TAG, "data is null");
             }
             resultImageView.setScaleType(ScaleType.MATRIX);
-            image = Bitmap.createScaledBitmap(image, w, h, true);
+            // image = Bitmap.createScaledBitmap(image, w, h, true);
 
             resultImageView.setImageBitmap(image);
             selfieImage.setOriginalImage(image);
@@ -211,22 +212,21 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
             Log.d(TAG, "OutOfMemoryError initOnItemClick");
         }
         initBackgroundMenu();
-        okVisible();
     }
 
     private void initBackAndFiltersButtons() {
-        selectBackgroundButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackgroundClick();
-            }
-        });
-        selectfilterButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFilterClick();
-            }
-        });
+        // selectBackgroundButton.setOnClickListener(new OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // onBackgroundClick();
+        // }
+        // });
+        // selectfilterButton.setOnClickListener(new OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // onFilterClick();
+        // }
+        // });
     }
 
     private void initOnItemClick() {
@@ -244,12 +244,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initListeners() {
-        okButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                okButtonClick();
-            }
-        });
+
         doneButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -264,31 +259,29 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         });
     }
 
-    private void okButtonClick() {
-        initBackAndFiltersButtons();
-        nextVisible();
-
-    }
-
     private void createImage() {
         image = selfieImage.getSelfieWithOutBackground();
         resultImageView.setImageBitmap(image);
     }
 
-    private void okVisible() {
-        doneButton.setVisibility(View.INVISIBLE);
-        okButton.setVisibility(View.VISIBLE);
-    }
-
     private void gotoFeed() {
         new AsyncTask<Void, Void, Intent>() {
+            protected void onPreExecute() {
+                dialog = ProgressDialog.show(MakeSelfieActivity.this, "", "");
+                dialog.setContentView(new ProgressBar(MakeSelfieActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            };
+
             @Override
             protected Intent doInBackground(Void... params) {
                 Intent intent = getShareActivityIntent();
                 return intent;
             }
+
             protected void onPostExecute(Intent result) {
                 startActivity(result);
+                if (dialog != null) {
+                    dialog.cancel();
+                }
             };
         }.execute();
     }
@@ -302,85 +295,16 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         return intent;
     }
 
-    private void onFilterClick() {
-        selectBackgroundButton.setBackgroundResource(R.drawable.icon_bg);
-        selectfilterButton.setBackgroundResource(R.drawable.icon_filter_active);
-        initFilteMenu();
-        selfieImage.setFilterclick(true);
-        resultImageView.setImageBitmap(selfieImage.getSelfieWithOutBackground());
-        okVisible();
-        resultImageView.setVisibility(View.VISIBLE);
-    }
-
-    private void initFilteMenu() {
-        menuListCurrent.clear();
-        menuListCurrent.add(new MenuItem(FilterConstants.F1, R.string.f1, selfieImage.getSelfieWithBackgroundWithOutFilter()));
-        menuListCurrent.add(new MenuItem(FilterConstants.f2, R.string.f2, getFilterImage(LIGHT_FIOLET)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f3, R.string.f3, getFilterImage(DARK_FIOLET)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f4, R.string.f4, getFilterImage(FIOLET)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f5, R.string.f5, getFilterImage(OHRA)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f6, R.string.f6, getFilterImage(OHRA2)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f7, R.string.f7, getFilterImage(GREY)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f8, R.string.f8, getFilterImage(GREYF)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f9, R.string.f9, getFilterImage(ROSY)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f10, R.string.f10, getFilterImage(GREYF2)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f11, R.string.f11, getFilterImage(ROSY2)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f12, R.string.f12, getFilterImage(GREYF3)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f13, R.string.f13, getFilterImage(YELLOW)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f14, R.string.f14, getFilterImage(ROSY_BROWN)));
-        menuListCurrent.add(new MenuItem(FilterConstants.f15, R.string.f15, getFilterImage(FIOLET2)));
-
-        adapterCurrent.notifyDataSetChanged();
-    }
-
-    private Bitmap getFilterImage(int highlightColor) {
-        PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(highlightColor, Mode.DST_IN);
-        Bitmap bitmap = selfieImage.getSelfieWithBackgroundWithOutFilter();
-
-        Canvas canvas = new Canvas();
-        Bitmap result = Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(result);
-        Paint paint = new Paint();
-        // paint.setFilterBitmap(false);
-        // Color
-
-        paint.setColorFilter(colorFilter);
-        canvas.drawBitmap(bitmap, 0, 0, paint);
-        // paint.setColorFilter(null);
-        // //
-        // paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
-        // canvas.drawBitmap(bitmap, 0, 0, paint);
-        // paint.setXfermode(null);
-        return result;
-    }
-
-    private void onBackgroundClick() {
-        selectBackgroundButton.setBackgroundResource(R.drawable.icon_bg_active);
-        selectfilterButton.setBackgroundResource(R.drawable.icon_filter);
-        initBackgroundMenu();
-        okVisible();
-        if (selfieImage.getColorFilter() != null)
-            createImage();
-        resultImageView.setVisibility(View.VISIBLE);
-        resultImageView.setImageBitmap(image);
-    }
-
     private void initBackgroundMenu() {
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, R.drawable.colosseum, "colosseum_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, R.drawable.easter_island, "easter_island_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, R.drawable.moon, "moon_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, R.drawable.paris, "paris_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, R.drawable.petra, "petra_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b6, R.drawable.pyramids, "pyramids_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b7, R.drawable.statue_of_liberty, "statue_of_liberty_55.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b8, R.drawable.stonehenge, "stonehenge_55.jpg"));
-
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, R.drawable.colosseum, "colosseum_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, R.drawable.easter_island, "easter_island_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, R.drawable.moon, "moon_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, R.drawable.paris, "paris_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, R.drawable.petra, "petra_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b6, R.drawable.pyramids, "pyramids_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b7, R.drawable.statue_of_liberty, "statue_of_liberty_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b8, R.drawable.stonehenge, "stonehenge_110.jpg"));
         adapterCurrent.notifyDataSetChanged();
-    }
-
-    private void nextVisible() {
-        doneButton.setVisibility(View.VISIBLE);
-        okButton.setVisibility(View.INVISIBLE);
     }
 
     private void setBack(String filePath) {
@@ -391,21 +315,17 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
     private void setBack(int res) {
         Bitmap back = BitmapFactory.decodeResource(getResources(), res);
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            back.compress(Bitmap.CompressFormat.JPEG, 50, out);
+            Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
+            back = Bitmap.createBitmap(decoded);
+            // decoded.recycle();
+        } catch (OutOfMemoryError e) {
+            Log.d("tag", "OutOfMemoryError");
+        }
         selfieImage.setBackground(back);
         backImageView.setImageBitmap(selfieImage.getBackground());
-    }
-
-    private void dofilter(int highlightColor) {
-        if (highlightColor == 0) {
-            selfieImage.setColorFilter(null);
-        } else {
-            PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(highlightColor, Mode.MULTIPLY);
-            selfieImage.setColorFilter(colorFilter);
-        }
-
-        resultImageView.setImageBitmap(selfieImage.getSelfieWithOutBackground());
-        backImageView.setImageBitmap(selfieImage.getBackground());
-
     }
 
     private void pointerUp() {

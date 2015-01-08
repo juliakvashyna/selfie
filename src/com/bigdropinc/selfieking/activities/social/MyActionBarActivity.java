@@ -45,11 +45,13 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     private int LOADER_ID_CONTEST = 22;
     private CommandLoader loader;
     private String TAG = "tag";
-    private FeedFragment feedFragment;
+    private FeedFragment feedFragment = new FeedFragment();
     private int LOADER_ID_LIKE = 10;
     private int LOADER_ID_DISLIKE = 11;
     private int id;
     private int index;
+
+    private boolean fromCamera;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -89,7 +91,6 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 getLoaderManager().getLoader(LOADER_ID_LIKE + like.getPostId()).reset();
             getLoaderManager().initLoader(LOADER_ID_DISLIKE + like.getPostId(), bundle, MyActionBarActivity.this).forceLoad();
         } else {
-
             if (getLoaderManager().getLoader(LOADER_ID_DISLIKE + like.getPostId()) != null)
                 getLoaderManager().getLoader(LOADER_ID_DISLIKE + like.getPostId()).reset();
             getLoaderManager().initLoader(LOADER_ID_LIKE + like.getPostId(), bundle, MyActionBarActivity.this).forceLoad();
@@ -104,7 +105,9 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         getLoaderManager().initLoader(LOADER_ID_COMMENT, bundle, MyActionBarActivity.this).forceLoad();
     }
 
-    public void contest(SelfieImage selfieImage) {
+    public void contest(SelfieImage selfieImage, int position) {
+        this.index = position;
+        this.id = selfieImage.getId();
         Bundle bundle = getContestBundle(selfieImage);
         getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, MyActionBarActivity.this).forceLoad();
 
@@ -174,7 +177,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 return findViewById(R.id.realtabcontent);
             }
         });
-        spec.setIndicator(createTabView(R.drawable.icon_make_shot, "camera"));
+        spec.setIndicator(createTabView(R.drawable.make_shot, "camera"));
         mTabHost.addTab(spec);
 
         spec = mTabHost.newTabSpec(TAB_CONTEST);
@@ -201,9 +204,9 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
-            Comment comment = data.getExtras().getParcelable("comment");
-            int index = data.getExtras().getInt("position");
-            comment(comment, index);
+            SelfieImage selfieImage = data.getExtras().getParcelable("selfie");
+            index = data.getExtras().getInt("index");
+            feedFragment.updateGridView(index, selfieImage);
         }
     }
 
@@ -232,13 +235,14 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     @Override
     protected void onResume() {
         super.onResume();
+        if (fromCamera) {
+            mTabHost.setCurrentTab(0);
+        }
         if (!LoginManagerImpl.getInstance().check()) {
-
             finish();
             Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
             startActivity(intent);
         }
-
     }
 
     private View createTabView(final int id, final String text) {
@@ -255,22 +259,18 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
      */
     private TabHost.OnTabChangeListener listener = new TabHost.OnTabChangeListener() {
         public void onTabChanged(String tabId) {
-
             mCurrentTab = tabId;
-
             if (tabId.equals(TAB_HOME)) {
-                feedFragment = new FeedFragment();
-
-                addArguments(feedFragment);
                 pushFragments(feedFragment, false, false, TAB_HOME);
             } else if (tabId.equals(TAB_LIKED)) {
                 pushFragments(new FeedFragment(), false, false, TAB_LIKED);
-            } else if (tabId.equals(TAB_CAMERA)) {
-                startActivity(new Intent(getApplicationContext(), SelectImageActivity.class));
             } else if (tabId.equals(TAB_CONTEST)) {
                 pushFragments(new ContestFragment(), false, false, TAB_CONTEST);
             } else if (tabId.equals(TAB_PROFILE)) {
                 pushFragments(new ProfileFragment(), false, false, TAB_PROFILE);
+            } else {
+                fromCamera = true;
+                startActivity(new Intent(getApplicationContext(), SelectImageActivity.class));
             }
 
         }
@@ -294,6 +294,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     private Bundle getContestBundle(SelfieImage selfieImage) {
         Bundle bundle = new Bundle();
         Command command = new Command(Command.ADD_CONTEST);
+        selfieImage.setInContest(1);
         command.setSelfieImage(selfieImage);
         bundle.putParcelable(Constants.COMMAND, command);
         return bundle;
@@ -312,11 +313,14 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     private void updateFeed(Loader<StatusCode> loader) {
         SelfieImage selfieImage = ((CommandLoader) loader).getSelfieImage();
         Log.d(TAG, "onLoadFinished: " + loader.hashCode());
-        if (loader.getId() == LOADER_ID_COMMENT || loader.getId() == LOADER_ID_LIKE + selfieImage.getId() || loader.getId() == LOADER_ID_DISLIKE + selfieImage.getId()) {
-            if (selfieImage.getId() == id) {
-                feedFragment.updateGridView(index, selfieImage);
-            }
+        // if (loader.getId() == LOADER_ID_COMMENT || loader.getId() ==
+        // LOADER_ID_LIKE + selfieImage.getId() || loader.getId() ==
+        // LOADER_ID_DISLIKE + selfieImage.getId()) {
+        if (selfieImage.getId() == id) {
+            feedFragment.updateGridView(index, selfieImage);
+
         }
+        // }
     }
 
     private Bundle getLiketBundle(Like like, boolean liked) {

@@ -17,7 +17,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:alpha="90"
             android:background="@drawable/close_button_selector" />
 
         <TextView

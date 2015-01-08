@@ -35,11 +35,16 @@ public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
         textView = (TextView) convertView.findViewById(R.id.mtitle);
         MenuItem itemMenu = getItem(position);
         if (itemMenu.getBitmap() != null) {
+
             imageView.setImageBitmap(itemMenu.getBitmap());
-        } else if (itemMenu.getImageres() != 0) {
-            imageView.setImageResource(itemMenu.getImageres());
         } else {
-            imageView.setImageBitmap(FileManager.getBitmapFromAsset(itemMenu.getPath()));
+            if (itemMenu.getPath() != null) {
+                imageView.setImageBitmap(FileManager.getBitmapFromAsset(itemMenu.getPath()));
+            } else {
+                if (itemMenu.getImageres() != 0) {
+                }
+                imageView.setImageResource(itemMenu.getImageres());
+            }
         }
         if (itemMenu.getTitleres() != 0) {
             String text = context.getResources().getString((itemMenu.getTitleres()));

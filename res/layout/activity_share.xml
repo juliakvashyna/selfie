@@ -2,41 +2,99 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-        android:background="@drawable/background"
+    android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.editimages.ShareActivity" >
 
+    <RelativeLayout
+        android:id="@+id/shareTopL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/camera_top"
+        android:padding="@dimen/topButtonPadding" >
+
+        <Button
+            android:id="@+id/shareBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/icon_back" />
+
+        <TextView
+            style="@style/customEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Publish" />
+
+        <Button
+            android:id="@+id/shareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/done_selector" />
+    </RelativeLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content"
+        android:layout_below="@id/shareTopL"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:orientation="vertical" >
 
         <ImageView
+            android:layout_margin="20dp"
             android:id="@+id/shareImage"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_width="@dimen/sizeshareImage"
+            android:layout_height="@dimen/sizeshareImage" />
 
         <EditText
             android:id="@+id/shareComment"
             style="@style/customEditText"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:hint="comment" />
-    </LinearLayout>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:hint="@string/addDesc"
+            android:padding="10dp" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true" >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/divider_01" />
 
-        <Button
-            android:id="@+id/shareButton"
-            style="@style/customButton"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="Share" />
-    </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/fbButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/fb_selector" />
+
+            <Button
+                android:id="@+id/twButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/twitter_selector" />
+
+            <Button
+                android:id="@+id/googleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="15dp"
+                android:background="@drawable/google_selector" />
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class CropView extends ImageView {
     private Paint paint = new Paint();
@@ -174,6 +175,7 @@ public class CropView extends ImageView {
         width = (int) rightBottom.x - (int) leftTop.x;
         height = (int) rightBottom.y - (int) leftTop.y;
         Bitmap cropped = drawable.getBitmap();
+        byte[] b;
         if (y + height <= drawable.getBitmap().getHeight() && x + width <= drawable.getBitmap().getWidth()) {
             cropped = Bitmap.createBitmap(drawable.getBitmap(), (int) x, (int) y, (int) rightBottom.x - (int) leftTop.x, (int) rightBottom.y - (int) leftTop.y);
             cropped = Bitmap.createScaledBitmap(cropped, width, height, true);
@@ -181,8 +183,18 @@ public class CropView extends ImageView {
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
+        cropped.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        b = stream.toByteArray();
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        stream = null;
+        return b;
     }
 
     public byte[] getCroppedImage(Bitmap bitmap) {
@@ -194,8 +206,19 @@ public class CropView extends ImageView {
         Bitmap cropped = Bitmap.createBitmap(bitmap, (int) x, (int) y, (int) rightBottom.x - (int) leftTop.x, (int) rightBottom.y - (int) leftTop.y);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        cropped.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        return stream.toByteArray();
+        cropped.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        byte[] b;
+        b = stream.toByteArray();
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        stream = null;
+        return b;
     }
 
 }

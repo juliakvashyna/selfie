@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
@@ -32,10 +33,10 @@ import com.bigdropinc.selfieking.controller.CustomPicasso;
 import com.bigdropinc.selfieking.controller.UrlRequest;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.User;
-import com.bigdropinc.selfieking.model.selfie.Comment;
 import com.bigdropinc.selfieking.model.selfie.Like;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.views.RoundedImageView;
+import com.squareup.picasso.Callback;
 
 public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
@@ -77,11 +78,8 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             // holder.commentEditText = (EditText)
             // convertView.findViewById(R.id.commentEditText);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
-            // holder.sendCommentButton = (Button)
-            // convertView.findViewById(R.id.commentButton);
-            // holder.commentLayout = (LinearLayout)
-            // convertView.findViewById(R.id.commentLayout);
-
+            holder.progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
+            holder.progressBar.setVisibility(View.VISIBLE);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -91,23 +89,51 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         String token = LoginManagerImpl.getInstance().getToken();
         User user = DatabaseManager.getInstance().findUser(token);
         holder.nameTextView.setText(user.getUserName());
+
         if (feedItem != null) {
             String imageUrl = getImageUrl(feedItem);
-            CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).noFade().error(R.drawable.notfound).into(holder.imageView);
+            CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
+                @Override
+                public void onSuccess() {
+                    if (this.progressBar != null) {
+                        this.progressBar.setVisibility(View.GONE);
+                    }
+                }
+            });
             holder.likes.setText(String.valueOf(feedItem.getLikes()));
             holder.comments.setText(String.valueOf(feedItem.getComment()));
             if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
                 holder.descTextView.setText(feedItem.getDescription());
                 holder.descTextView.setVisibility(View.VISIBLE);
+            } else {
+                holder.descTextView.setVisibility(View.GONE);
             }
 
             holder.likeButton.setSelected(feedItem.isLiked());
             holder.contentButton.setSelected(feedItem.isInContest());
             holder.commentButton.setSelected(feedItem.getComment() != 0);
             holder.timeTextView.setText(getTimeString(feedItem.getDate()));
-            CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").resize(AVATAR_SIZE, AVATAR_SIZE).into(holder.avatar);
+            CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").into(holder.avatar);
         }
         return convertView;
+    }
+
+    private class ImageLoadedCallback implements Callback {
+        ProgressBar progressBar;
+
+        public ImageLoadedCallback(ProgressBar progBar) {
+            progressBar = progBar;
+        }
+
+        @Override
+        public void onSuccess() {
+
+        }
+
+        @Override
+        public void onError() {
+
+        }
     }
 
     private String getImageUrl(SelfieImage feedItem) {
@@ -136,7 +162,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         holder.contentButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                contest(selfie);
+                contest(selfie, position);
             }
         });
         holder.commentButton.setOnClickListener(new OnClickListener() {
@@ -171,29 +197,30 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     private void startComment(final SelfieImage selfie, final int position) {
         Intent intent = new Intent(context.getApplicationContext(), CommentsActivity.class);
         intent.putExtra("postId", selfie.getId());
-        intent.putExtra("position", position);
+        intent.putExtra("index", position);
         context.startActivityForResult(intent, 10);
     }
 
     private String getTimeString(String time) {
         String timeStr = "";
         Date postTime = getDate(time);
-
-        Calendar post = Calendar.getInstance();
-        post.setTime(postTime);
-        Calendar now = Calendar.getInstance();
-        now.setTime(new Date());
-        long difference = now.getTimeInMillis() - post.getTimeInMillis();
-        if (difference <= minute) {
-            timeStr = String.valueOf(difference / second) + " seconds ago";
-        } else if (difference <= hour) {
-            timeStr = String.valueOf(difference / minute) + " min ago";
-        } else if (difference <= day) {
-            timeStr = String.valueOf(difference / hour) + " hours ago";
-        } else if (difference <= week) {
-            timeStr = String.valueOf(difference / day) + " days ago";
-        } else {
-            timeStr = String.valueOf(now.get(Calendar.WEEK_OF_YEAR) - post.get(Calendar.WEEK_OF_YEAR)) + " weeks ago";
+        if (postTime != null) {
+            Calendar post = Calendar.getInstance();
+            post.setTime(postTime);
+            Calendar now = Calendar.getInstance();
+            now.setTime(new Date());
+            long difference = now.getTimeInMillis() - post.getTimeInMillis();
+            if (difference <= minute) {
+                timeStr = String.valueOf(difference / second) + " sec";
+            } else if (difference <= hour) {
+                timeStr = String.valueOf(difference / minute) + " min";
+            } else if (difference <= day) {
+                timeStr = String.valueOf(difference / hour) + " h";
+            } else if (difference <= week) {
+                timeStr = String.valueOf(difference / day) + " d";
+            } else {
+                timeStr = String.valueOf(now.get(Calendar.WEEK_OF_YEAR) - post.get(Calendar.WEEK_OF_YEAR)) + " weeks";
+            }
         }
         return timeStr;
     }
@@ -205,15 +232,18 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         } catch (ParseException e) {
 
             e.printStackTrace();
+        } catch (NullPointerException e) {
+
+            e.printStackTrace();
         }
         return date;
     }
 
-    private void contest(SelfieImage selfie) {
+    private void contest(SelfieImage selfie, int position) {
         if (context instanceof OneSelfieActivity) {
             ((OneSelfieActivity) context).contest(selfie);
         } else if (context instanceof MyActionBarActivity) {
-            ((MyActionBarActivity) context).contest(selfie);
+            ((MyActionBarActivity) context).contest(selfie, position);
         }
     }
 
@@ -243,6 +273,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         private EditText commentEditText;
         private RoundedImageView avatar;
         private LinearLayout commentLayout;
+        private ProgressBar progressBar;
     }
 
     public List<SelfieImage> getObjects() {

@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
-        android:background="@drawable/background"
     tools:context="com.bigdropinc.selfieking.activities.editimages.SelectImageActivity" >
 
     <RelativeLayout
@@ -43,62 +43,71 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:id="@+id/selectedImageL"
         android:layout_width="match_parent"
-        android:layout_height="400dp" >
+        android:layout_height="wrap_content" >
 
-        <FrameLayout
-            android:id="@+id/camera_preview"
+        <RelativeLayout
+            android:id="@+id/selectedImageL"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="wrap_content" >
 
-            <ImageView
-                android:id="@+id/selectedImage"
+            <FrameLayout
+                android:id="@+id/camera_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:id="@+id/selectedImage"
+                    android:layout_width="@dimen/sizeImageFeed"
+                    android:layout_height="@dimen/sizeImageFeed"
+                    android:scaleType="fitXY"
+                    android:visibility="invisible" >
+                </ImageView>
+            </FrameLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/cameraBottomL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/selectedImageL"
+            android:layout_marginTop="-30dp"
+            android:alpha="0.8"
+            android:background="@drawable/camera_bottom" >
+
+            <LinearLayout
+                android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:visibility="invisible" >
-            </ImageView>
-        </FrameLayout>
-    </RelativeLayout>
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                android:orientation="horizontal" >
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/camera_bottom" >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
 
-        <LinearLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:orientation="horizontal" >
+                    <Button
+                        android:id="@+id/photo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/gallery"
+                        android:layout_alignBottom="@+id/gallery"
+                        android:layout_centerHorizontal="true"
+                        android:background="@drawable/icon_make_shot" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-
-                <Button
-                    android:id="@+id/photo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/gallery"
-                    android:layout_alignBottom="@+id/gallery"
-                    android:layout_centerHorizontal="true"
-                    android:background="@drawable/make_shot" />
-
-                <Button
-                    android:id="@+id/gallery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="37dp"
-                    android:background="@drawable/add_image_selector" />
-            </RelativeLayout>
-        </LinearLayout>
+                    <Button
+                        android:id="@+id/gallery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="37dp"
+                        android:background="@drawable/add_image_selector" />
+                </RelativeLayout>
+            </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
 
 </LinearLayout>

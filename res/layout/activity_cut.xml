@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@drawable/background"
+    android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.editimages.CropActivity" >
 
     <RelativeLayout
@@ -14,19 +14,20 @@
         android:padding="@dimen/topButtonPadding" >
 
         <Button
-            android:id="@+id/btnMainBack"
+            android:id="@+id/cutBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/icon_back" />
+            android:background="@drawable/back_selector" />
 
         <TextView
+                style="@style/customTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/crop" />
+            android:text="@string/cut" />
 
         <Button
             android:id="@+id/next"
@@ -39,32 +40,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        
-        android:gravity="fill" >
-
-        <!-- <com.bigdropinc.selfieking.views.CutView -->
-        <!-- android:id="@+id/mainImage" -->
-        <!-- android:layout_width="match_parent" -->
-        <!-- android:layout_height="match_parent" -->
-        <!-- android:layout_centerHorizontal="true" -->
-        <!-- android:layout_centerInParent="true" -->
-        <!-- android:layout_centerVertical="true" -->
-        <!-- android:layout_gravity="center" -->
-        <!-- android:gravity="center" -->
-        <!-- android:scaleType="fitCenter" -->
-        <!-- android:visibility="invisible" /> -->
+        android:layout_height="@dimen/sizeImageFeed" >
 
         <com.bigdropinc.selfieking.views.CutView
             android:id="@+id/mainImage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="fill" />
+            android:layout_height="@dimen/sizeImageFeed"
+            android:gravity="center" />
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@drawable/camera_bottom" >
 
         <Button

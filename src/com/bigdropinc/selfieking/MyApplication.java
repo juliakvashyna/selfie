@@ -1,5 +1,7 @@
 package com.bigdropinc.selfieking;
 
+import io.fabric.sdk.android.Fabric;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 
@@ -9,8 +11,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Typeface;
-import android.provider.Settings;
-import android.provider.Settings.Global;
 import android.util.Base64;
 import android.util.Log;
 
@@ -21,8 +21,14 @@ import com.bigdropinc.selfieking.controller.InternetChecker;
 import com.bigdropinc.selfieking.controller.SharedPreferenceKeys;
 import com.bigdropinc.selfieking.controller.managers.FileManager;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 public class MyApplication extends Application {
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "6PUZMawzdCNwQ2zbuIEvw5Mly";
+    private static final String TWITTER_SECRET = "MUchDymINUXFS37w7Lthyb1slyA297KhUs5uh0I7rHnLTtPdAO";
+    
     private static final String FONT = "font/";
     private static final String DEFAULT_BOLD_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Bold.otf";
     private static final String DEFAULT_ITALIC_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Light Italic.otf";
@@ -45,6 +51,8 @@ public class MyApplication extends Application {
         // Global.AIRPLANE_MODE_ON, 1);
         setDefaultFont();
         super.onCreate();
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
     }
 
     private void initAuthorization() {
@@ -70,7 +78,6 @@ public class MyApplication extends Application {
     }
 
     private void setDefaultFont() {
-
         try {
             final Typeface bold = Typeface.createFromAsset(getAssets(), DEFAULT_BOLD_FONT_FILENAME);
             final Typeface italic = Typeface.createFromAsset(getAssets(), DEFAULT_ITALIC_FONT_FILENAME);

@@ -1,7 +1,10 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImage3x3TextureSamplingFilter;
@@ -35,6 +38,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageView;
 import jp.co.cyberagent.android.gpuimage.GPUImageVignetteFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageWhiteBalanceFilter;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -43,11 +47,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
@@ -61,23 +66,25 @@ import com.devsmart.android.ui.HorizontalListView;
 public class AddFilterActivity extends Activity {
     private static final String TAG = "tag";
     private GPUImageFilter mFilter;
-    private FilterAdjuster mFilterAdjuster;
     private GPUImageView mGPUImageView;
     private HorizontalListView horizontalListViewCurrent;
     private BottomMenuAdapter adapterCurrent;
     private List<MenuItem> menuListCurrent;
     private byte[] byteArray;
     private Bitmap image;
+    private Bitmap original;
     final FilterList filters = new FilterList();
-    private Button doneButton;
+    final FilterList filters2 = new FilterList();
     private Button nextButton;
     private Button backButton;
     private EditImage selfieImage;
+    private GPUImage gpuImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_filter);
+        gpuImage = new GPUImage(this);
         initViews();
         initListeners();
         initImage();
@@ -86,10 +93,25 @@ public class AddFilterActivity extends Activity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGPUImageView != null && mFilter != null) {
+            mGPUImageView.onResume();
+            mGPUImageView.setImage(original);
+            mGPUImageView.setFilter(mFilter);
+            mGPUImageView.requestRender();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
     private void initViews() {
         mGPUImageView = (GPUImageView) findViewById(R.id.gpuimage);
         horizontalListViewCurrent = (HorizontalListView) findViewById(R.id.bottomMenuFilter);
-        doneButton = (Button) findViewById(R.id.filterOKButton);
         nextButton = (Button) findViewById(R.id.filterNextButton);
         backButton = (Button) findViewById(R.id.filterBackButton);
     }
@@ -98,22 +120,26 @@ public class AddFilterActivity extends Activity {
         int id = getIntent().getIntExtra("id", 0);
         selfieImage = DatabaseManager.getInstance().findEditImage(id);
         byteArray = selfieImage.getResult();
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPurgeable = true;
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = 2;
+            options.inDither = true;
+            image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
+            image = Bitmap.createScaledBitmap(image, selfieImage.getWidth(), selfieImage.getHeight(), true);
+            original = image;
 
-        image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-
-        LayoutParams params = new LayoutParams(image.getWidth(), image.getHeight());
-        // mGPUImageView.setLayoutParams(params);
-       // image = Bitmap.createScaledBitmap(image, selfieImage.getWidth(), selfieImage.getHeight(), false);
+        } catch (OutOfMemoryError e) {
+            Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
+        } catch (NullPointerException e) {
+            Toast.makeText(this, "Sorry, image error null ", Toast.LENGTH_LONG).show();
+        }
         mGPUImageView.setImage(image);
     }
 
     private void initListeners() {
-        doneButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                okButtonClick();
-            }
-        });
+
         nextButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,6 +157,16 @@ public class AddFilterActivity extends Activity {
 
     private void gotoFeed() {
         new AsyncTask<Void, Void, Intent>() {
+            ProgressDialog dialog;
+
+            protected void onPreExecute() {
+
+                dialog = ProgressDialog.show(AddFilterActivity.this, "", "");
+
+                dialog.setContentView(new ProgressBar(AddFilterActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
+            };
+
             @Override
             protected Intent doInBackground(Void... params) {
                 Intent intent = getShareActivityIntent();
@@ -138,7 +174,12 @@ public class AddFilterActivity extends Activity {
             }
 
             protected void onPostExecute(Intent result) {
+                if (dialog != null) {
+                    dialog.cancel();
+
+                }
                 startActivity(result);
+
             };
         }.execute();
 
@@ -146,42 +187,42 @@ public class AddFilterActivity extends Activity {
 
     private Intent getShareActivityIntent() {
         Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
+        Bitmap res = null;
+        try {
+            createImage();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPurgeable = true;
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = 2;
+            options.inDither = true;
+            res = Bitmap.createBitmap(image);
+            res.compress(Bitmap.CompressFormat.PNG, 0, out);
+            res = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()), null, options);
 
-        createImage();
-        selfieImage.createBytes(image);
+            // image = Bitmap.createBitmap(decoded);
+            // decoded.recycle();
+        } catch (OutOfMemoryError e) {
+            Log.d("tag", "OutOfMemoryError getShareActivityIntent");
+        }
+        selfieImage.createBytesFilter(res);
         DatabaseManager.getInstance().updateSelfie(selfieImage);
         intent.putExtra("id", selfieImage.getId());
         return intent;
     }
 
-    private void okButtonClick() {
-        nextVisible();
-    }
-
-    private void nextVisible() {
-        nextButton.setVisibility(View.VISIBLE);
-        doneButton.setVisibility(View.INVISIBLE);
-
-    }
-
     private void createImage() {
-        GPUImage gpuImage = new GPUImage(this);
-        gpuImage.setImage(image);
-        gpuImage.setFilter(mFilter);
-        image = gpuImage.getBitmapWithFilterApplied();
+        if (mFilter != null) {
+            gpuImage.setImage(original);
+            gpuImage.setFilter(mFilter);
+            image = gpuImage.getBitmapWithFilterApplied();
+        }
 
-    }
-
-    private void okVisible() {
-        nextButton.setVisibility(View.INVISIBLE);
-        doneButton.setVisibility(View.VISIBLE);
     }
 
     private void initMenu() {
         menuListCurrent = new ArrayList<MenuItem>();
-
         adapterCurrent = new BottomMenuAdapter(this, R.layout.bottom_item, menuListCurrent);
-
         horizontalListViewCurrent.setAdapter(adapterCurrent);
         try {
             initOnItemClick();
@@ -198,7 +239,6 @@ public class AddFilterActivity extends Activity {
                 GPUImageFilter filter = GPUImageFilterTools.createFilterForType(getApplicationContext(), filters.getFilter(id));
                 switchFilterTo(filter);
                 mGPUImageView.requestRender();
-                okVisible();
             }
         });
 
@@ -529,13 +569,14 @@ public class AddFilterActivity extends Activity {
         if (mFilter == null || (filter != null && !mFilter.getClass().equals(filter.getClass()))) {
             mFilter = filter;
             mGPUImageView.setFilter(mFilter);
-            mFilterAdjuster = new FilterAdjuster(mFilter);
-            // findViewById(R.id.seekBar).setVisibility(mFilterAdjuster.canAdjust()
-            // ? View.VISIBLE : View.GONE);
+
+        } else {
+
         }
     }
 
     private void initFilters() {
+        // filters.addFilter("No filter", FilterType.NONE);
         filters.addFilter("Contrast", FilterType.CONTRAST);
         filters.addFilter("Gamma", FilterType.GAMMA);
         filters.addFilter("Sepia", FilterType.SEPIA);
@@ -547,16 +588,45 @@ public class AddFilterActivity extends Activity {
         filters.addFilter("Monochrome", FilterType.MONOCHROME);
         filters.addFilter("Vignette", FilterType.VIGNETTE);
         filters.addFilter("ToneCurve", FilterType.TONE_CURVE);
-        filters.addFilter("Lookup (Amatorka)", FilterType.LOOKUP_AMATORKA);
+
         filters.addFilter("Gaussian Blur", FilterType.GAUSSIAN_BLUR);
         filters.addFilter("Dilation", FilterType.DILATION);
         filters.addFilter("Kuwahara", FilterType.KUWAHARA);
         filters.addFilter("Toon", FilterType.TOON);
         filters.addFilter("Haze", FilterType.HAZE);
-        for (String filter : filters.names) {
-            menuListCurrent.add(new MenuItem(FilterConstants.F1, filter, R.drawable.bg_img_size));
+        for (int i = 0; i < filters.names.size(); i++) {
+            // for (String filter : filters.names) {
+            menuListCurrent.add(new MenuItem(FilterConstants.F1, filters.names.get(i), filter(image, i)));
         }
         adapterCurrent.notifyDataSetChanged();
 
     }
+
+    class ImageLocation {
+        Bitmap bitmap;
+        Integer location;
+
+        public ImageLocation(Bitmap bitmap, Integer location) {
+            super();
+            this.bitmap = bitmap;
+            this.location = location;
+        }
+
+    }
+
+    private Bitmap filter(Bitmap image, int location) {
+
+        mFilter = GPUImageFilterTools.createFilterForType(getApplicationContext(), filters.filters.get(location));
+        image = Bitmap.createScaledBitmap(image, 150, 150, false);
+        if (mFilter != null) {
+            gpuImage.deleteImage();
+            gpuImage.setFilter(mFilter);
+            gpuImage.setImage(image);
+            image = gpuImage.getBitmapWithFilterApplied();
+            mFilter = null;
+            return image;
+        }
+        return image;
+    }
+
 }

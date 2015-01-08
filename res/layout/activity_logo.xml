@@ -8,14 +8,14 @@
     tools:context="com.bigdropinc.selfieking.activities.login.LogoActivity" >
 
     <TextView
+        style="@style/customEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Selfie"
-        android:textColor="@color/white"
+        android:text="@string/selfie"
         android:textSize="35sp" />
 
 </RelativeLayout>

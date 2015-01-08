@@ -29,7 +29,7 @@
             android:id="@+id/button_two"
             android:layout_weight="1"
             android:button="@null"
-            android:gravity="center"
+            android:gravity="center" 
             android:minHeight="60dp"
             android:minWidth="30dp"
             android:text="@string/notifications"

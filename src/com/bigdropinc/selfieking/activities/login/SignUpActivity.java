@@ -2,6 +2,7 @@ package com.bigdropinc.selfieking.activities.login;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.Loader;
 import android.graphics.Typeface;
@@ -10,9 +11,11 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
@@ -38,6 +41,7 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
     private CommandLoader loader;
     private String LOG_TAG = "tag";
     private User user;
+    private ProgressDialog dialog;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -50,6 +54,9 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode code) {
+        if (dialog != null) {
+            dialog.cancel();
+        }
         if (code.isSuccess()) {
             signUp(loader);
         } else {
@@ -99,10 +106,6 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
         repeatpassEditText = (EditText) findViewById(R.id.editTextSigUpRepeatPass);
         signUpButton = (Button) findViewById(R.id.btnSignUp);
         closeButton = (Button) findViewById(R.id.signUpCloseButton);
-        // Typeface typeFace = Typeface.createFromAsset(getAssets(),
-        // "font/Mark Simonson - Proxima Nova Semibold Italic.otf");
-        // loginEditText.setTypeface(typeFace);;
-
     }
 
     private void initListeners() {
@@ -159,19 +162,12 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
     }
 
     private void registr() {
+        dialog = ProgressDialog.show(SignUpActivity.this, "", "");
+        dialog.setContentView(new ProgressBar(SignUpActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
         Bundle bundle = new Bundle();
         bundle.putParcelable("command", new Command(Command.REGISTR, user));
         getLoaderManager().initLoader(LOADER_ID, bundle, SignUpActivity.this).forceLoad();
-
-        // try {
-        // code = loader.registrTask.get();
-        // } catch (InterruptedException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // } catch (ExecutionException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
 
     }
 

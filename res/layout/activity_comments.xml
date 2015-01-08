@@ -1,35 +1,74 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.social.CommentsActivity" >
-    <LinearLayout
-        android:id="@+id/commentLayout"
 
+    <RelativeLayout
+        android:id="@+id/shareTopL"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/camera_top"
+        android:padding="@dimen/topButtonPadding" >
+
+        <Button
+            android:id="@+id/commentsBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/icon_back" />
+
+        <TextView
+            style="@style/customEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="Comments" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/commentsListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         android:descendantFocusability="beforeDescendants"
+        android:divider="@drawable/divider_02"
+        android:layout_marginBottom="50dp"
+        android:layout_below="@id/shareTopL" >
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/commentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/commentsListView"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/input"
         android:orientation="horizontal" >
 
         <EditText
             android:id="@+id/commentEditText"
+            style="@style/customEditText"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:hint="Type comment here"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_weight="4"
-            android:focusable="true" />
+            android:focusable="true"
+            android:layout_margin="3dp" />
 
         <Button
             android:id="@+id/commentButton"
+            style="@style/customButton"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:text="SEND" />
     </LinearLayout>
-    <ListView
-        android:id="@+id/commentsListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </ListView>
 
-
-</LinearLayout>
+</RelativeLayout>

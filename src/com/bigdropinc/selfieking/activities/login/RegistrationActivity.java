@@ -4,20 +4,24 @@ import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.activities.editimages.CropActivity;
 import com.bigdropinc.selfieking.activities.editimages.SelectImageActivity;
 import com.bigdropinc.selfieking.controller.InternetChecker;
 import com.bigdropinc.selfieking.controller.loaders.Command;
@@ -26,6 +30,7 @@ import com.bigdropinc.selfieking.controller.managers.login.LoginManager;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
+import com.facebook.AppEventsLogger;
 import com.facebook.Request;
 import com.facebook.Request.GraphUserCallback;
 import com.facebook.Response;
@@ -47,6 +52,36 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
     private Button signFBButton;
     private CommandLoader loader;
     private User user;
+    private ProgressDialog dialog;
+
+    // private SocialAuthAdapter adapter = new SocialAuthAdapter(new
+    // DialogListener() {
+    //
+    // @Override
+    // public void onError(SocialAuthError e) {
+    // Log.d("tag", e.getMessage());
+    //
+    // }
+    //
+    // @Override
+    // public void onComplete(Bundle values) {
+    // user = new User("fb");
+    // user.setId(1);
+    // loginManager.signIn(user.getId(), user.getToken());
+    // goSelectImage();
+    // }
+    //
+    // @Override
+    // public void onCancel() {
+    // // TODO Auto-generated method stub
+    //
+    // }
+    //
+    // @Override
+    // public void onBack() {
+    // // TODO Auto-generated method stub
+    // }
+    // });
 
     @Override
     public void onClick(View v) {
@@ -55,6 +90,7 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
             signIn();
             break;
         case R.id.btnRegSignFB:
+            // adapter.authorize(this, Provider.FACEBOOK);
             performFacebookLogin();
             break;
         case R.id.btnRegResetPass:
@@ -80,6 +116,9 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
 
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode statusCode) {
+        if (dialog != null) {
+            dialog.cancel();
+        }
         if (statusCode.isSuccess()) {
             this.user = ((CommandLoader) loader).getUser();
             if (user != null && user.getToken() != null) {
@@ -88,7 +127,9 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
                 Toast.makeText(RegistrationActivity.this, "Login error", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(RegistrationActivity.this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_LONG).show();
+            String er = statusCode.getError().get(0).errorMessage;
+            Log.d("tag", "statusCode.getError().get(0).errorMessage " + er);
+            Toast.makeText(RegistrationActivity.this, er, Toast.LENGTH_LONG).show();
         }
         getLoaderManager().destroyLoader(loader.getId());
     }
@@ -128,6 +169,15 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
             this.finish();
         }
         super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this);
     }
 
     private void goSelectImage() {
@@ -174,7 +224,14 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
         // progressDialog = new ProgressDialog(this);
         // progressDialog.show();
         hideSoftKeyboard(this);
-        if (InternetChecker.isNetworkConnected()) {
+        if (LoginManagerImpl.getInstance().check()) {
+            user = DatabaseManager.getInstance().findUser(LoginManagerImpl.getInstance().getToken());
+            goSelectImage();
+
+        } else if (InternetChecker.isNetworkConnected()) {
+            dialog = ProgressDialog.show(RegistrationActivity.this, "", "");
+            dialog.setContentView(new ProgressBar(RegistrationActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+
             String email = loginEditText.getText().toString();
             User user = new User(email, passEditText.getText().toString());
             Bundle bundle = new Bundle();
@@ -232,13 +289,15 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
                                 org.json.JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
                                 String email = graphResponse.optString("email");
                                 String token = graphResponse.optString("token");
-                                // String id = graphResponse.optString("id");
+                                String id = graphResponse.optString("id");
                                 // String facebookName = user.getUsername();
                                 if (email == null || email.length() < 0) {
                                     return;
                                 } else {
-                                    loginManager.signIn(user.getName(), token);
-                                    signIn();
+                                    RegistrationActivity.this.user = new User("fb");
+                                    RegistrationActivity.this.user.setId(1);
+                                    RegistrationActivity.this.user.setToken(token);
+                                    goSelectImage();
                                 }
                             }
                         }

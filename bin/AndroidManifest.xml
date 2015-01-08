@@ -1,155 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.bigdropinc.selfieking"
-    android:versionCode="2"
-    android:versionName="1.0" >
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="8" android:versionName="1.0" package="com.bigdropinc.selfieking">
 
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="22" />
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="23"/>
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-feature android:name="android.hardware.camera.flashlight" />
+    <uses-feature android:name="android.hardware.camera"/>
+    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera.flashlight"/>
 
-    <uses-permission android:name="com.android.vending.BILLING" />
+    <!-- <uses-permission android:name="com.android.vending.BILLING" /> -->
 
-    <application
-        android:name=".MyApplication"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/MyAppTheme" >
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+    <application android:allowBackup="true" android:hardwareAccelerated="true" android:icon="@drawable/ic_launcher" android:label="@string/app_name" android:largeHeap="true" android:name="com.bigdropinc.selfieking.MyApplication" android:theme="@style/MyAppTheme">
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
-        <activity
-            android:name=".activities.login.LogoActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:label="@string/app_name" android:name="com.bigdropinc.selfieking.activities.login.LogoActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.login.RegistrationActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:launchMode="singleTask" android:name="com.bigdropinc.selfieking.activities.login.RegistrationActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity
-            android:name=".activities.login.SignUpActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:name="com.bigdropinc.selfieking.activities.login.SignUpActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity
-            android:name=".activities.login.ResetPassActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:name="com.bigdropinc.selfieking.activities.login.ResetPassActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity
-            android:name=".activities.editimages.MakeSelfieActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:launchMode="singleTop" android:name="com.bigdropinc.selfieking.activities.editimages.MakeSelfieActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity
-            android:name=".activities.profile.ProfileFragment"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:name="com.bigdropinc.selfieking.activities.profile.ProfileFragment" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity
-            android:name=".activities.profile.ProfileEditActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:name="com.bigdropinc.selfieking.activities.profile.ProfileEditActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity
-            android:name=".activities.profile.ChangePasswordActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        <activity android:name="com.bigdropinc.selfieking.activities.profile.ChangePasswordActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
         </activity>
-        <activity
-            android:name=".cropLibrary.CropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:name="com.bigdropinc.selfieking.cropLibrary.CropActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity
-            android:name=".activities.editimages.SelectImageActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:launchMode="singleTop" android:name="com.bigdropinc.selfieking.activities.editimages.SelectImageActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity
-            android:name=".activities.FeedActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
+        <activity android:name="com.bigdropinc.selfieking.activities.FeedActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar" android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
-        <activity
-            android:name=".activities.social.MyActionBarActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
+        <activity android:launchMode="singleTop" android:name="com.bigdropinc.selfieking.activities.social.MyActionBarActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar" android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
-        <activity
-            android:name="com.facebook.LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:name="com.facebook.LoginActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity android:name="com.android.camera.action.CROP" />
-        <activity
-            android:name=".activities.editimages.CropActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:name="com.android.camera.action.CROP"/>
+        <activity android:launchMode="singleTop" android:name="com.bigdropinc.selfieking.activities.editimages.CropActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity
-            android:name=".activities.editimages.CutActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:launchMode="singleTop" android:name="com.bigdropinc.selfieking.activities.editimages.CutActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity
-            android:name=".activities.social.ContestFragment"
-            android:label="@string/title_activity_content_fragment" >
+        <activity android:label="@string/title_activity_content_fragment" android:name="com.bigdropinc.selfieking.activities.social.ContestFragment">
         </activity>
-        <activity
-            android:name=".activities.editimages.ShareActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:configChanges="keyboardHidden|orientation" android:name="com.bigdropinc.selfieking.activities.editimages.ShareActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-        <activity
-            android:name=".activities.social.OneSelfieActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar"
-            android:windowSoftInputMode="stateHidden|adjustPan" >
+        <activity android:name="com.bigdropinc.selfieking.activities.social.OneSelfieActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar" android:windowSoftInputMode="stateHidden|adjustPan">
         </activity>
-        <activity
-            android:name=".activities.social.CommentsActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:name="com.bigdropinc.selfieking.activities.social.CommentsActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
 
-        <receiver
-            android:name=".receiver.ConnectionChangeReceiver"
-            android:label="NetworkConnection" >
+        <receiver android:label="NetworkConnection" android:name="com.bigdropinc.selfieking.receiver.ConnectionChangeReceiver">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="com.bigdropinc.selfieking.activities.editimages.AddFilterActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" >
+        <activity android:name="com.bigdropinc.selfieking.activities.editimages.AddFilterActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
+        <activity android:name="com.twitter.android.PostActivity">
+        </activity>
+
+        <provider android:authorities="com.facebook.app.NativeAppCallContentProvider799554853444316" android:exported="true" android:name="com.facebook.NativeAppCallContentProvider"/>
+
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="9600793ec266638c25e60da1cdff7a7d24300b1d"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.PhoneNumberActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.ConfirmationCodeActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTop" android:name="com.digits.sdk.android.LoginCodeActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.TwitterLoginActivity" android:taskAffinity="com.digits.sdk.android"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.PhoneNumberActionBarActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.ConfirmationCodeActionBarActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTop" android:name="com.digits.sdk.android.LoginCodeActionBarActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.TwitterLoginActionBarActivity" android:taskAffinity="com.digits.sdk.android"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.twitter.sdk.android.core.identity.OAuthActivity"/>
+        <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:icon="@drawable/tw__transparent" android:label="@string/kit_name" android:name="com.twitter.sdk.android.core.identity.ShareEmailActivity"/>
     </application>
 
 </manifest>

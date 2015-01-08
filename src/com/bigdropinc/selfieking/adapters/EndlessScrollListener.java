@@ -54,7 +54,7 @@ public abstract class EndlessScrollListener implements OnScrollListener {
 
     public void incremetnPage() {
         currentPage += VISIBLETHRESHOLD - 1;
-        Log.d("tag", "incremetnPage currentPage " + currentPage);
+       
     }
 
     @SuppressLint("NewApi")

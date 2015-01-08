@@ -116,7 +116,7 @@ public class FileManager {
         return inSampleSize;
     }
 
-    public Bitmap createImageFile(EditImage selfieImage) {
+    private Bitmap createImageFile(EditImage selfieImage) {
         String file_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Images";
         File dir = new File(file_path);
         if (!dir.exists()) {
@@ -126,7 +126,8 @@ public class FileManager {
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(file);
-            selfieImage.getSelfieWithOutBackground().compress(Bitmap.CompressFormat.PNG, 10, fOut);
+            selfieImage.getSelfieWithOutBackground().compress(Bitmap.CompressFormat.PNG, 0, fOut);
+            selfieImage.getSelfieWithOutBackground().recycle();
             fOut.flush();
             fOut.close();
         } catch (FileNotFoundException e) {
@@ -179,7 +180,7 @@ public class FileManager {
         }
     }
 
-    public static Uri getUriFromiImage(Bitmap inImage) {
+    private static Uri getUriFromiImage(Bitmap inImage) {
         Uri uri;
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);

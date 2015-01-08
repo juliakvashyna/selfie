@@ -6,19 +6,30 @@
     android:descendantFocusability="beforeDescendants"
     android:orientation="vertical" >
 
-    <RelativeLayout 
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" >
 
         <RelativeLayout
             android:id="@+id/layoutTop"
             android:layout_width="match_parent"
-            android:layout_height="400dp" >
+            android:layout_height="wrap_content" >
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/fimage"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="@dimen/sizeImageFeed"
                 android:scaleType="centerCrop" >
             </ImageView>
         </RelativeLayout>
@@ -29,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_below="@id/layoutTop"
-            android:layout_marginTop="28dp" >
+            android:layout_marginTop="15dp" >
 
             <RelativeLayout
                 android:id="@+id/lname"
@@ -38,64 +49,55 @@
 
                 <TextView
                     android:id="@+id/fName"
-                    style="@style/customEditText"
+                    style="@style/customTextViewRozyLightBig"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="70dp" />
+                    android:layout_marginLeft="60dp"
+                    android:padding="7dp" />
+
+                <TextView
+                    android:id="@+id/fdescription"
+                    style="@style/customTextViewRozyLighr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/fName"
+                    android:padding="5dp"
+                    android:visibility="gone" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_gravity="right"
-                    android:orientation="horizontal" >
+                    android:layout_gravity="end"
+                    android:orientation="horizontal"
+                    android:padding="2dp" >
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:contentDescription="time" />
+                        android:layout_gravity="center_vertical"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:src="@drawable/icon_clock" />
 
                     <TextView
                         android:id="@+id/ftime"
-                        style="@style/customEditText"
+                        style="@style/customTextViewRozyLighr"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
                 </LinearLayout>
             </RelativeLayout>
-
-            <TextView
-                android:id="@+id/fdescription"
-                style="@style/customEditText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lname"
-                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/fdescription"
-                android:orientation="horizontal" >
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingRight="5dp" >
-
-                    <TextView
-                        android:id="@+id/likes"
-                        style="@style/customEditText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:paddingRight="2dp" />
-
-                    <TextView
-                        style="@style/customEditText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:text="likes" />
-                </LinearLayout>
+                android:layout_below="@id/lname"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp" >
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -103,18 +105,40 @@
                     android:orientation="horizontal" >
 
                     <TextView
-                        android:id="@+id/comments"
-                        style="@style/customEditText"
+                        android:id="@+id/likes"
+                        style="@style/customTextViewRozyLighr"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
+                        android:paddingLeft="0dp"
+                        android:paddingRight="2dp" />
+
+                    <TextView
+                        style="@style/customTextViewRozyLighr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/likes" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:id="@+id/comments"
+                        style="@style/customTextViewRozyLighr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="0dp"
                         android:paddingRight="2dp" />
 
                     <TextView
                         android:id="@+id/commentsListTextView"
-                        style="@style/customEditText"
+                        style="@style/customTextViewRozyLighr"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="comments" />
+                        android:text="@string/comments" />
                 </LinearLayout>
 
                 <RelativeLayout
@@ -125,41 +149,51 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_alignParentRight="true"
-                        android:layout_margin="3dp"
                         android:orientation="horizontal" >
 
                         <Button
                             android:id="@+id/flike"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/postButtonsPadding"
+                            android:layout_marginRight="@dimen/postButtonsPadding"
                             android:background="@drawable/post_like_selector" />
 
                         <Button
                             android:id="@+id/fcontent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/postButtonsPadding"
+                            android:layout_marginRight="@dimen/postButtonsPadding"
                             android:background="@drawable/post_content_selector" />
 
                         <Button
                             android:id="@+id/fcomment"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/postButtonsPadding"
+                            android:layout_marginRight="@dimen/postButtonsPadding"
                             android:background="@drawable/post_comment_selector" />
                     </LinearLayout>
                 </RelativeLayout>
             </LinearLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/lname"
+                android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/divider_02" />
         </RelativeLayout>
 
         <com.bigdropinc.selfieking.views.RoundedImageView
             android:id="@+id/favatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/sizeProfileIconFeed"
+            android:layout_height="@dimen/sizeProfileIconFeed"
             android:layout_above="@id/layoutBottom"
-            android:layout_marginBottom="-30dp"
-            android:layout_marginLeft="10dp" >
+            android:layout_marginBottom="@dimen/sizeProfileIconHalfFeed"
+            android:layout_marginLeft="10dp"
+            android:padding="5dp" >
         </com.bigdropinc.selfieking.views.RoundedImageView>
     </RelativeLayout>
 

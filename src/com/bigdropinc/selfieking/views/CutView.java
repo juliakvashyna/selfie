@@ -64,12 +64,13 @@ public class CutView extends ImageView implements OnTouchListener {
         this.setOnTouchListener(this);
         points = new ArrayList<Point>();
         bfirstpoint = false;
+
     }
 
     private void initPaint() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(2);
+        paint.setStrokeWidth(5);
         paint.setColor(Color.WHITE);
     }
 
@@ -95,7 +96,7 @@ public class CutView extends ImageView implements OnTouchListener {
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(2);
+        paint.setStrokeWidth(5);
         paint.setColor(Color.WHITE);
 
         this.setOnTouchListener(this);
@@ -111,9 +112,17 @@ public class CutView extends ImageView implements OnTouchListener {
     @SuppressLint("DrawAllocation")
     public void onDraw(Canvas canvas) {
         if (bitmap != null) {
-            bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+            if (width > 0 && height > 0) {
+                try {
+                    bitmap = Bitmap.createScaledBitmap(bitmap, width, height, true);
+                } catch (OutOfMemoryError error) {
+                    Log.d("tag", "OutOfMemoryError onDraw");
+                }
+            }
+
             canvas.drawBitmap(bitmap, 0, 0, null);
         }
+
         path = new Path();
         boolean first = true;
 

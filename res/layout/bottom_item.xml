@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/mimage"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/sizeImageFeedSmall"
+        android:layout_height="@dimen/sizeImageFeedSmall"
         android:layout_gravity="center"
         android:scaleType="centerCrop" >
     </ImageView>

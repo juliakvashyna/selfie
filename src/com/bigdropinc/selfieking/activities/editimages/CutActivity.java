@@ -1,9 +1,11 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,16 +13,22 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.customs.MyProgressDialog;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.bigdropinc.selfieking.views.CutView;
 import com.bigdropinc.selfieking.views.Point;
@@ -32,11 +40,14 @@ public class CutActivity extends Activity {
     private Bitmap image;
     private Bitmap original;
     public static CutView mainImageView;
+    private ProgressDialog dialog;
     private String TAG = "tag";
     private Button cutButton;
     private Button nextButton;
+    private Button backButton;
     private Button clearButton;
     private EditImage selfieImage;
+    private boolean isCrop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,35 +58,36 @@ public class CutActivity extends Activity {
         initListeners();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (dialog != null)
+            dialog.cancel();
+    }
+
     private void initViews() {
         mainImageView = (CutView) findViewById(R.id.mainImage);
         cutButton = (Button) findViewById(R.id.cut);
         clearButton = (Button) findViewById(R.id.clear);
         nextButton = (Button) findViewById(R.id.next);
+        backButton = (Button) findViewById(R.id.cutBack);
     }
 
     private void initImage() {
         if (getIntent() != null) {
-
             selfieImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
             byte[] byteArray = selfieImage.getResult();
-            w = getIntent().getIntExtra("w", 0);
+            w = getWindowManager().getDefaultDisplay().getWidth();
+            // w = getIntent().getIntExtra("w", 0);
             h = getIntent().getIntExtra("h", 0);
-            Boolean camera = getIntent().getExtras().getBoolean("camera");
             if (byteArray != null) {
-                image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                if (getIntent().getExtras().containsKey("camera")) {
-                    if (camera) {
-                        image = rotateBitmap(image, -90);
-                    } else {
-                        image = rotateBitmapSimple(image, 90);
-                    }
+                try {
+                    image = getImage(byteArray);
+                    rotating();
+                } catch (OutOfMemoryError e) {
+                    Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
                 }
-            }
-            if (w > 0 && h > 0 && image != null) {
-                image = Bitmap.createScaledBitmap(image, w, h, true);
-            } else {
-                Log.d("tag", "CutActivity initImage image, w, h null");
+
             }
             original = image;
             mainImageView.setMyWidth(w);
@@ -86,11 +98,39 @@ public class CutActivity extends Activity {
         }
     }
 
+    private Bitmap getImage(byte[] byteArray) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPurgeable = true;
+        options.inJustDecodeBounds = false;
+        options.inDither = true;
+        // options.inSampleSize = 2;
+        image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
+        if (w > 0 && h > 0)
+            return Bitmap.createScaledBitmap(image, w, h, true);
+        return image;
+
+    }
+
+    private void rotating() {
+        Boolean rotate = getIntent().getExtras().getBoolean("rotate");
+        if (getIntent().getExtras().containsKey("rotate")) {
+            if (!rotate) {
+                image = rotateBitmap(image, -90);
+            } else {
+                image = rotateBitmapSimple(image, 90);
+            }
+        }
+    }
+
     private void initListeners() {
         cutButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                cropping();
+                try {
+                    cropping();
+                } catch (OutOfMemoryError e) {
+                    Toast.makeText(CutActivity.this, "Sorry, image error ", Toast.LENGTH_LONG).show();
+                }
             }
 
         });
@@ -105,16 +145,33 @@ public class CutActivity extends Activity {
             public void onClick(View v) {
                 image = original;
                 mainImageView.setBitmap(image);
+
                 mainImageView.clear();
                 mainImageView.invalidate();
+                isCrop = false;
+            }
+        });
+        backButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+
             }
         });
     }
 
     private void cropping() {
+        isCrop = true;
         List<Point> points = mainImageView.getPoints();
         if (points.size() > 0) {
-            Bitmap resultingImage = Bitmap.createBitmap(w, h, image.getConfig());
+            Bitmap resultingImage;
+            if (w > 0 && h > 0)
+                resultingImage = Bitmap.createBitmap(w, h, image.getConfig());
+            else {
+                resultingImage = image.copy(image.getConfig(), true);
+
+            }
             Canvas canvas = new Canvas(resultingImage);
             Paint paint = new Paint();
             paint.setAntiAlias(true);
@@ -132,17 +189,25 @@ public class CutActivity extends Activity {
             mainImageView.invalidate();
         } else {
             Log.d(TAG, "points is null");
+            Toast.makeText(CutActivity.this, "Draw selfie ", Toast.LENGTH_LONG).show();
         }
 
     }
 
     private void gotoMain() {
-        Intent intent = new Intent(getApplicationContext(), MakeSelfieActivity.class);
-        EditImage selfieImage = getEditImage();
-        intent.putExtra("id", selfieImage.getId());
-        intent.putExtra("w", w);
-        intent.putExtra("h", h);
-        startActivity(intent);
+        if (isCrop) {
+            dialog = ProgressDialog.show(CutActivity.this, "", "");
+            dialog.setContentView(new ProgressBar(CutActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            Intent intent = new Intent(getApplicationContext(), MakeSelfieActivity.class);
+            EditImage selfieImage = getEditImage();
+            intent.putExtra("id", selfieImage.getId());
+            intent.putExtra("w", w);
+            intent.putExtra("h", h);
+            startActivity(intent);
+            dialog.cancel();
+        } else {
+            Toast.makeText(CutActivity.this, "Draw selfie and press cut button", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -152,10 +217,20 @@ public class CutActivity extends Activity {
      */
     private EditImage getEditImage() {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.PNG, 45, stream);
+
+        image.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        // image.recycle();
         byte[] byteArray = stream.toByteArray();
 
         selfieImage.setResult(byteArray);
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+        stream = null;
         DatabaseManager.getInstance().updateSelfie(selfieImage);
         return selfieImage;
     }

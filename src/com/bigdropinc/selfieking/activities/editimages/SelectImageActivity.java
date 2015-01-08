@@ -1,24 +1,26 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
@@ -47,19 +49,17 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     private CameraPreview mPreview;
     private Camera mCamera;
     private FrameLayout preview;
-    private int currentCameraId;
-
+    private int currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+    private int w;
+    private int h;
     private Boolean rotate;
+    int result;
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
         case R.id.photo:
-            if (mCamera != null && mPreview != null && mPreview.getHolder() != null) {
-                mPreview.getHolder().removeCallback(mPreview);
-                mCamera.setPreviewCallback(null);
-                mCamera.takePicture(null, null, mPicture);
-            }
+            takePicture();
             break;
         case R.id.cameraRotate:
             changeCamera();
@@ -75,6 +75,18 @@ public class SelectImageActivity extends Activity implements OnClickListener {
             break;
         default:
             break;
+        }
+    }
+
+    private void takePicture() {
+        try {
+            if (mCamera != null && mPreview != null && mPreview.getHolder() != null) {
+                mPreview.getHolder().removeCallback(mPreview);
+                mCamera.setPreviewCallback(null);
+                mCamera.takePicture(null, null, mPicture);
+            }
+        } catch (RuntimeException e) {
+
         }
     }
 
@@ -121,24 +133,10 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     private PictureCallback mPicture = new PictureCallback() {
         @Override
         public void onPictureTaken(final byte[] data, final Camera camera) {
-            String picturePath = saveToInternalSorage(data);
-            goToCutActivity(data, picturePath);
+            // rotate=true;
+            goToCropActivity(data);
         }
     };
-
-    private String saveToInternalSorage(byte[] data) {
-        File f = new File(Environment.getExternalStorageDirectory() + File.separator + "test.jpg");
-        try {
-            f.createNewFile();
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(data);
-
-            fo.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return f.getAbsolutePath();
-    }
 
     private void flash() {
         Camera.Parameters params = mCamera.getParameters();
@@ -155,14 +153,11 @@ public class SelectImageActivity extends Activity implements OnClickListener {
 
     private void initCamera() {
         mCamera = getCameraInstance();
-
         if (mCamera != null) {
-
             mPreview = new CameraPreview(this, mCamera);
             preview.removeAllViews();
             preview.addView(mPreview);
-            setBackOrientation();
-
+            setSizeOrientation();
         }
     }
 
@@ -237,10 +232,10 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     }
 
     private void setCurrentCameraId() {
-        if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK) {
-            currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-        } else {
+        if (currentCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        } else {
+            currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
         }
     }
 
@@ -259,7 +254,7 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     /**
      * Set right orientation of camera.
      */
-    private int setBackOrientation() {
+    private int setSizeOrientation() {
         Camera.CameraInfo info = new Camera.CameraInfo();
         Camera.getCameraInfo(currentCameraId, info);
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
@@ -280,7 +275,6 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         default:
             break;
         }
-        int result;
         if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             result = (info.orientation + degrees) % 360;
             result = (360 - result) % 360; // compensate the mirror
@@ -289,10 +283,8 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         }
         // STEP #2: Set the 'rotation' parameter
         Camera.Parameters params = mCamera.getParameters();
-        params.setRotation(result);
-
+        // mPreview.getLayoutParams().width = params.getPreviewSize().height;
         params.setFlashMode(Parameters.FLASH_MODE_OFF);
-
         mCamera.setParameters(params);
         return result;
     }
@@ -305,7 +297,7 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     private Camera getCameraInstance() {
         Camera c = null;
         try {
-            c = Camera.open(0);
+            c = Camera.open(currentCameraId);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -318,6 +310,12 @@ public class SelectImageActivity extends Activity implements OnClickListener {
         rotateCameraButton = (Button) findViewById(R.id.cameraRotate);
         flashButton = (Button) findViewById(R.id.cameraFlash);
         closeButton = (Button) findViewById(R.id.closeCamera);
+
+        RelativeLayout l = (RelativeLayout) findViewById(R.id.cameraBottomL);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        int h = getResources().getDimensionPixelSize(R.dimen.marginCameraBottom);
+        layoutParams.setMargins(0, h, 0, 0);
+        l.setLayoutParams(layoutParams);
         // selectedImageView = (ImageView) findViewById(R.id.selectedImage);
     }
 
@@ -330,32 +328,29 @@ public class SelectImageActivity extends Activity implements OnClickListener {
     }
 
     private void openGallery() {
+
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(i, RESULT_GALLERY);
     }
 
     private void save() {
+        rotate = false;
         Intent intent = new Intent(getApplicationContext(), CropActivity.class);
         intent.putExtra(EXTRA_IMAGE_URI, selectedImage);
-  
+
         startActivity(intent);
     }
 
-    private void goToCutActivity(byte[] data, String picturePath) {
-        Intent intent = new Intent(getApplicationContext(), CutActivity.class);
-        int w = mPreview.getWidth();
-        int h = mPreview.getHeight();
-
+    private void goToCropActivity(byte[] data) {
+        Intent intent = new Intent(getApplicationContext(), CropActivity.class);
         EditImage selfieImage = new EditImage();
         selfieImage.setResult(data);
         selfieImage = DatabaseManager.getInstance().addSelfie(selfieImage);
         intent.putExtra("id", selfieImage.getId());
-        intent.putExtra("w", w);
-        intent.putExtra("h", h);
-        if (rotate != null) {
-            intent.putExtra("camera", rotate);
-        }
+        w = getResources().getDimensionPixelSize(R.dimen.sizeImageFeed);
+        h = getResources().getDimensionPixelSize(R.dimen.sizeImageFeed);
+        intent.putExtra("rotate", rotate);
+      
         startActivity(intent);
     }
-
 }

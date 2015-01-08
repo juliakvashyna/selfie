@@ -9,7 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:padding="10dp" >
 
         <ImageButton
             android:id="@+id/profileBack"
@@ -24,19 +25,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:src="@drawable/edittool" />
+            android:src="@drawable/edit_selector" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="10dp"
         android:orientation="vertical" >
 
         <com.bigdropinc.selfieking.views.RoundedImageView
             android:id="@+id/avatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/sizeProfileIcon"
+            android:layout_height="@dimen/sizeProfileIcon"
             android:layout_gravity="center" />
     </LinearLayout>
 
@@ -55,18 +57,20 @@
         android:textSize="20sp" />
 
     <TextView
+        android:layout_margin="5dp"
         android:id="@+id/profileCountTextView"
         style="@style/customEditText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
+        android:background="@drawable/amount_bg"
+        android:gravity="center" />
 
     <GridView
         android:id="@+id/profileGridView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:horizontalSpacing="1dp"
-        android:numColumns="auto_fit"
+        android:numColumns="3"
         android:stretchMode="columnWidth"
         android:verticalSpacing="1dp" >
     </GridView>

@@ -1,12 +1,12 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.editimages.MakeSelfieActivity" >
 
     <RelativeLayout
+        android:id="@+id/rtop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/camera_top"
@@ -21,11 +21,12 @@
             android:background="@drawable/icon_back" />
 
         <TextView
+            style="@style/customTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="@string/croptool"
+            android:text="@string/backgroud"
             android:textSize="18sp" />
 
         <RelativeLayout
@@ -38,82 +39,48 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_next" />
-
-            <Button
-                android:id="@+id/btnMainOK"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/icon_done"
-                android:visibility="invisible" />
         </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/ri"
         android:layout_width="match_parent"
-        android:layout_height="400dp" >
+        android:layout_height="@dimen/sizeImageFeed"
+        android:layout_below="@id/rtop" >
 
         <ImageView
             android:id="@+id/backImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/back"
             android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/resultImage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:contentDescription="@string/back" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bottom_bar"
-        android:layout_weight="2"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/ri"
+        android:layout_marginTop="35dp"
         android:orientation="vertical" >
 
-        <LinearLayout
+        <com.devsmart.android.ui.HorizontalListView
+            android:id="@+id/bottomMenuCurrent"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
-            <com.devsmart.android.ui.HorizontalListView
-                android:id="@+id/bottomMenuCurrent"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="0dp"
-                android:visibility="visible" >
-            </com.devsmart.android.ui.HorizontalListView>
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/divider_01" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
-            <Button
-                android:id="@+id/selectBackground"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/icon_bg_active" />
-
-            <Button
-                android:id="@+id/selectFilter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:visibility="gone"
-                android:background="@drawable/icon_filter" />
-        </LinearLayout>
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center"
+            android:padding="0dp"
+            android:visibility="visible" >
+        </com.devsmart.android.ui.HorizontalListView>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

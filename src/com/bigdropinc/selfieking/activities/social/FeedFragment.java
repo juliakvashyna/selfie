@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -36,11 +35,11 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
 
     public static final int LIMIT = EndlessScrollListener.VISIBLETHRESHOLD;
     private static final int LOADER_ID = 5;
-    private static final String TAG = "tag";
+
     private ArrayList<SelfieImage> feedList = new ArrayList<SelfieImage>();
     private FeedAdapter feedAdapter;
     private GridView gridView;
-    private ListView listView;
+    ListView listView;
     private RelativeLayout title;
     private CommandLoader loader;
     private View rootView;
@@ -56,7 +55,7 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     private boolean end;
 
     @Override
-    public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
+    public Loader<StatusCode> onCreateLoader(int id, Bundle args) {  
         loader = new CommandLoader(getActivity(), args);
         return loader;
     }
@@ -65,7 +64,7 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode code) {
         if (code.isSuccess()) {
             more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
-            if (more.size() > 0) {
+             if (more.size() > 0) {
                 feedList.addAll(more);
                 feedAdapter.notifyDataSetChanged();
                 adapter.notifyDataSetChanged();
@@ -90,18 +89,12 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
         return rootView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-    }
-
     void updateGridView(int index, SelfieImage selfieImage) {
         if (feedList.size() > 0) {
             feedList.set(index, selfieImage);
             feedAdapter.notifyDataSetChanged();
-        }
-        else{
+            adapter.notifyDataSetChanged();
+        } else {
             Log.d("tag", "FeedFragment feedList.size()=0");
         }
     }

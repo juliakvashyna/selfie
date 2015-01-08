@@ -116,7 +116,7 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
     private void initMonths() {
         ViewPagerItem item;
         String m;
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i <= 11; i++) {
             initMonth(i);
             item = new ViewPagerItem(i);
             item.setMonthNumber(i);

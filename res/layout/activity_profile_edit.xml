@@ -3,28 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:orientation="vertical"
-        android:padding="10dp" >
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:padding="10dp" >
 
             <Button
                 android:id="@+id/editProfileBack"
-                style="@style/customButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/back" />
+                android:layout_centerVertical="true"
+                android:alpha="90"
+                android:background="@drawable/close_button_selector" />
+
+            <TextView
+                style="@style/customSignupEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/editProfile"
+                android:textSize="@dimen/signUpBigTextSize" />
 
             <Button
                 android:id="@+id/editProfileButton"
@@ -33,191 +41,302 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/edit" />
+                android:background="@drawable/done_selector" />
         </RelativeLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/divider_02" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp" >
+            android:orientation="vertical" >
 
             <TextView
+                style="@style/customSignupEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="General" />
+                android:layout_marginLeft="30dp"
+                android:padding="10dp"
+                android:text="@string/general" />
 
-            <LinearLayout
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_02" />
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
                 android:padding="10dp" >
 
-                <LinearLayout
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/icon_user" />
+
+                <EditText
+                    android:id="@+id/editPofileUserName"
+                    style="@style/customEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical" >
+                    android:layout_centerInParent="true"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="@string/userName"
+                    android:inputType="textEmailAddress" />
+            </RelativeLayout>
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="5dp" >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="profession" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-                        <EditText
-                            android:id="@+id/editPofileUserName"
-                            style="@style/customEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/transparent"
-                            android:hint="user name" />
-                    </LinearLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/icon_about" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:orientation="horizontal" >
+                <EditText
+                    android:id="@+id/editPofileProfession"
+                    style="@style/customEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="Proffession" />
+            </RelativeLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="5dp" >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
 
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:contentDescription="profession" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-                            <EditText
-                                android:id="@+id/editPofileProfession"
-                                style="@style/customEditText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:hint="proffession" />
-                        </LinearLayout>
-                    </LinearLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/icon_link" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal"
-                        android:orientation="horizontal" >
+                <EditText
+                    android:id="@+id/editPofileSite"
+                    style="@style/customEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="site"
+                    android:inputType="textUri" />
+            </RelativeLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="5dp" >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
 
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+            <TextView
+                style="@style/customSignupEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:padding="10dp"
+                android:text="@string/personalInfo" />
 
-                            <EditText
-                                android:id="@+id/editPofileSite"
-                                style="@style/customEditText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:hint="site"
-                                android:inputType="textUri" />
-                        </LinearLayout>
-                    </LinearLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_02" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Personal Info" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="5dp" >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/icon_mail" />
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="profession" />
+                <EditText
+                    android:id="@+id/editPofileEmail"
+                    style="@style/customEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="email" />
+            </RelativeLayout>
 
-                        <EditText
-                            android:id="@+id/editPofileEmail"
-                            style="@style/customEditText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:hint="email" />
-                    </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="5dp" >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="profession" />
+                <ImageView
+                    android:id="@+id/genL"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:contentDescription="gender"
+                    android:src="@drawable/icon_gender" />
 
-                        <Spinner
-                            android:layout_margin="5dp"
-                            android:id="@+id/editPofileMale"
-                            style="@style/customSpinner"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:popupBackground="@android:color/transparent"
-                            android:spinnerMode="dropdown" />
-                    </LinearLayout>
+                <Spinner
+                    android:id="@+id/editPofileMale"
+                    style="@style/customSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerInParent="true"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="5dp"
+                    android:layout_toRightOf="@id/genL"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:popupBackground="@android:color/transparent"
+                    android:spinnerMode="dropdown" />
+            </RelativeLayout>
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="5dp" >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
 
-                        <EditText
-                            android:id="@+id/editPofilePhone"
-                            style="@style/customEditText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:hint="Add phone number"
-                            android:inputType="phone" />
-                    </LinearLayout>
-                </LinearLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:gravity="center_vertical"
+                    android:src="@drawable/icon_phone" />
+
+                <EditText
+                    android:id="@+id/editPofilePhone"
+                    style="@style/customEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="Add phone number"
+                    android:inputType="phone" />
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:src="@drawable/icon_pass" />
 
                 <Button
                     android:id="@+id/changePassword"
-                    style="@style/customButton"
+                    style="@style/customEditButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:text="@string/changePassword" />
+            </RelativeLayout>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/divider_01" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="@dimen/iconMarginLeft"
+                    android:src="@drawable/icon_delete" />
+
+                <Button
+                    android:id="@+id/deleteAccount"
+                    style="@style/customEditButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/changePassword" />
-            </LinearLayout>
+                    android:layout_centerInParent="true"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:text="@string/deleteAccount" />
+            </RelativeLayout>
 
-            <Button
-                android:id="@+id/deleteAll"
-                style="@style/customButton"
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete posts" />
-
-            <Button
-                android:id="@+id/deleteAccount"
-                style="@style/customButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/deleteAccount" />
+                android:src="@drawable/divider_01" />
 
             <Button
                 android:id="@+id/signOut"

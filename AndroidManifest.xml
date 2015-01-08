@@ -1,35 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bigdropinc.selfieking"
-    android:versionCode="2"
+    android:versionCode="8"
     android:versionName="1.0" >
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="23" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature android:name="android.hardware.camera.flashlight" />
 
-    <uses-permission android:name="com.android.vending.BILLING" />
+    <!-- <uses-permission android:name="com.android.vending.BILLING" /> -->
 
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:theme="@style/MyAppTheme" >
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".activities.login.LogoActivity"
@@ -60,6 +67,7 @@
         </activity>
         <activity
             android:name=".activities.editimages.MakeSelfieActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
@@ -85,6 +93,7 @@
         </activity>
         <activity
             android:name=".activities.editimages.SelectImageActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
@@ -96,6 +105,7 @@
         </activity>
         <activity
             android:name=".activities.social.MyActionBarActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustPan" >
@@ -108,11 +118,13 @@
         <activity android:name="com.android.camera.action.CROP" />
         <activity
             android:name=".activities.editimages.CropActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
         <activity
             android:name=".activities.editimages.CutActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
@@ -122,6 +134,7 @@
         </activity>
         <activity
             android:name=".activities.editimages.ShareActivity"
+            android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
@@ -150,6 +163,17 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
+        <activity android:name="com.twitter.android.PostActivity" >
+        </activity>
+
+        <provider
+            android:name="com.facebook.NativeAppCallContentProvider"
+            android:authorities="com.facebook.app.NativeAppCallContentProvider799554853444316"
+            android:exported="true" />
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="9600793ec266638c25e60da1cdff7a7d24300b1d" />
     </application>
 
 </manifest>

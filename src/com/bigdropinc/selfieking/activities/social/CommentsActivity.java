@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -20,9 +21,11 @@ import com.bigdropinc.selfieking.adapters.CommentAdapter;
 import com.bigdropinc.selfieking.controller.InternetChecker;
 import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
+import com.bigdropinc.selfieking.controller.loaders.Constants;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.Comment;
+import com.bigdropinc.selfieking.model.selfie.CommentSelfieImage;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 
 public class CommentsActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode> {
@@ -35,8 +38,39 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
     private int postId;
     private EditText commentEditText;
     private Button sendCommentButton;
+    private Button backButton;
     private Context previousActivity;
     private int position;
+    private int LOADER_ID_COMMENT = 25;
+    private CommentSelfieImage selfieImage;
+
+    @Override
+    public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
+        commandLoader = new CommandLoader(this, args);
+        return commandLoader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<StatusCode> loader, StatusCode arg1) {
+        if (loader.getId() == LOADER_ID_COMMENT) {
+            selfieImage = ((CommandLoader) loader).getCommentSelfieImage();
+            commentsList = selfieImage.getComments();
+            // adapter = new CommentAdapter(getApplicationContext(),
+            // R.layout.comment_item, commentsList);
+            adapter.clear();
+            adapter.addAll(commentsList);
+            adapter.notifyDataSetChanged();
+        } else {
+            initComments(loader);
+
+        }
+        getLoaderManager().destroyLoader(loader.getId());
+    }
+
+    @Override
+    public void onLoaderReset(Loader<StatusCode> arg0) {
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +87,9 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
         } else {
             InternetChecker.showNotInternetError(this);
         }
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            position = getIntent().getExtras().getInt("index");
+        }
 
     }
 
@@ -61,29 +98,49 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
             @Override
             public void onClick(View v) {
                 comment();
-                
+                hideSoftKeyboard(CommentsActivity.this);
+            }
+        });
+        backButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
     }
 
     private void comment() {
-
         Comment comment = createComment();
+        Bundle bundle = getCommentBundle(comment);
+        getLoaderManager().initLoader(LOADER_ID_COMMENT, bundle, CommentsActivity.this).forceLoad();
+        commentEditText.getText().clear();
+        commentEditText.clearFocus();
 
-        Intent data = new Intent();
+    }
+
+    @Override
+    public void onBackPressed() {
+        settingResult();
+        super.onBackPressed();
+    }
+
+    private void settingResult() {
+        Bundle bundle2 = new Bundle();
+        bundle2.putParcelable("selfie", selfieImage);
+        Intent intent = new Intent();
+        intent.putExtra("selfie", selfieImage);
+        intent.putExtra("index", position);
+        setResult(35, intent);
+    }
+
+    private Bundle getCommentBundle(Comment comment) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable("comment", comment);
-        bundle.putInt("position", position);
-        data.putExtras(bundle);
-        CommentsActivity.this.setResult(10, data);
-        CommentsActivity.this.finish();
-        // if (previousActivity instanceof OneSelfieActivity) {
-        // ((OneSelfieActivity) ac.).comment(comment);
-        // } else if (previousActivity instanceof MyActionBarActivity) {
-        // ((MyActionBarActivity) getCallingActivity()).comment(comment,
-        // position);
-        // }
+        Command command = new Command(Command.ADD_COMMENT);
+        command.setComment(comment);
+        command.setSelfieImage(selfieImage);
+        bundle.putParcelable(Constants.COMMAND, command);
+        return bundle;
     }
 
     private Comment createComment() {
@@ -97,7 +154,7 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
         listView = (ListView) findViewById(R.id.commentsListView);
         commentEditText = (EditText) findViewById(R.id.commentEditText);
         sendCommentButton = (Button) findViewById(R.id.commentButton);
-
+        backButton = (Button) findViewById(R.id.commentsBack);
     }
 
     private void startLoader() {
@@ -113,32 +170,20 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
         selfieImage.setToken(LoginManagerImpl.getInstance().getToken());
         selfieImage.setId(postId);
         command.setSelfieImage(selfieImage);
+
         budle.putParcelable(Command.BUNDLE_NAME, command);
         return budle;
     }
 
-    @Override
-    public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
-        commandLoader = new CommandLoader(this, args);
-        return commandLoader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<StatusCode> loader, StatusCode arg1) {
-        initComments(loader);
-        getLoaderManager().destroyLoader(loader.getId());
-        // adapter.notifyDataSetChanged();
-    }
-
     private void initComments(Loader<StatusCode> loader) {
-        commentsList = ((CommandLoader) loader).getCommentSelfieImage().getComments();
+        selfieImage = ((CommandLoader) loader).getCommentSelfieImage();
+        commentsList = selfieImage.getComments();
         adapter = new CommentAdapter(getApplicationContext(), R.layout.comment_item, commentsList);
         listView.setAdapter(adapter);
     }
 
-    @Override
-    public void onLoaderReset(Loader<StatusCode> arg0) {
-
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
-
 }

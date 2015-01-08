@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,9 +85,9 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
             signOut();
             break;
 
-        case R.id.deleteAll:
-            deleteAll();
-            break;
+        // case R.id.deleteAll:
+        // deleteAll();
+        // break;
 
         default:
             break;
@@ -103,15 +104,15 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         initUser();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (!LoginManagerImpl.getInstance().check()) {
-
-            finish();
-        }
-
-    }
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+////        if (!LoginManagerImpl.getInstance().check()) {
+////
+////            finish();
+////        }
+//
+//    }
 
     private void checkingCode(Loader<StatusCode> loader, StatusCode statusCode) {
         switch (loader.getId()) {
@@ -166,7 +167,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         backButton = (Button) findViewById(R.id.editProfileBack);
         changePassword = (Button) findViewById(R.id.changePassword);
         deleteAccount = (Button) findViewById(R.id.deleteAccount);
-        deleteAll = (Button) findViewById(R.id.deleteAll);
+        // deleteAll = (Button) findViewById(R.id.deleteAll);
         signOut = (Button) findViewById(R.id.signOut);
 
     }
@@ -176,7 +177,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         backButton.setOnClickListener(this);
         changePassword.setOnClickListener(this);
         deleteAccount.setOnClickListener(this);
-        deleteAll.setOnClickListener(this);
+        // deleteAll.setOnClickListener(this);
         signOut.setOnClickListener(this);
 
     }
@@ -202,7 +203,9 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
 
     private void signOut() {
         LoginManagerImpl.getInstance().signOut();
-        this.finishActivity(35);
+       // this.finishActivity(35);
+        this.moveTaskToBack(true);
+       this.finish();
         Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
         startActivity(intent);
     }
@@ -258,5 +261,10 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         Command command = new Command(Command.EDIT_PROFILE, user);
         bundle.putParcelable(Command.BUNDLE_NAME, command);
         getLoaderManager().initLoader(LOADER_ID_EDIT, bundle, ProfileEditActivity.this).forceLoad();
+    }
+
+    private static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 }

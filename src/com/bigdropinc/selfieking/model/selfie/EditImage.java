@@ -1,18 +1,15 @@
 package com.bigdropinc.selfieking.model.selfie;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 
 import android.graphics.Bitmap;
-import android.graphics.BlurMaskFilter;
-import android.graphics.BlurMaskFilter.Blur;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.ColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.PorterDuffXfermode;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -25,17 +22,21 @@ public class EditImage {
     private int id;
     @DatabaseField(dataType = DataType.BYTE_ARRAY)
     byte[] imageBytes;
+    @DatabaseField(dataType = DataType.BYTE_ARRAY)
+    byte[] filterImageBytes;
+
     private Bitmap originalImage;
     private Bitmap croppedBitmap;
     private Bitmap background;
-    private Filter filter;
+    // private Filter filter;
     @DatabaseField
     private int width;
     @DatabaseField
     private int height;
     private boolean filterclick;
     private Matrix matrix;
-    private PorterDuffColorFilter colorFilter;
+
+    // private PorterDuffColorFilter colorFilter;
 
     public EditImage(int id) {
         this.id = id;
@@ -53,13 +54,21 @@ public class EditImage {
         this.id = id;
     }
 
-    public PorterDuffColorFilter getColorFilter() {
-        return colorFilter;
+    public byte[] getFilterImageBytes() {
+        return filterImageBytes;
     }
 
-    public void setColorFilter(PorterDuffColorFilter colorFilter) {
-        this.colorFilter = colorFilter;
+    public void setFilterImageBytes(byte[] filterImageBytes) {
+        this.filterImageBytes = filterImageBytes;
     }
+
+    // public PorterDuffColorFilter getColorFilter() {
+    // return colorFilter;
+    // }
+    //
+    // public void setColorFilter(PorterDuffColorFilter colorFilter) {
+    // this.colorFilter = colorFilter;
+    // }
 
     public Matrix getMatrix() {
         return matrix;
@@ -93,8 +102,39 @@ public class EditImage {
         this.height = (int) (height);
     }
 
+    @Override
+    public String toString() {
+        int len = 0;
+        if (imageBytes != null) {
+            len = imageBytes.length;
+        }
+        return "EditImage [id=" + id + ", imageBytes=" + len + ", originalImage=" + originalImage + ", croppedBitmap=" + croppedBitmap + ", background=" + background + ", width=" + width + ", height=" + height + ", filterclick=" + filterclick
+                + ", matrix=" + matrix + "]";
+    }
+
     private Bitmap doOverlayBackdround(Bitmap bitmap, boolean filterclick) {
-        return overlay(background, bitmap, filterclick);
+        Bitmap workingBitmap = Bitmap.createBitmap(background);
+        // Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888,
+        // true);
+        Bitmap mutableBitmap = workingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+        // Canvas canvas = new Canvas(bmOverlay);
+        // if (!filter)
+        // canvas.drawBitmap(bmp1, new Matrix(), null);
+        if (matrix != null)
+            canvas.drawBitmap(bitmap, matrix, null);
+        else
+            canvas.drawBitmap(bitmap, new Matrix(), null);
+        // ByteArrayOutputStream out = new ByteArrayOutputStream();
+        // BitmapFactory.Options options = new BitmapFactory.Options();
+        // options.inPurgeable = true;
+        // options.inJustDecodeBounds = false;
+        // options.inSampleSize = 2;
+        // options.inDither = true;
+        // mutableBitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
+        // mutableBitmap = BitmapFactory.decodeStream(new
+        // ByteArrayInputStream(out.toByteArray()), null, options);
+        return mutableBitmap;
     }
 
     public Bitmap getOriginalImage() {
@@ -114,8 +154,8 @@ public class EditImage {
     }
 
     public Bitmap getBackground() {
-        if (background != null && colorFilter != null) {
-            return createFilterImage(background, colorFilter);
+        if (background != null) {
+            return createFilterImage(background);
         }
         return background;
     }
@@ -132,56 +172,7 @@ public class EditImage {
         this.imageBytes = imageBytes;
     }
 
-    private Bitmap createFilterCropImage(Bitmap image) {
-        Canvas canvas = new Canvas();
-        Bitmap cropImage = doHighlightImage(image);
-        Bitmap result = Bitmap.createBitmap(cropImage.getWidth(), cropImage.getHeight(), Bitmap.Config.ARGB_8888);
-        canvas.setBitmap(result);
-        Paint paint = new Paint();
-        // paint.setFilterBitmap(false);
-        // Color
-
-        // paint.setColorFilter(colorFilter);
-        canvas.drawBitmap(cropImage, 0, 0, paint);
-        // paint.setColorFilter(null);
-
-        paint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
-        canvas.drawBitmap(cropImage, 0, 0, paint);
-        paint.setXfermode(null);
-        result = doHighlightImage(result);
-        return result;
-    }
-
-    public static Bitmap doHighlightImage(Bitmap src) {
-        // create new bitmap, which will be painted and becomes result image
-        Bitmap bmOut = Bitmap.createBitmap(src.getWidth() + 96, src.getHeight() + 96, Bitmap.Config.ARGB_8888);
-        // setup canvas for painting
-        Canvas canvas = new Canvas(bmOut);
-        // setup default color
-        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-
-        // create a blur paint for capturing alpha
-        Paint ptBlur = new Paint();
-        ptBlur.setMaskFilter(new BlurMaskFilter(15, Blur.NORMAL));
-        int[] offsetXY = new int[2];
-        // capture alpha into a bitmap
-        Bitmap bmAlpha = src.extractAlpha(ptBlur, offsetXY);
-        // create a color paint
-        Paint ptAlphaColor = new Paint();
-        ptAlphaColor.setColor(0xFFFFFFFF);
-        // paint color for captured alpha region (bitmap)
-        canvas.drawBitmap(bmAlpha, offsetXY[0], offsetXY[1], ptAlphaColor);
-        // free memory
-        bmAlpha.recycle();
-
-        // paint the image source
-        canvas.drawBitmap(src, 0, 0, null);
-
-        // return out final image
-        return bmOut;
-    }
-
-    public Bitmap createFilterImage(Bitmap image, ColorFilter colorFilter) {
+    public Bitmap createFilterImage(Bitmap image) {
         Canvas canvas = new Canvas();
 
         Bitmap result = Bitmap.createBitmap(image.getWidth(), image.getHeight(), Bitmap.Config.ARGB_8888);
@@ -190,7 +181,7 @@ public class EditImage {
         paint.setFilterBitmap(false);
         // Color
 
-        paint.setColorFilter(colorFilter);
+        // paint.setColorFilter(colorFilter);
         canvas.drawBitmap(image, 0, 0, paint);
         // paint.setColorFilter(null);
         // paint.setXfermode(new PorterDuffXfermode(Mode.SRC));
@@ -205,13 +196,13 @@ public class EditImage {
         } else if (width > 0 && height > 0 && width <= croppedBitmap.getWidth() && height <= croppedBitmap.getHeight()) {
             croppedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, width, height, matrix, false);
         }
-        if (croppedBitmap != null && colorFilter != null) {
-            bitmap = createFilterCropImage(croppedBitmap);
-        } else if (croppedBitmap != null) {
+        //
+        if (croppedBitmap != null) {
             bitmap = croppedBitmap;
-        } else if (colorFilter != null) {
-            bitmap = createFilterImage(originalImage, colorFilter);
         }
+        // else if (colorFilter != null) {
+        // bitmap = createFilterImage(originalImage, colorFilter);
+        // }
         return bitmap;
     }
 
@@ -220,12 +211,12 @@ public class EditImage {
         if (originalImage != null) {
             bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
             if (background != null && croppedBitmap != null) {
-                if (colorFilter != null) {
-                    bitmap = doOverlayBackdround(croppedBitmap, true);
-                    bitmap = createFilterImage(bitmap, colorFilter);
-                } else {
-                    bitmap = doOverlayBackdround(croppedBitmap, false);
-                }
+                // if (colorFilter != null) {
+                // bitmap = doOverlayBackdround(croppedBitmap, true);
+                // bitmap = createFilterImage(bitmap, colorFilter);
+                // } else {
+                bitmap = doOverlayBackdround(croppedBitmap, false);
+                // }
 
             } else {
                 bitmap = getSelfieWithOutBackground();
@@ -237,29 +228,45 @@ public class EditImage {
 
     public void createBytes(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        bitmap.compress(Bitmap.CompressFormat.PNG, 15, stream);
-
-        // byte[] byteArray = stream.toByteArray();
-
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        // bitmap.recycle();
         imageBytes = stream.toByteArray();
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+        stream = null;
+    }
+    public void createBytesFilter(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+        // bitmap.recycle();
+        filterImageBytes = stream.toByteArray();
+        try {
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+        stream = null;
     }
 
-    public Bitmap getSelfieWithBackgroundWithOutFilter() {
+    private Bitmap getSelfieWithBackgroundWithOutFilter() {
         Bitmap bitmap = null;
-
         bitmap = Bitmap.createScaledBitmap(originalImage, width, height, true);
         if (background != null && croppedBitmap != null) {
             bitmap = doOverlayBackdround(croppedBitmap, false);
-
         } else {
             bitmap = getSelfieWithOutBackgroundithOutFilter();
         }
-
         return bitmap;
     }
 
-    public Bitmap getSelfieWithOutBackgroundithOutFilter() {
+    private Bitmap getSelfieWithOutBackgroundithOutFilter() {
         Bitmap bitmap = croppedBitmap;
         if (matrix == null) {
             croppedBitmap = Bitmap.createScaledBitmap(croppedBitmap, width, height, true);
@@ -270,18 +277,6 @@ public class EditImage {
             bitmap = croppedBitmap;
         }
         return bitmap;
-    }
-
-    private Bitmap overlay(Bitmap bmp1, Bitmap bmp2, boolean filter) {
-        Bitmap bmOverlay = Bitmap.createScaledBitmap(bmp1, width, height, true);
-        Canvas canvas = new Canvas(bmOverlay);
-        // if (!filter)
-        // canvas.drawBitmap(bmp1, new Matrix(), null);
-        if (matrix != null)
-            canvas.drawBitmap(bmp2, matrix, null);
-        else
-            canvas.drawBitmap(bmp2, new Matrix(), null);
-        return bmOverlay;
     }
 
     public byte[] getResult() {

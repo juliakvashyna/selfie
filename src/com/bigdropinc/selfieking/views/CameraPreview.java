@@ -1,5 +1,8 @@
 package com.bigdropinc.selfieking.views;
 
+import java.io.IOException;
+import java.util.List;
+
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
@@ -8,15 +11,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
-import java.io.IOException;
-
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
-   
+
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private String tag = "tag";
     private Context context;
     private int currentCameraId = 0;
+    private boolean isPreviewRunning;
 
     public int getCurrentCameraId() {
         return currentCameraId;
@@ -90,35 +92,67 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        // Camera.Parameters parameters = mCamera.getParameters();
+        // List<Camera.Size> previewSizes =
+        // parameters.getSupportedPreviewSizes();
+        //
+        // // You need to choose the most appropriate previewSize for your app
+        // Camera.Size previewSize = previewSizes.get(0);// .... select one of
+        // // previewSizes here
+        //
+        // parameters.setPreviewSize(previewSize.width, previewSize.height);
+        // mCamera.setParameters(parameters);
+        // mCamera.startPreview();
+        Camera.Parameters mParameters = mCamera.getParameters();
+        Camera.Size bestSize = null;
 
-        // If your preview can change or rotate, take care of those events here.
-        // Make sure to stop the preview before resizing or reformatting it.
+        List<Camera.Size> sizeList = mCamera.getParameters().getSupportedPreviewSizes();
+        bestSize = sizeList.get(0);
+        
 
-        if (mHolder.getSurface() == null) {
-            // preview surface does not exist
-            return;
+        for (int i = 1; i < sizeList.size(); i++) {
+            if ((sizeList.get(i).width * sizeList.get(i).height) > (bestSize.width * bestSize.height)) {
+                bestSize = sizeList.get(i);
+            }
         }
 
-        // stop preview before making changes
-        try {
-            mCamera.stopPreview();
-        } catch (Exception e) {
-            e.printStackTrace();
-            // ignore: tried to stop a non-existent preview
-        }
+        mParameters.setPreviewSize(bestSize.width, bestSize.height);
+        mCamera.setParameters(mParameters);
+        mCamera.startPreview();
 
-        // set preview size and make any resize, rotate or
-        // reformatting changes here
-
-        // start preview with new settings
-        try {
-            mCamera.setPreviewDisplay(mHolder);
-            mCamera.startPreview();
-
-        } catch (Exception e) {
-            Log.d(tag, "Error starting camera preview: " + e.getMessage());
-        }
     }
+
+    // public void surfaceChanged(SurfaceHolder holder, int format, int w, int
+    // h) {
+    //
+    // // If your preview can change or rotate, take care of those events here.
+    // // Make sure to stop the preview before resizing or reformatting it.
+    //
+    // if (mHolder.getSurface() == null) {
+    // // preview surface does not exist
+    // return;
+    // }
+    //
+    // // stop preview before making changes
+    // try {
+    // mCamera.stopPreview();
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // // ignore: tried to stop a non-existent preview
+    // }
+    //
+    // // set preview size and make any resize, rotate or
+    // // reformatting changes here
+    //
+    // // start preview with new settings
+    // try {
+    // mCamera.setPreviewDisplay(mHolder);
+    // mCamera.startPreview();
+    //
+    // } catch (Exception e) {
+    // Log.d(tag, "Error starting camera preview: " + e.getMessage());
+    // }
+    // }
 
     public void changeCamera() {
         // if (isPreviewRunning) {

@@ -24,6 +24,7 @@ public class ChangePasswordActivity extends Activity implements LoaderManager.Lo
     private TextView newPass;
     private TextView repeatNewPass;
     private Button edit;
+    private Button back;
     private CommandLoader loader;
     private int LOADER_ID = 25;
 
@@ -68,6 +69,7 @@ public class ChangePasswordActivity extends Activity implements LoaderManager.Lo
         newPass = (TextView) findViewById(R.id.changePasswordNew);
         repeatNewPass = (TextView) findViewById(R.id.changePasswordRepeat);
         edit = (Button) findViewById(R.id.changePasswordButton);
+        back = (Button) findViewById(R.id.changePasswordBack);
     }
 
     private void initListeners() {
@@ -75,6 +77,12 @@ public class ChangePasswordActivity extends Activity implements LoaderManager.Lo
             @Override
             public void onClick(View v) {
                 changePassword();
+            }
+        });
+        back.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
     }

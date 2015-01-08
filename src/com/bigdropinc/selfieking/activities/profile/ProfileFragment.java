@@ -114,7 +114,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
 
     private void initViews() {
         avatar = (RoundedImageView) rootView.findViewById(R.id.avatar);
-        CustomPicasso.getImageLoader(getActivity()).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").resize(IMAGE_SIZE, IMAGE_SIZE).into(avatar);
+        CustomPicasso.getImageLoader(getActivity()).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").into(avatar);
         gridView = (GridView) rootView.findViewById(R.id.profileGridView);
 
         editProfileButton = (ImageButton) rootView.findViewById(R.id.profileEditButton);

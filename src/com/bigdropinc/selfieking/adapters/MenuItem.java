@@ -46,6 +46,12 @@ public class MenuItem {
         this.setTitle(name);
         this.imageres = imageres;
     }
+    public MenuItem(int id, String name, Bitmap bitmap) {
+        super();
+        this.setId(id);
+        this.setTitle(name);
+        this.bitmap = bitmap;
+    }
 
     public MenuItem(int id, int imageres, String path) {
         this.setId(id);

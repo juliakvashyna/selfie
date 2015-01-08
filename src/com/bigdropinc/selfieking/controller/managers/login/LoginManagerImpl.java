@@ -37,24 +37,21 @@ public final class LoginManagerImpl implements LoginManager {
 
     private void sign(int id, String t) {
         editor.putInt(idKey, id);
-
         editor.putString(TOKEN, t);
         editor.commit();
     }
 
     @Override
     public void signOut() {
-        editor.clear();
+        editor.remove(TOKEN);
         editor.commit();
         // moveTaskToBack(true);
         // Welcome.this.finish();
-
     }
 
     @Override
     public boolean check() {
-        String u = sharedpreferences.getString(email, "");
-        // String p = sharedpreferences.getString(pass, "");
+
         String token = sharedpreferences.getString(TOKEN, "");
         return !token.isEmpty();
     }
@@ -69,7 +66,7 @@ public final class LoginManagerImpl implements LoginManager {
             User user = new User(sharedpreferences.getString(email, ""), sharedpreferences.getString(pass, ""));
             user.setToken(sharedpreferences.getString(TOKEN, ""));
             return user;
-        }
+        }  
         return null;
     }
 

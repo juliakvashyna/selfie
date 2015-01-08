@@ -1,9 +1,11 @@
 package com.bigdrop.selfieking.db;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
@@ -64,6 +66,7 @@ public final class DatabaseManager {
 
             e.printStackTrace();
         }
+        Log.d("db", "delete" + id);
     }
 
     public List<EditImage> getAllTasks() {
@@ -78,21 +81,26 @@ public final class DatabaseManager {
 
     public EditImage addSelfie(EditImage editImage) {
         try {
-            return helper.getSelfieDao().createIfNotExists(editImage);
+            editImage = helper.getSelfieDao().createIfNotExists(editImage);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        Log.d("db", "add " + editImage.toString());
         return editImage;
     }
 
     public void updateSelfie(EditImage editImage) {
+        int i = 0;
         try {
-            int i = helper.getSelfieDao().update(editImage);
+            i = helper.getSelfieDao().update(editImage);
             System.out.println(i);
         } catch (SQLException e) {
 
             e.printStackTrace();
         }
+        Log.d("db", "update " + editImage.toString());
+
+        Log.d("db", "update i= " + i);
     }
 
     public void addSelfies(List<EditImage> task) {
@@ -143,8 +151,8 @@ public final class DatabaseManager {
     }
 
     public EditImage findEditImage(int id) {
+        List<EditImage> tasks = new ArrayList<EditImage>();
         try {
-
 
             QueryBuilder<EditImage, Integer> queryBuilder = helper.getSelfieDao().queryBuilder();
 
@@ -152,15 +160,19 @@ public final class DatabaseManager {
 
             PreparedQuery<EditImage> preparedQuery = queryBuilder.prepare();
 
-            List<EditImage> tasks = helper.getSelfieDao().query(preparedQuery);
-            
+            tasks = helper.getSelfieDao().query(preparedQuery);
+
             if (tasks.size() > 0)
                 return tasks.get(0);
         } catch (SQLException e) {
 
             e.printStackTrace();
+        } catch (RuntimeException e) {
+
+            e.printStackTrace();
         }
+ 
+        Log.d("db", "get" + tasks.toString());
         return new EditImage(id);
     }
-
 }

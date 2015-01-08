@@ -41,9 +41,11 @@
     <string name="next">Next</string>
     <string name="croptool">Crop tool</string>
     <string name="crop">Crop</string>
+       <string name="cut">Cut</string>
+    <string name="filters">Filters</string>
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_profile_fragment">Profile_fragment</string>
-
+    <string name="selfie">Selfie</string>
     <!-- profile -->
     <string name="coutSelfie">No of selfies :</string>
     <string name="editProfile">Edit profile</string>
@@ -59,9 +61,7 @@
 
     <!-- select image -->
     <string name="eselectImage">Please, select photo</string>
-    <string name="crop">Crop</string>
     <string name="backgroud">Background</string>
-    <string name="filters">Filters</string>
     <string name="f1">Normal</string>
     <string name="f2">Amaro</string>
     <string name="f3">MayFair</string>
@@ -87,7 +87,7 @@
     <string name="Gallery">Gallery</string>
     <string name="Standart">Standart</string>
     <!-- fb -->
-    <string name="facebook_app_id">1463519287247044</string>
+    <string name="facebook_app_id">799554853444316</string>
     <string name="title_activity_feed">FeedActivity</string>
     <string name="title_activity_big_crop">BigCropActivity</string>
     <string name="title_activity_cut">CutActivity</string>
@@ -102,5 +102,14 @@
     <string name="title_activity_one_selfie">OneSelfieActivity</string>
     <string name="title_activity_comments">CommentsActivity</string>
     <string name="title_activity_add_filter">AddFilterActivity</string>
+
+    <!-- profile edit -->
+    <string name="general">GENERAL</string>
+    <string name="personalInfo">PERSONAL INFO</string>
+
+    <!-- share -->
+    <string name="addDesc">Add a description</string>
+    <string name="comments">comments</string>
+    <string name="likes">likes</string>
 
 </resources>

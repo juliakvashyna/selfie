@@ -96,7 +96,7 @@ public class CommandLoader extends Loader<StatusCode> {
 
     @Override
     protected void onStartLoading() {
-      //  Log.d(TAG, hashCode() + " onStartLoading");
+        // Log.d(TAG, hashCode() + " onStartLoading");
 
         if (takeContentChanged())
             forceLoad();
@@ -105,19 +105,19 @@ public class CommandLoader extends Loader<StatusCode> {
     @Override
     protected void onStopLoading() {
         super.onStopLoading();
-      //  Log.d(TAG, hashCode() + " onStopLoading");
+        // Log.d(TAG, hashCode() + " onStopLoading");
     }
 
     @Override
     protected void onAbandon() {
         super.onAbandon();
-     //   Log.d(TAG, hashCode() + " onAbandon");
+        // Log.d(TAG, hashCode() + " onAbandon");
     }
 
     @Override
     protected void onReset() {
         super.onReset();
-    //    Log.d(TAG, hashCode() + " onReset");
+        // Log.d(TAG, hashCode() + " onReset");
     }
 
     void getResultFromTask(StatusCode result) {
@@ -128,7 +128,7 @@ public class CommandLoader extends Loader<StatusCode> {
     protected void onForceLoad() {
         super.onForceLoad();
         if (InternetChecker.isNetworkConnected()) {
-        //    Log.d(TAG, hashCode() + " onForceLoad");
+            // Log.d(TAG, hashCode() + " onForceLoad");
             if (registrTask != null)
                 registrTask.cancel(true);
             registrTask = new RegistrAsyncTask();
@@ -159,23 +159,21 @@ public class CommandLoader extends Loader<StatusCode> {
                 } else if (Command.EDIT_PROFILE.equals(commandName)) {
                     user = helper.editProfile(user);
                 } else if (Command.ADD_COMMENT.equals(commandName)) {
-                    selfieImage = helper.commentSelfie(command.getComment());
+                    commentSelfieImage = helper.commentSelfie(command.getComment());
                 } else if (Command.LIKE.equals(commandName)) {
                     selfieImage = helper.likeSelfie(command.getLike(), UrlRequest.LIKE);
                 } else if (Command.DISLIKE.equals(commandName)) {
                     selfieImage = helper.likeSelfie(command.getLike(), UrlRequest.DISLIKE);
                 } else if (Command.GET_SELFIE.equals(commandName)) {
                     commentSelfieImage = helper.getSelfieWithComments(selfieImage);
-                }
-
-                else if (Command.GET_USER.equals(commandName)) {
+                } else if (Command.GET_USER.equals(commandName)) {
                     user = helper.getUser(LoginManagerImpl.getInstance().getToken());
                 } else if (Command.CHANGE_PASSWORD.equals(commandName)) {
                     statusCode = helper.changePassword(password);
                 } else if (Command.DELETE_ACCOUNT.equals(commandName)) {
                     statusCode = helper.deleteAccount();
                 } else if (Command.ADD_CONTEST.equals(commandName)) {
-                    statusCode = helper.contest(selfieImage);
+                    selfieImage = helper.contest(selfieImage);
                 } else if (Command.GET_CONTEST.equals(commandName)) {
                     setSelfies(helper.getContest(command.getContest()));
                 } else if (Command.GET_LIKED.equals(commandName)) {
