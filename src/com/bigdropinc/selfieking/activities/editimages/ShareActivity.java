@@ -42,6 +42,7 @@ import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
+import com.bigdropinc.selfieking.views.ImageHelper;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
 import com.google.android.gms.common.ConnectionResult;
@@ -74,6 +75,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     boolean twSelected;
     private ProgressDialog dialog;
     private Uri myImageUri;
+
     private GoogleApiClient mGoogleApiClient;
     private UiLifecycleHelper uiHelper;
     private boolean mIntentInProgress;
@@ -87,7 +89,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     @Override
     public void onDestroy() {
         super.onDestroy();
-   
+
         uiHelper.onDestroy();
     }
 
@@ -241,7 +243,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-        imageView.setImageBitmap(image);
+        imageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(image, 50));
         myImageUri = getImageUri(getApplicationContext(), image);
 
     }

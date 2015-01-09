@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.controller.managers.FileManager;
+import com.bigdropinc.selfieking.views.ImageHelper;
 
 public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
 
@@ -19,12 +20,21 @@ public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
     private TextView textView;
     private Context context;
     private int r;
+    private int radius=20;
 
     public BottomMenuAdapter(Context context, int r, List<MenuItem> objects) {
 
         super(context, 0, objects);
         this.context = context;
         this.r = r;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
     @Override
@@ -36,7 +46,7 @@ public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
         MenuItem itemMenu = getItem(position);
         if (itemMenu.getBitmap() != null) {
 
-            imageView.setImageBitmap(itemMenu.getBitmap());
+            imageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(itemMenu.getBitmap(), radius));
         } else {
             if (itemMenu.getPath() != null) {
                 imageView.setImageBitmap(FileManager.getBitmapFromAsset(itemMenu.getPath()));

@@ -29,7 +29,7 @@ public class MyApplication extends Application {
     private static final String TWITTER_KEY = "6PUZMawzdCNwQ2zbuIEvw5Mly";
     private static final String TWITTER_SECRET = "MUchDymINUXFS37w7Lthyb1slyA297KhUs5uh0I7rHnLTtPdAO";
     
-    private static final String FONT = "font/";
+    private static final String FONT = "fonts/";
     private static final String DEFAULT_BOLD_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Bold.otf";
     private static final String DEFAULT_ITALIC_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Light Italic.otf";
     private static final String DEFAULT_BOLD_ITALIC_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Semibold Italic.otf";

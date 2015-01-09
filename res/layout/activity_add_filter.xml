@@ -50,8 +50,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="30dp"
         android:layout_below="@id/gpuimage"
+        android:layout_marginTop="30dp"
         android:padding="5dp"
         android:visibility="visible" >
     </com.devsmart.android.ui.HorizontalListView>

@@ -38,6 +38,7 @@ import com.bigdropinc.selfieking.adapters.MenuItem;
 import com.bigdropinc.selfieking.controller.managers.FileManager;
 import com.bigdropinc.selfieking.model.constants.BackGroundConstants;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
+import com.bigdropinc.selfieking.views.ImageHelper;
 import com.devsmart.android.ui.HorizontalListView;
 
 public class MakeSelfieActivity extends Activity implements OnTouchListener {
@@ -155,10 +156,6 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         resultImageView = (ImageView) findViewById(R.id.resultImage);
         resultImageView.setOnTouchListener(this);
         backImageView = (ImageView) findViewById(R.id.backImage);
-        // selectBackgroundButton = (Button)
-        // findViewById(R.id.selectBackground);
-        // selectfilterButton = (Button) findViewById(R.id.selectFilter);
-
         horizontalListViewCurrent = (HorizontalListView) findViewById(R.id.bottomMenuCurrent);
         doneButton = (Button) findViewById(R.id.btnMainNext);
         backButton = (Button) findViewById(R.id.btnMainBack);
@@ -203,8 +200,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         menuListCurrent = new ArrayList<MenuItem>();
 
         adapterCurrent = new BottomMenuAdapter(this, R.layout.bottom_item, menuListCurrent);
-        initBackAndFiltersButtons();
-
+        adapterCurrent.setRadius(100);
         horizontalListViewCurrent.setAdapter(adapterCurrent);
         try {
             initOnItemClick();
@@ -212,21 +208,6 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
             Log.d(TAG, "OutOfMemoryError initOnItemClick");
         }
         initBackgroundMenu();
-    }
-
-    private void initBackAndFiltersButtons() {
-        // selectBackgroundButton.setOnClickListener(new OnClickListener() {
-        // @Override
-        // public void onClick(View v) {
-        // onBackgroundClick();
-        // }
-        // });
-        // selectfilterButton.setOnClickListener(new OnClickListener() {
-        // @Override
-        // public void onClick(View v) {
-        // onFilterClick();
-        // }
-        // });
     }
 
     private void initOnItemClick() {
@@ -238,7 +219,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 res = menuListCurrent.get(position);
                 if (res != null)
-                    setBack(res.getImageres());
+                    setBack(res.getBitmap());
             }
         });
     }
@@ -257,11 +238,6 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
                 onBackPressed();
             }
         });
-    }
-
-    private void createImage() {
-        image = selfieImage.getSelfieWithOutBackground();
-        resultImageView.setImageBitmap(image);
     }
 
     private void gotoFeed() {
@@ -296,14 +272,14 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void initBackgroundMenu() {
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, R.drawable.colosseum, "colosseum_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, R.drawable.easter_island, "easter_island_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, R.drawable.moon, "moon_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, R.drawable.paris, "paris_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, R.drawable.petra, "petra_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b6, R.drawable.pyramids, "pyramids_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b7, R.drawable.statue_of_liberty, "statue_of_liberty_110.jpg"));
-        menuListCurrent.add(new MenuItem(BackGroundConstants.b8, R.drawable.stonehenge, "stonehenge_110.jpg"));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b1, ImageHelper.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.colosseum), 100)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b2, BitmapFactory.decodeResource(getResources(), R.drawable.easter_island)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b3, BitmapFactory.decodeResource(getResources(), R.drawable.moon)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b4, BitmapFactory.decodeResource(getResources(), R.drawable.paris)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b5, BitmapFactory.decodeResource(getResources(), R.drawable.petra)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b6, BitmapFactory.decodeResource(getResources(), R.drawable.pyramids)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b7, BitmapFactory.decodeResource(getResources(), R.drawable.statue_of_liberty)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b8, BitmapFactory.decodeResource(getResources(), R.drawable.stonehenge)));
         adapterCurrent.notifyDataSetChanged();
     }
 
@@ -313,8 +289,8 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         backImageView.setImageBitmap(selfieImage.getBackground());
     }
 
-    private void setBack(int res) {
-        Bitmap back = BitmapFactory.decodeResource(getResources(), res);
+    private void setBack(Bitmap bitmap) {
+        Bitmap back = bitmap;
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             back.compress(Bitmap.CompressFormat.JPEG, 50, out);
