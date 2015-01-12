@@ -4,7 +4,7 @@
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
+            backward-compatibility can go here.
         -->
     </style>
 
@@ -44,6 +44,7 @@
         <item name="android:background">@color/transparent</item>
         <item name="android:textSize">@dimen/buttonTextSize</item>
         <item name="android:textColor">@color/textViewColor</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:padding">1dp</item>
     </style>
 

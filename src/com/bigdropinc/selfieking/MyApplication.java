@@ -25,10 +25,11 @@ import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 public class MyApplication extends Application {
-    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    // Note: Your consumer key and secret should be obfuscated in your source
+    // code before shipping.
     private static final String TWITTER_KEY = "6PUZMawzdCNwQ2zbuIEvw5Mly";
     private static final String TWITTER_SECRET = "MUchDymINUXFS37w7Lthyb1slyA297KhUs5uh0I7rHnLTtPdAO";
-    
+
     private static final String FONT = "fonts/";
     private static final String DEFAULT_BOLD_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Bold.otf";
     private static final String DEFAULT_ITALIC_FONT_FILENAME = FONT + "Mark Simonson - Proxima Nova Light Italic.otf";
@@ -40,6 +41,7 @@ public class MyApplication extends Application {
     @SuppressLint("NewApi")
     @Override
     public void onCreate() {
+        super.onCreate();
         DatabaseManager.init(this);
         LoginManagerImpl.init(getApplicationContext());
         FileManager.init(getApplicationContext());
@@ -50,7 +52,7 @@ public class MyApplication extends Application {
         // Settings.Global.putInt(getApplicationContext().getContentResolver(),
         // Global.AIRPLANE_MODE_ON, 1);
         setDefaultFont();
-        super.onCreate();
+
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
     }
@@ -91,8 +93,6 @@ public class MyApplication extends Application {
             Field DEFAULT_BOLD = Typeface.class.getDeclaredField("DEFAULT_BOLD");
             DEFAULT_BOLD.setAccessible(true);
             DEFAULT_BOLD.set(null, bold);
-
-     
 
             Field sDefaults = Typeface.class.getDeclaredField("sDefaults");
             sDefaults.setAccessible(true);

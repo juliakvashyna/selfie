@@ -7,20 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.controller.managers.FileManager;
 import com.bigdropinc.selfieking.views.ImageHelper;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
 
-    private ImageView imageView;
+    private RoundedImageView imageView;
     private TextView textView;
     private Context context;
     private int r;
-    private int radius=20;
+    private int radius = 20;
 
     public BottomMenuAdapter(Context context, int r, List<MenuItem> objects) {
 
@@ -41,12 +41,12 @@ public class BottomMenuAdapter extends ArrayAdapter<MenuItem> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         convertView = LayoutInflater.from(context).inflate(r, parent, false);
-        imageView = (ImageView) convertView.findViewById(R.id.mimage);
+        imageView = (RoundedImageView) convertView.findViewById(R.id.mimage);
         textView = (TextView) convertView.findViewById(R.id.mtitle);
         MenuItem itemMenu = getItem(position);
         if (itemMenu.getBitmap() != null) {
 
-            imageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(itemMenu.getBitmap(), radius));
+            imageView.setImageBitmap(itemMenu.getBitmap());
         } else {
             if (itemMenu.getPath() != null) {
                 imageView.setImageBitmap(FileManager.getBitmapFromAsset(itemMenu.getPath()));

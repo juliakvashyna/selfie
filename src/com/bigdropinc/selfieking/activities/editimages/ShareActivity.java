@@ -51,6 +51,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 public class ShareActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode>, ConnectionCallbacks, OnConnectionFailedListener {
@@ -60,7 +61,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     private static final int RC_SIGN_IN = 56;
     private Button shareButton;
     private Button back;
-    private ImageView imageView;
+    private RoundedImageView imageView;
     private EditText editText;
     private Bitmap image;
     private byte[] byteArray;
@@ -222,7 +223,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         fbButton = (Button) findViewById(R.id.fbButton);
         googleButton = (Button) findViewById(R.id.googleButton);
         twitterButton = (Button) findViewById(R.id.twButton);
-        imageView = (ImageView) findViewById(R.id.shareImage);
+        imageView = (RoundedImageView) findViewById(R.id.shareImage);
         editText = (EditText) findViewById(R.id.shareComment);
         back = (Button) findViewById(R.id.shareBack);
 
