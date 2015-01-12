@@ -588,8 +588,7 @@ public class AddFilterActivity extends Activity {
         filters.addFilter("Monochrome", FilterType.MONOCHROME);
         filters.addFilter("Vignette", FilterType.VIGNETTE);
         filters.addFilter("ToneCurve", FilterType.TONE_CURVE);
-
-        filters.addFilter("Gaussian Blur", FilterType.GAUSSIAN_BLUR);
+         filters.addFilter("Gaussian Blur", FilterType.GAUSSIAN_BLUR);
         filters.addFilter("Dilation", FilterType.DILATION);
         filters.addFilter("Kuwahara", FilterType.KUWAHARA);
         filters.addFilter("Toon", FilterType.TOON);

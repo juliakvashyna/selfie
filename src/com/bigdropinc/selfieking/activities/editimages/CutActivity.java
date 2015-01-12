@@ -46,6 +46,7 @@ public class CutActivity extends Activity {
     private Button nextButton;
     private Button backButton;
     private Button clearButton;
+    private Button eraseButton;
     private EditImage selfieImage;
     private boolean isCrop;
 
@@ -71,6 +72,7 @@ public class CutActivity extends Activity {
         clearButton = (Button) findViewById(R.id.clear);
         nextButton = (Button) findViewById(R.id.next);
         backButton = (Button) findViewById(R.id.cutBack);
+   //     eraseButton = (Button) findViewById(R.id.erase);
     }
 
     private void initImage() {
@@ -159,6 +161,14 @@ public class CutActivity extends Activity {
 
             }
         });
+//        eraseButton.setOnClickListener(new OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//
+//            }
+//        });
     }
 
     private void cropping() {

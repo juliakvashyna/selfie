@@ -280,6 +280,9 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         menuListCurrent.add(new MenuItem(BackGroundConstants.b6, BitmapFactory.decodeResource(getResources(), R.drawable.pyramids)));
         menuListCurrent.add(new MenuItem(BackGroundConstants.b7, BitmapFactory.decodeResource(getResources(), R.drawable.statue_of_liberty)));
         menuListCurrent.add(new MenuItem(BackGroundConstants.b8, BitmapFactory.decodeResource(getResources(), R.drawable.stonehenge)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b9, BitmapFactory.decodeResource(getResources(), R.drawable.rhino)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b10, BitmapFactory.decodeResource(getResources(), R.drawable.taj_mahal)));
+        menuListCurrent.add(new MenuItem(BackGroundConstants.b11, BitmapFactory.decodeResource(getResources(), R.drawable.the_great_wall)));
         adapterCurrent.notifyDataSetChanged();
     }
 

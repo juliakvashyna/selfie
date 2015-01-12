@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_below="@id/layoutTop"
-            android:layout_marginTop="15dp" >
+            android:layout_marginTop="10dp" >
 
             <RelativeLayout
                 android:id="@+id/lname"
@@ -53,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="60dp"
-                    android:padding="7dp" />
+                    android:padding="4dp" />
 
                 <TextView
                     android:id="@+id/fdescription"

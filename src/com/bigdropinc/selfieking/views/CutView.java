@@ -6,10 +6,15 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
+import android.graphics.Shader;
+import android.graphics.Shader.TileMode;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -30,6 +35,11 @@ public class CutView extends ImageView implements OnTouchListener {
     private Bitmap bitmap;
     private int width;
     private int height;
+    PointF zoomPos = new PointF(0, 0);
+    private boolean zooming;
+    private Matrix matrix = new Matrix();
+    private Shader shader;
+    private Paint shaderPaint = new Paint();
 
     public int getMyWidth() {
         return width;
@@ -82,10 +92,12 @@ public class CutView extends ImageView implements OnTouchListener {
         path = new Path();
         bfirstpoint = false;
         points = new ArrayList<Point>();
+        invalidate();
     }
 
     public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
+        shader = new BitmapShader(bitmap, TileMode.CLAMP, TileMode.CLAMP);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -121,6 +133,7 @@ public class CutView extends ImageView implements OnTouchListener {
             }
 
             canvas.drawBitmap(bitmap, 0, 0, null);
+
         }
 
         path = new Path();
@@ -140,6 +153,20 @@ public class CutView extends ImageView implements OnTouchListener {
                 path.lineTo(point.x, point.y);
             }
         }
+        if (zooming) {
+            matrix.reset();
+            matrix.postScale(2f, 2f, zoomPos.x, zoomPos.y);
+            shaderPaint.setShader(shader);
+            shader.setLocalMatrix(matrix);
+            Paint paintWhite = new Paint();
+            paintWhite.setColor(Color.WHITE);
+            canvas.drawCircle(zoomPos.x - 150, zoomPos.y - 150, 205, paintWhite);
+            canvas.drawCircle(zoomPos.x - 150, zoomPos.y - 150, 200, shaderPaint);
+            Path pathC = new Path();
+            pathC.lineTo(zoomPos.x - 50, zoomPos.y - 50);
+
+            canvas.drawPath(pathC, paintWhite);
+        }
 
         canvas.drawPath(path, paint);
         canvas.restore();
@@ -153,6 +180,7 @@ public class CutView extends ImageView implements OnTouchListener {
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View view, MotionEvent event) {
         Point point = new Point();
+
         point.x = (int) event.getX();
         point.y = (int) event.getY();
         if (flgPathDraw) {
@@ -167,7 +195,6 @@ public class CutView extends ImageView implements OnTouchListener {
             } else {
                 points.add(point);
             }
-
             if (!(bfirstpoint)) {
                 mfirstpoint = point;
                 bfirstpoint = true;
@@ -176,7 +203,6 @@ public class CutView extends ImageView implements OnTouchListener {
 
         invalidate();
         Log.e("Hi  ==>", "Size: " + point.x + " " + point.y);
-
         if (event.getAction() == MotionEvent.ACTION_UP) {
             Log.d("Action up*******~~~~~~~>>>>", "called");
             mlastpoint = point;
@@ -189,7 +215,30 @@ public class CutView extends ImageView implements OnTouchListener {
                 }
             }
         }
+        int action = event.getAction();
 
+        zoomPos.x = event.getX();
+        zoomPos.y = event.getY();
+        matrix.reset();
+        matrix.postScale(2f, 2f);
+        matrix.postTranslate(-zoomPos.x, -zoomPos.y);
+        shader.setLocalMatrix(matrix);
+
+        switch (action) {
+        case MotionEvent.ACTION_DOWN:
+        case MotionEvent.ACTION_MOVE:
+            zooming = true;
+            this.invalidate();
+            break;
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_CANCEL:
+            zooming = false;
+            this.invalidate();
+            break;
+
+        default:
+            break;
+        }
         return true;
     }
 
