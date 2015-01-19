@@ -46,9 +46,10 @@ public class CutActivity extends Activity {
     private Button nextButton;
     private Button backButton;
     private Button clearButton;
-    private Button eraseButton;
+    private Button drawButton;
     private EditImage selfieImage;
     private boolean isCrop;
+    private boolean isDraw;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class CutActivity extends Activity {
         clearButton = (Button) findViewById(R.id.clear);
         nextButton = (Button) findViewById(R.id.next);
         backButton = (Button) findViewById(R.id.cutBack);
-   //     eraseButton = (Button) findViewById(R.id.erase);
+        drawButton = (Button) findViewById(R.id.draw);
     }
 
     private void initImage() {
@@ -161,18 +162,19 @@ public class CutActivity extends Activity {
 
             }
         });
-//        eraseButton.setOnClickListener(new OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                // TODO Auto-generated method stub
-//
-//            }
-//        });
+        drawButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                isDraw = !isDraw;
+                // mainImageView.setDrawTools(isDraw);
+            }
+        });
     }
 
     private void cropping() {
         isCrop = true;
+      //  mainImageView.zooming = false;
         List<Point> points = mainImageView.getPoints();
         if (points.size() > 0) {
             Bitmap resultingImage;

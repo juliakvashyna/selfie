@@ -15,7 +15,6 @@ import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -24,10 +23,16 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class CutView extends ImageView implements OnTouchListener {
+    public static final int shiftX = 250;
+    public static final int shiftY = 0;
+
+    private static final int radius = 200;
+    private static final int borderRadius = 205;
     private Paint paint;
     private Path path;
     private List<Point> points;
-
+    private ArrayList<Point> circle = new ArrayList<Point>();
+    Paint paintWhite = new Paint();
     private boolean flgPathDraw = true;
     private Point mfirstpoint = null;
     private boolean bfirstpoint = false;
@@ -36,7 +41,8 @@ public class CutView extends ImageView implements OnTouchListener {
     private int width;
     private int height;
     PointF zoomPos = new PointF(0, 0);
-    private boolean zooming;
+    public boolean zooming;
+
     private Matrix matrix = new Matrix();
     private Shader shader;
     private Paint shaderPaint = new Paint();
@@ -74,7 +80,6 @@ public class CutView extends ImageView implements OnTouchListener {
         this.setOnTouchListener(this);
         points = new ArrayList<Point>();
         bfirstpoint = false;
-
     }
 
     private void initPaint() {
@@ -87,7 +92,6 @@ public class CutView extends ImageView implements OnTouchListener {
     public void clear() {
         initPaint();
         flgPathDraw = true;
-
         mlastpoint = null;
         path = new Path();
         bfirstpoint = false;
@@ -96,8 +100,10 @@ public class CutView extends ImageView implements OnTouchListener {
     }
 
     public void setBitmap(Bitmap bitmap) {
+
         this.bitmap = bitmap;
         shader = new BitmapShader(bitmap, TileMode.CLAMP, TileMode.CLAMP);
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -123,6 +129,7 @@ public class CutView extends ImageView implements OnTouchListener {
 
     @SuppressLint("DrawAllocation")
     public void onDraw(Canvas canvas) {
+        Log.d("crop", "onDraw");
         if (bitmap != null) {
             if (width > 0 && height > 0) {
                 try {
@@ -131,17 +138,19 @@ public class CutView extends ImageView implements OnTouchListener {
                     Log.d("tag", "OutOfMemoryError onDraw");
                 }
             }
-
             canvas.drawBitmap(bitmap, 0, 0, null);
-
         }
-
+        float cx = zoomPos.x;
+        float cy = zoomPos.y;
         path = new Path();
         boolean first = true;
-
+        circle = new ArrayList<Point>();
         for (int i = 0; i < points.size(); i += 2) {
-            Point point = points.get(i);
 
+            Point point = points.get(i);
+            if (isPontInCircle(point.x, point.y, radius, cx, cy)) {
+                circle.add(point);
+            }
             if (first) {
                 first = false;
                 path.moveTo(point.x, point.y);
@@ -153,23 +162,52 @@ public class CutView extends ImageView implements OnTouchListener {
                 path.lineTo(point.x, point.y);
             }
         }
+        canvas.drawPath(path, paint);
+        Matrix m = new Matrix();
+        canvas.setMatrix(m);
+        drawCircles(canvas, cx, cy);
+        canvas.restore();
+    }
+
+    private void drawCircles(Canvas canvas, float cx, float cy) {
+        paintWhite = new Paint(paint);
+        paintWhite.setColor(Color.WHITE);
+        paintWhite.setStrokeWidth(5);
         if (zooming) {
             matrix.reset();
-            matrix.postScale(2f, 2f, zoomPos.x, zoomPos.y);
+            matrix.postScale(2f, 2f);
+            matrix.postTranslate(-zoomPos.x, -zoomPos.y);
             shaderPaint.setShader(shader);
             shader.setLocalMatrix(matrix);
-            Paint paintWhite = new Paint();
-            paintWhite.setColor(Color.WHITE);
-            canvas.drawCircle(zoomPos.x - 150, zoomPos.y - 150, 205, paintWhite);
-            canvas.drawCircle(zoomPos.x - 150, zoomPos.y - 150, 200, shaderPaint);
-            Path pathC = new Path();
-            pathC.lineTo(zoomPos.x - 50, zoomPos.y - 50);
-
-            canvas.drawPath(pathC, paintWhite);
+            canvas.drawCircle(cx, cy, borderRadius, paintWhite);
+            canvas.drawCircle(cx, cy, radius, shaderPaint);
+            canvas.drawCircle(cx, cy, 5, paintWhite);
+            Path p = new Path();
+            p.moveTo(cx, cy);
+            drawPathinCircle(cx, cy, p);
+            canvas.drawPath(p, paintWhite);
         }
+    }
 
-        canvas.drawPath(path, paint);
-        canvas.restore();
+    private void drawPathinCircle(float cx, float cy, Path p) {
+        boolean first = true;
+        Point pointC;
+        for (int i = 0; i < circle.size(); i += 2) {
+            pointC = circle.get(i);
+            if (first) {
+                first = false;
+                p.moveTo(pointC.x, pointC.y);
+            } else if (i < circle.size() - 1) {
+                Point next = circle.get(i + 1);
+                p.quadTo(pointC.x, pointC.y, next.x, next.y);
+            } else {
+             //   mlastpoint = circle.get(i);
+                p.lineTo(pointC.x, pointC.y);
+            }
+        }
+    }
+    private boolean isPontInCircle(float x, float y, int r, float cx, float cy) {
+        return (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius;
     }
 
     @Override
@@ -179,10 +217,21 @@ public class CutView extends ImageView implements OnTouchListener {
 
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View view, MotionEvent event) {
-        Point point = new Point();
+        int action = event.getAction();
+        detectPoints(event);
+        Log.d("crop", "onTouch " + action);
+        switchZoom(event, action);
+        invalidate();
 
+        return true;
+    }
+
+    private void detectPoints(MotionEvent event) {
+        Point point = new Point();
         point.x = (int) event.getX();
         point.y = (int) event.getY();
+        zoomPos.x = point.x;
+        zoomPos.y = point.y;
         if (flgPathDraw) {
             if (bfirstpoint) {
                 if (comparepoint(mfirstpoint, point)) {
@@ -200,11 +249,9 @@ public class CutView extends ImageView implements OnTouchListener {
                 bfirstpoint = true;
             }
         }
+        switch (event.getAction()) {
 
-        invalidate();
-        Log.e("Hi  ==>", "Size: " + point.x + " " + point.y);
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            Log.d("Action up*******~~~~~~~>>>>", "called");
+        case MotionEvent.ACTION_UP: {
             mlastpoint = point;
             if (flgPathDraw) {
                 if (points.size() > 12) {
@@ -215,15 +262,32 @@ public class CutView extends ImageView implements OnTouchListener {
                 }
             }
         }
-        int action = event.getAction();
+        case MotionEvent.ACTION_MOVE: {
+            zooming = true;
+            this.invalidate();
+            break;
+        }
+        case MotionEvent.ACTION_CANCEL:
+            zooming = false;
+            this.invalidate();
+            break;
+        }
+        matrix.reset();
+        // matrix.postScale(2f, 2f);
+        // matrix.postTranslate(-point.x, -point.y);
+        matrix.postScale(2f, 2f, zoomPos.x, zoomPos.y);
+        matrix.setTranslate(-shiftX, -shiftY);
+        shader.setLocalMatrix(matrix);
 
+    }
+
+    private void switchZoom(MotionEvent event, int action) {
         zoomPos.x = event.getX();
         zoomPos.y = event.getY();
         matrix.reset();
         matrix.postScale(2f, 2f);
         matrix.postTranslate(-zoomPos.x, -zoomPos.y);
         shader.setLocalMatrix(matrix);
-
         switch (action) {
         case MotionEvent.ACTION_DOWN:
         case MotionEvent.ACTION_MOVE:
@@ -239,7 +303,6 @@ public class CutView extends ImageView implements OnTouchListener {
         default:
             break;
         }
-        return true;
     }
 
     /**

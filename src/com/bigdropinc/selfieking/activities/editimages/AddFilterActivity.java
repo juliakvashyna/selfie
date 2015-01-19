@@ -42,6 +42,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -62,6 +63,7 @@ import com.bigdropinc.selfieking.adapters.MenuItem;
 import com.bigdropinc.selfieking.model.constants.FilterConstants;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.devsmart.android.ui.HorizontalListView;
+import com.google.android.gms.internal.im;
 
 public class AddFilterActivity extends Activity {
     private static final String TAG = "tag";
@@ -129,13 +131,23 @@ public class AddFilterActivity extends Activity {
             image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
             image = Bitmap.createScaledBitmap(image, selfieImage.getWidth(), selfieImage.getHeight(), true);
             original = image;
-
+         
         } catch (OutOfMemoryError e) {
             Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
         } catch (NullPointerException e) {
             Toast.makeText(this, "Sorry, image error null ", Toast.LENGTH_LONG).show();
         }
         mGPUImageView.setImage(image);
+    }
+
+    private void addWaterMark() {
+        Bitmap res = Bitmap.createBitmap(image);
+        Bitmap mutableBitmap = res.copy(Bitmap.Config.ARGB_8888, true);
+        Bitmap watermark = BitmapFactory.decodeResource(getResources(), R.drawable.watermark);
+        watermark = Bitmap.createScaledBitmap(watermark, 800, 600, false);
+        Canvas canvas = new Canvas(mutableBitmap);
+        canvas.drawBitmap(watermark, 500, 700, null);
+        image = Bitmap.createBitmap(mutableBitmap);
     }
 
     private void initListeners() {
@@ -216,6 +228,7 @@ public class AddFilterActivity extends Activity {
             gpuImage.setImage(original);
             gpuImage.setFilter(mFilter);
             image = gpuImage.getBitmapWithFilterApplied();
+          //  addWaterMark();
         }
 
     }
@@ -588,7 +601,7 @@ public class AddFilterActivity extends Activity {
         filters.addFilter("Monochrome", FilterType.MONOCHROME);
         filters.addFilter("Vignette", FilterType.VIGNETTE);
         filters.addFilter("ToneCurve", FilterType.TONE_CURVE);
-         filters.addFilter("Gaussian Blur", FilterType.GAUSSIAN_BLUR);
+        filters.addFilter("Gaussian Blur", FilterType.GAUSSIAN_BLUR);
         filters.addFilter("Dilation", FilterType.DILATION);
         filters.addFilter("Kuwahara", FilterType.KUWAHARA);
         filters.addFilter("Toon", FilterType.TOON);

@@ -1,10 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/com.bigdropinc.selfieking"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
     android:orientation="vertical"
-    tools:context="com.bigdropinc.selfieking.activities.editimages.ShareActivity" xmlns:app="http://schemas.android.com/apk/res/com.bigdropinc.selfieking">
+    tools:context="com.bigdropinc.selfieking.activities.editimages.ShareActivity" >
 
     <RelativeLayout
         android:id="@+id/shareTopL"
@@ -44,17 +45,17 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/shareTopL"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
         android:gravity="center"
         android:orientation="vertical" >
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/shareImage"
-            app:riv_border_color="@color/white"
-            app:riv_border_width="1dp"
-            app:riv_corner_radius="5dp"
             android:layout_width="@dimen/sizeshareImage"
             android:layout_height="@dimen/sizeshareImage"
-            android:layout_margin="20dp" />
+            app:riv_border_color="@color/white"
+            app:riv_border_width="1dp"
+            app:riv_corner_radius="5dp" />
 
         <EditText
             android:id="@+id/shareComment"
@@ -63,7 +64,16 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="@string/addDesc"
-            android:padding="10dp" />
+            android:padding="8dp"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <Button
+            android:id="@+id/purchase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:text="Purchase" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -73,7 +83,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="50dp"
             android:gravity="center"
             android:orientation="horizontal" >
 
