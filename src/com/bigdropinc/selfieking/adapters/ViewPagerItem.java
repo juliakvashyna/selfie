@@ -8,6 +8,8 @@ public class ViewPagerItem {
 
     private int viewPagerItemId;
     private String month;
+    private int year;
+
     private int monthNumber;
     private int count;
     private List<SelfieImage> selfies;
@@ -55,5 +57,13 @@ public class ViewPagerItem {
 
     public void setMonthNumber(int monthNumber) {
         this.monthNumber = monthNumber;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 }

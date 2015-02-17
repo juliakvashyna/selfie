@@ -30,6 +30,7 @@ public class Command implements Parcelable {
     public static final String ADD_CONTEST = "addContest";
     public static final String GET_CONTEST = "getContest";
     public static final String GET_LIKED = "getLiked";
+    public static final String LOGIN_FB = "loginFB";
     private String command;
     private Password password;
     private int offset;

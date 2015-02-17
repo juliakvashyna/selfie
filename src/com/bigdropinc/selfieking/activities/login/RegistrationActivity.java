@@ -42,6 +42,7 @@ import com.facebook.model.GraphUser;
 public class RegistrationActivity extends Activity implements OnClickListener, LoaderManager.LoaderCallbacks<StatusCode> {
     private static final String TAG = null;
     private static final int LOADER_ID = 0;
+
     private EditText loginEditText;
     private EditText passEditText;
     private Button signInbutton;
@@ -288,19 +289,20 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
                                 Log.d("FACEBOOK", "user != null");
                                 org.json.JSONObject graphResponse = response.getGraphObject().getInnerJSONObject();
                                 String email = graphResponse.optString("email");
-                                String token = graphResponse.optString("token");
-                                String id = graphResponse.optString("id");
+                                String username = graphResponse.optString("name");
+                                // String token =
+                                // graphResponse.optString("token");
+                                // String id = graphResponse.optString("id");
                                 // String facebookName = user.getUsername();
                                 if (email == null || email.length() < 0) {
                                     return;
                                 } else {
-                                    RegistrationActivity.this.user = new User("fb");
-                                    RegistrationActivity.this.user.setId(1);
-                                    RegistrationActivity.this.user.setToken(token);
-                                    goSelectImage();
+                                    loginFb(email, username);
+                                    // goSelectImage();
                                 }
                             }
                         }
+
                     });
                     getMe.executeAsync();
                 } else {
@@ -314,6 +316,16 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
                 }
             }
         });
+    }
+
+    private void loginFb(String email, String username) {
+        user = new User();
+        user.setEmail(email);
+        user.setUserName(username);
+        Bundle bundle = new Bundle();
+        Command command = new Command(Command.LOGIN_FB, user);
+        bundle.putParcelable(Command.BUNDLE_NAME, command);
+        getLoaderManager().initLoader(LOADER_ID, bundle, this).forceLoad();
     }
 
 }

@@ -10,7 +10,10 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -150,6 +154,48 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         return objects.size();
     }
 
+    private void showPopup(ViewHolder holder) {
+        int popupWidth = 200;
+        int popupHeight = 150;
+
+        // Inflate the popup_layout.xml
+        LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.popup);
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.popup_crowns, viewGroup);
+
+        // Creating the PopupWindow
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(layout);
+       // popup.setWidth(popupWidth);
+    //     popup.setHeight(popupHeight);
+        popup.setFocusable(true);
+
+        // Some offset to align the popup a bit to the right, and a bit down,
+        // relative to button's position.
+        int OFFSET_X = 20;
+        int OFFSET_Y = 20;
+
+        // Clear the default translucent background
+        popup.setBackgroundDrawable(new BitmapDrawable());
+
+        // Displaying the popup at the specified location, + offsets.
+        Point p = new Point();
+        p.x = (int) (holder.contentButton.getX());
+        p.y = (int) (holder.contentButton.getY());
+        popup.showAtLocation(layout, Gravity.CENTER_VERTICAL, p.x + OFFSET_X, p.y + OFFSET_Y);
+
+        // Getting a reference to Close button, and close the popup when
+        // clicked.
+        // Button close = (Button) layout.findViewById(R.id.close);
+        // close.setOnClickListener(new OnClickListener() {
+
+        // @Override
+        // public void onClick(View v) {
+        // popup.dismiss();
+        // }
+        // });
+    }
+
     private void initListeners(final ViewHolder holder, final SelfieImage selfie, final int position) {
         holder.likeButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -162,7 +208,8 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         holder.contentButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                contest(selfie, position);
+                showPopup(holder);
+                // contest(selfie, position);
             }
         });
         holder.commentButton.setOnClickListener(new OnClickListener() {
@@ -240,6 +287,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     }
 
     private void contest(SelfieImage selfie, int position) {
+
         if (context instanceof OneSelfieActivity) {
             ((OneSelfieActivity) context).contest(selfie);
         } else if (context instanceof MyActionBarActivity) {

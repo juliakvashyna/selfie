@@ -9,7 +9,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -46,6 +48,7 @@ public class CropActivity extends Activity {
         initViews();
         initListeners();
         initImage();
+      
     }
 
     @Override

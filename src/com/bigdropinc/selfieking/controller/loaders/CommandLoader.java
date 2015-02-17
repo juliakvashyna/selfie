@@ -156,6 +156,8 @@ public class CommandLoader extends Loader<StatusCode> {
 
                 } else if (Command.LOGIN.equals(commandName)) {
                     user = helper.getUser(user.getEmail(), user.getPassword());
+                } else if (Command.LOGIN_FB.equals(commandName)) {
+                    user = helper.loginFB(user.getEmail(), user.getUserName());
                 } else if (Command.EDIT_PROFILE.equals(commandName)) {
                     user = helper.editProfile(user);
                 } else if (Command.ADD_COMMENT.equals(commandName)) {

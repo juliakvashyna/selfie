@@ -3,7 +3,10 @@ package com.bigdropinc.selfieking.activities.editimages;
 import io.fabric.sdk.android.Fabric;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -15,9 +18,17 @@ import android.content.Loader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
+import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,41 +37,45 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.vending.billing.IabHelper;
 import com.android.vending.billing.IabHelper.OnIabPurchaseFinishedListener;
 import com.android.vending.billing.IabResult;
-import com.android.vending.billing.Inventory;
 import com.android.vending.billing.Purchase;
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
 import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
+import com.bigdropinc.selfieking.controller.loaders.Constants;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
-import com.bigdropinc.selfieking.views.ImageHelper;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.widget.FacebookDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.PlusShare;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-public class ShareActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode>, ConnectionCallbacks, OnConnectionFailedListener {
+public class ShareActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode>, ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
 
     private static final int PURCHASE_REQUEST_CODE = 12;
     private static final String WATERMARK = "watermark";
     private static final String SHARE_TEXT = "My selfie from SelfieKing";
     private static final int LOADER_ID = 3;
     private static final int RC_SIGN_IN = 56;
+    private static final int LOADER_ID_CONTEST = 15;
     private Button shareButton;
     private Button back;
     private RoundedImageView imageView;
@@ -73,7 +88,8 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     private Button fbButton;
     private Button googleButton;
     private Button twitterButton;
-    private Button purshaceButton;
+    private Button addToContestButton;
+    // private Button purshaceButton;
     boolean fbSelected;
     boolean gSelected;
     boolean twSelected;
@@ -83,6 +99,10 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     private GoogleApiClient mGoogleApiClient;
     private UiLifecycleHelper uiHelper;
     private boolean mIntentInProgress;
+    private TextView countryTextView;
+    PaymentDialog paydialog;
+    Location location;
+    private boolean addToContest;
 
     @Override
     public void onPause() {
@@ -162,6 +182,31 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     }
 
     @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+        // setCityCountry();
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
@@ -170,13 +215,34 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         initImage();
         initListeners();
         initIabHelper();
+
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
         Fabric.with(this, new TweetComposer());
-        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Plus.API)
+        mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN).build();
+        initPaymentDialog();
+        displayCountry();
 
-        .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+    }
 
+    private void initPaymentDialog() {
+        OnClickListener listener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                paydialog.dismiss();
+                mHelper.launchPurchaseFlow(ShareActivity.this, WATERMARK, PURCHASE_REQUEST_CODE, new OnIabPurchaseFinishedListener() {
+                    @Override
+                    public void onIabPurchaseFinished(IabResult result, Purchase info) {
+
+                        Toast.makeText(ShareActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        };
+        paydialog = new PaymentDialog(this, image, listener);
+        paydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        // dialog.getWindow().setLayout(LayoutParams.WRAP_CONTENT, 600);
+        paydialog.show();
     }
 
     protected void onStart() {
@@ -235,7 +301,11 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     private void checkCodeAndShare(StatusCode code) {
         if (code != null) {
             if (code.isSuccess())
-                share();
+                if (addToContest) {
+                    shareContestBundle();
+                } else {
+                    share();
+                }
             else {
                 Toast.makeText(ShareActivity.this, code.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
             }
@@ -252,7 +322,8 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         imageView = (RoundedImageView) findViewById(R.id.shareImage);
         editText = (EditText) findViewById(R.id.shareComment);
         back = (Button) findViewById(R.id.shareBack);
-        purshaceButton = (Button) findViewById(R.id.purchase);
+        addToContestButton = (Button) findViewById(R.id.contestButton);
+        countryTextView = (TextView) findViewById(R.id.sharecountry);
 
     }
 
@@ -271,20 +342,22 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-     //   if(mHelper.queryInventory(querySkuDetails, moreSkus))
+        // if(mHelper.queryInventory(querySkuDetails, moreSkus))
         addWaterMark();
-        imageView.setImageBitmap(ImageHelper.getRoundedCornerBitmap(image, 50));
+
+        DatabaseManager.getInstance().updateSelfie(editImage);
+        imageView.setImageBitmap(image);
         myImageUri = getImageUri(getApplicationContext(), image);
 
     }
- 
+
     private void addWaterMark() {
         Bitmap res = Bitmap.createBitmap(image);
         Bitmap mutableBitmap = res.copy(Bitmap.Config.ARGB_8888, true);
         Bitmap watermark = BitmapFactory.decodeResource(getResources(), R.drawable.watermark);
-        watermark = Bitmap.createScaledBitmap(watermark, 800, 600, false);
+        watermark = Bitmap.createScaledBitmap(watermark, 450, 350, false);
         Canvas canvas = new Canvas(mutableBitmap);
-        canvas.drawBitmap(watermark, 500, 700, null);
+        canvas.drawBitmap(watermark, 220, 290, null);
         image = Bitmap.createBitmap(mutableBitmap);
     }
 
@@ -323,21 +396,50 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
                 onBackPressed();
             }
         });
-        purshaceButton.setOnClickListener(new OnClickListener() {
+        addToContestButton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                mHelper.launchPurchaseFlow(ShareActivity.this, WATERMARK, PURCHASE_REQUEST_CODE, new OnIabPurchaseFinishedListener() {
+                dialog = ProgressDialog.show(ShareActivity.this, "", "");
+                dialog.setContentView(new ProgressBar(ShareActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-                    @Override
-                    public void onIabPurchaseFinished(IabResult result, Purchase info) {
-                        Toast.makeText(ShareActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    }
-
-                });
+                startCommandLoader();
+                addToContest = true;
             }
+
         });
+
+    }
+
+    private void shareContestBundle() {
+        Intent intent = new Intent(getApplicationContext(), MyActionBarActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(Command.ADD_CONTEST, true);
+
+        intent.putExtras(bundle);
+        intent.putExtra(Command.ADD_CONTEST, true);
+        DatabaseManager.getInstance().deleteSelfie(editImage.getId());
+        hideSoftKeyboard(this);
+        getApplicationContext().getContentResolver().delete(myImageUri, null, null);
+        startActivity(intent);
+
+    }
+
+    public void contest(SelfieImage selfieImage) {
+
+        Bundle bundle = getContestBundle(selfieImage);
+        getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, ShareActivity.this).forceLoad();
+
+    }
+
+    private Bundle getContestBundle(SelfieImage selfieImage) {
+        Bundle bundle = new Bundle();
+        Command command = new Command(Command.ADD_CONTEST);
+        selfieImage.setInContest(1);
+        command.setSelfieImage(selfieImage);
+        bundle.putParcelable(Constants.COMMAND, command);
+        return bundle;
     }
 
     private Uri getImageUri(Context inContext, Bitmap inImage) {
@@ -364,12 +466,15 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
 
     private void startCommandLoader() {
         Bundle bundle = new Bundle();
-        SelfieImage image = new SelfieImage();
-        image.setBytesImage(byteArray);
-        image.setDescription(editText.getText().toString());
-        image.setToken(LoginManagerImpl.getInstance().getToken());
+        SelfieImage selfie = new SelfieImage();
+        // if()
+        editImage.createBytesFilter(image);
+        byteArray = editImage.getFilterImageBytes();
+        selfie.setBytesImage(byteArray);
+        selfie.setDescription(editText.getText().toString());
+        selfie.setToken(LoginManagerImpl.getInstance().getToken());
         Command command = new Command(Command.POST_SELFIE);
-        command.setSelfieImage(image);
+        command.setSelfieImage(selfie);
         bundle.putParcelable("command", command);
         getLoaderManager().initLoader(LOADER_ID, bundle, ShareActivity.this).forceLoad();
     }
@@ -403,6 +508,33 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
             googleButton.setSelected(gSelected);
             Intent shareIntent = new PlusShare.Builder(this).setType("image/*").setText(SHARE_TEXT).setStream(myImageUri).getIntent();
             startActivityForResult(shareIntent, RC_SIGN_IN);
+        }
+    }
+
+    private void displayCountry() {
+        String locationProvider = LocationManager.NETWORK_PROVIDER;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, this);
+        location = locationManager.getLastKnownLocation(locationProvider);
+        if (location != null) {
+            setCityCountry();
+        }
+    }
+
+    private void setCityCountry() {
+        Geocoder gcd = new Geocoder(this, Locale.ENGLISH);
+        List<Address> addresses = null;
+        try {
+            addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (addresses.size() > 0) {
+            String countryName = addresses.get(0).getCountryName();
+            countryTextView.setText(countryName + ", " + addresses.get(0).getLocality());
+        } else {
+            countryTextView.setText("Search...");
         }
     }
 

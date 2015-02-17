@@ -18,11 +18,11 @@ public final class R {
 		public static final int black_translucent = 0x7f060038;
 	}
 	public static final class drawable {
-		public static final int dot_size = 0x7f0200ca;
+		public static final int dot_size = 0x7f0200d9;
 	}
 	public static final class id {
-		public static final int CropOverlayView = 0x7f0d00d9;
-		public static final int ImageView_image = 0x7f0d00d8;
+		public static final int CropOverlayView = 0x7f0d00db;
+		public static final int ImageView_image = 0x7f0d00da;
 		public static final int off = 0x7f0d003c;
 		public static final int on = 0x7f0d003d;
 		public static final int onTouch = 0x7f0d003e;

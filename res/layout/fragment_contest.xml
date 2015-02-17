@@ -5,37 +5,39 @@
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.social.ContestFragment" >
 
-    <com.makeramen.segmented.SegmentedRadioGroup
-        android:id="@+id/segment_text"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:checkedButton="@+id/button_one"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal" >
+        android:background="@drawable/top_bar"
+        android:layout_height="wrap_content" >
 
-        <RadioButton
-            android:id="@id/button_one"
-            android:layout_weight="1"
-            android:button="@null"
-            android:gravity="center"
-            android:minHeight="60dp"
-            android:minWidth="30dp"
-            android:text="@string/contest"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@drawable/radio_colors" />
+        <com.makeramen.segmented.SegmentedRadioGroup
+            android:id="@+id/segment_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:checkedButton="@+id/button_one"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal" >
 
-        <RadioButton
-            android:id="@+id/button_two"
-            android:layout_weight="1"
-            android:button="@null"
-            android:gravity="center" 
-            android:minHeight="60dp"
-            android:minWidth="30dp"
-            android:text="@string/notifications"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="@drawable/radio_colors" />
-    </com.makeramen.segmented.SegmentedRadioGroup>
+            <RadioButton
+                android:id="@id/button_one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@drawable/radio_colors" />
+
+            <RadioButton
+                android:id="@+id/button_two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@drawable/radio_colors" />
+        </com.makeramen.segmented.SegmentedRadioGroup>
+    </LinearLayout>
 
     <ViewSwitcher
         android:id="@+id/contestSwitcher"

@@ -108,7 +108,7 @@ public class ViewPagerAdapter extends PagerAdapter {
      */
     public void initView(View v, ViewPagerItem item, int position) {
         TextView month = (TextView) v.findViewById(R.id.monthTextView);
-        month.setText(item.getMonth());
+        month.setText(item.getMonth()+", "+item.getYear());
         TextView count = (TextView) v.findViewById(R.id.count);
         count.setText(String.valueOf(item.getCount()));
         initGridView(v, item);

@@ -41,7 +41,7 @@
     <string name="next">Next</string>
     <string name="croptool">Crop tool</string>
     <string name="crop">Crop</string>
-       <string name="cut">Cut</string>
+    <string name="cut">Cut</string>
     <string name="filters">Filters</string>
     <string name="title_activity_profile">ProfileActivity</string>
     <string name="title_activity_profile_fragment">Profile_fragment</string>
@@ -111,5 +111,9 @@
     <string name="addDesc">Add a description</string>
     <string name="comments">comments</string>
     <string name="likes">likes</string>
+    <string name="inContest">In contest</string>
+    <string name="votes">Votes left</string>
+       <string name="mostRecent">Most recent</string>
+    <string name="payText">Do you want to remove our cool logo from your selfies? just pay 4.99$ and forget about it!</string>
 
 </resources>

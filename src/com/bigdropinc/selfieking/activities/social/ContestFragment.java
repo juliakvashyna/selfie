@@ -115,11 +115,13 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
 
     private void initMonths() {
         ViewPagerItem item;
+        int year=Calendar.getInstance().get(Calendar.YEAR);
         String m;
         for (int i = 0; i <= 11; i++) {
             initMonth(i);
             item = new ViewPagerItem(i);
             item.setMonthNumber(i);
+            item.setYear(year);
             // item.setSelfies(new ArrayList<SelfieImage>());
             calendar.set(Calendar.MONTH, i);
             m = calendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.US);

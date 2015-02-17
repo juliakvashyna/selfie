@@ -50,8 +50,8 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     private int LOADER_ID_DISLIKE = 11;
     private int id;
     private int index;
-
     private boolean fromCamera;
+    private boolean fromContest;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -217,16 +217,28 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         setContentView(R.layout.activity_actionbar);
         mTabHost = (TabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup();
+
         if (savedInstanceState != null) {
             mCurrentTab = savedInstanceState.getString(M_CURRENT_TAB);
+
             initializeTabs();
             mTabHost.setCurrentTabByTag(mCurrentTab);
-            /*
-             * when resume state it's important to set listener after
-             * initializeTabs
-             */
             mTabHost.setOnTabChangedListener(listener);
-        } else {
+        }
+//        if (getIntent() != null && getIntent().getExtras() != null) {
+//            Boolean b = getIntent().getExtras().getBoolean(Command.ADD_CONTEST);
+//            if (b != false) {
+//                // mCurrentTab = TAB_CONTEST;
+//                fromContest = true;
+//                // initializeTabs();
+//                //
+//                // mTabHost.setCurrentTabByTag(mCurrentTab);
+//                // mTabHost.setCurrentTab(3);
+//                // mTabHost.setOnTabChangedListener(listener);
+//            }
+//        } 
+        else {
+            mTabHost.setCurrentTabByTag(mCurrentTab);
             mTabHost.setOnTabChangedListener(listener);
             initializeTabs();
         }
@@ -238,6 +250,10 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         if (fromCamera) {
             mTabHost.setCurrentTab(0);
         }
+        // if (fromContest) {
+        // mTabHost.setCurrentTab(3);
+        //
+        // }
         if (!LoginManagerImpl.getInstance().check()) {
             finish();
             Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);

@@ -152,18 +152,18 @@
                         android:orientation="horizontal" >
 
                         <Button
-                            android:id="@+id/flike"
+                            android:id="@+id/fcontent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/postButtonsPadding"
                             android:background="@drawable/post_like_selector" />
 
                         <Button
-                            android:id="@+id/fcontent"
+                            android:id="@+id/flike"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/postButtonsPadding"
-                            android:background="@drawable/post_content_selector" />
+                            android:background="@drawable/post_heart_selector" />
 
                         <Button
                             android:id="@+id/fcomment"

@@ -101,6 +101,18 @@ public class HttpClientHelper {
         return getUser(token);
     }
 
+    public User loginFB(String email, String userName) throws ApiException {
+        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>(5);
+        params.add(new BasicNameValuePair(EMAIL, email));
+        params.add(new BasicNameValuePair(USER_NAME, userName));
+        InputStream inputStream = postData(UrlRequest.LOGIN_FB, params);
+        String content = convertStreamToString(inputStream);
+        Log.d(TAG, "responce from server  " + content);
+        User user = jsonHelper.parseUser(content);
+        token = user.getToken();
+        return getUser(token);
+    }
+
     public User registr(User user) throws ApiException {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(USER_NAME, user.getUserName()));

@@ -57,6 +57,25 @@
             app:riv_border_width="1dp"
             app:riv_corner_radius="5dp" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_place" />
+
+            <TextView
+                android:id="@+id/sharecountry"
+                style="@style/customSmallText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp" />
+        </LinearLayout>
+
         <EditText
             android:id="@+id/shareComment"
             style="@style/customEditText"
@@ -68,24 +87,29 @@
             android:textSize="16sp"
             android:textStyle="normal" />
 
-        <Button
-            android:id="@+id/purchase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="15dp"
-            android:text="Purchase" />
-
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/divider_01" />
+
+        <TextView
+            style="@style/customEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="50dp"
+            android:text="SHARE"
+            android:textSize="14sp"
+            android:textStyle="normal" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="5dp"
             android:gravity="center"
             android:orientation="horizontal" >
 
@@ -93,23 +117,41 @@
                 android:id="@+id/fbButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:background="@drawable/fb_selector" />
 
             <Button
                 android:id="@+id/twButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:background="@drawable/twitter_selector" />
 
             <Button
                 android:id="@+id/googleButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:background="@drawable/google_selector" />
         </LinearLayout>
+
+        <TextView
+            style="@style/customSmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="or"
+            android:textStyle="normal" />
+
+        <Button
+            android:id="@+id/contestButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/addcontest_selector" />
     </LinearLayout>
 
 </RelativeLayout>

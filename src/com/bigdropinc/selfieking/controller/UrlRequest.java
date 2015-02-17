@@ -1,10 +1,11 @@
 package com.bigdropinc.selfieking.controller;
 
 public interface UrlRequest {
-    String ADDRESS = "http://selfieking.bigdropinc.com/";
+    String ADDRESS = "http://selfieking.bigdropinc.com";
     // login
     String GET_USER = ADDRESS + "/api/user/get";
     String LOGIN = ADDRESS + "/api/login";
+    String LOGIN_FB = ADDRESS + "/api/fb/login";
     String REGISTR_USER = ADDRESS + "/api/register";
     String RESET_PASSWORD = ADDRESS + "/api/resetPassword";
 

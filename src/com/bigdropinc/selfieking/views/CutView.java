@@ -23,11 +23,11 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class CutView extends ImageView implements OnTouchListener {
-    public static final int shiftX = 250;
-    public static final int shiftY = 0;
+    public static final int shiftX = 150;
+    public static final int shiftY = 150;
 
-    private static final int radius = 200;
-    private static final int borderRadius = 205;
+    private static final int radius = 150;
+    private static final int borderRadius = 155;
     private Paint paint;
     private Path path;
     private List<Point> points;
@@ -50,7 +50,7 @@ public class CutView extends ImageView implements OnTouchListener {
     public int getMyWidth() {
         return width;
     }
-
+ 
     public void setMyWidth(int width) {
         this.width = width;
     }
@@ -201,13 +201,14 @@ public class CutView extends ImageView implements OnTouchListener {
                 Point next = circle.get(i + 1);
                 p.quadTo(pointC.x, pointC.y, next.x, next.y);
             } else {
-             //   mlastpoint = circle.get(i);
+                mlastpoint = circle.get(i);
                 p.lineTo(pointC.x, pointC.y);
             }
         }
     }
+
     private boolean isPontInCircle(float x, float y, int r, float cx, float cy) {
-        return (x - cx) * (x - cx) + (y - cy) * (y - cy) <= radius * radius;
+        return (x - cx) * (x - cx) + (y - cy) * (y - cy) < radius * radius;
     }
 
     @Override
@@ -219,10 +220,8 @@ public class CutView extends ImageView implements OnTouchListener {
     public boolean onTouch(View view, MotionEvent event) {
         int action = event.getAction();
         detectPoints(event);
-        Log.d("crop", "onTouch " + action);
         switchZoom(event, action);
         invalidate();
-
         return true;
     }
 

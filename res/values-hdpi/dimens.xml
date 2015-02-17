@@ -6,7 +6,7 @@
     <dimen name="feedSp">14sp</dimen>
     <dimen name="buttonTextSize">18dp</dimen>
         <dimen name="tvTextSize">20dp</dimen>
-    <dimen name="signUpTextSize">16dp</dimen>
+    <dimen name="signUpTextSize">15dp</dimen>
     <dimen name="bottomTextSize">14dp</dimen>
     <dimen name="signUpBigTextSize">22dp</dimen>
     <dimen name="spinnerTextSize">22dp</dimen>
