@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/com.bigdropinc.selfieking"
+    android:layout_width="match_parent"
+    android:layout_height="500dp"
+    android:layout_gravity="center"
+    android:background="@drawable/bd_buypopup"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="30dp" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/btn_yes" >
+
+            <TextView
+                style="@style/customEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                     android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:text="Attention!" />
+
+            <ImageButton
+                android:id="@+id/closedialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@color/transparent"
+                android:src="@drawable/close_icon" />
+        </RelativeLayout>
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/shareImage"
+            android:layout_width="@dimen/sizeshareImage"
+            android:layout_height="@dimen/sizeshareImage"
+            android:layout_below="@id/title"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="60dp"
+            app:riv_border_color="@color/white"
+            app:riv_border_width="1dp"
+            app:riv_corner_radius="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/shareImage"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:text="@string/payText"
+            android:textColor="@color/textViewColor" />
+
+        <Button
+            android:id="@+id/btn_yes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/button_removelogo" />
+    </RelativeLayout>
+
+</LinearLayout>

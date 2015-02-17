@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/bk_favorites_rate"
+    android:orientation="vertical" >
+
+    <RatingBar
+        android:visibility="invisible"
+        android:id="@+id/ratingBarCrowns"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:numStars="5"
+        android:progressDrawable="@drawable/rating_selector" />
+
+</LinearLayout>
