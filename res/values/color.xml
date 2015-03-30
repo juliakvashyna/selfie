@@ -3,10 +3,12 @@
 
     <color name="white">#ffffff</color>
     <color name="grey">#dcdcdc</color>
-    <color name="textViewColor">#fec7ba</color>
+    <color name="textViewColor">#f4cad9</color>
     <color name="transparent">#00000000</color>
     <color name="rosy">#b46c83</color>
-        <color name="rosyLight">#efc0d2</color>
-    
+    <color name="rosyDarker">#b16364</color>
+    <color name="rosyLight">#efc0d2</color>
+    <color name="rosyLightLight">#f6cccf</color>
+    <color name="colorHint">#bb9aa6</color>
 
 </resources>

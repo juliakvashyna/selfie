@@ -91,10 +91,12 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@color/transparent"
+                    android:textColorHint="#bb9aa6"
                     android:ems="10"
                     android:gravity="center"
                     android:hint="@string/userName"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textColor="#f4cad9" />
             </RelativeLayout>
 
             <ImageView

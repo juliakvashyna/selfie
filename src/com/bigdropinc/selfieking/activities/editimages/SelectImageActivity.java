@@ -293,7 +293,7 @@ public class SelectImageActivity extends Activity implements OnClickListener {
      * Open back camera.
      * 
      * @return camera instance
-     */
+     */ 
     private Camera getCameraInstance() {
         Camera c = null;
         try {
@@ -321,7 +321,7 @@ public class SelectImageActivity extends Activity implements OnClickListener {
 
     private void initListeners() {
         photoButton.setOnClickListener(this);
-        galleryButton.setOnClickListener(this);
+        galleryButton.setOnClickListener(this); 
         rotateCameraButton.setOnClickListener(this);
         flashButton.setOnClickListener(this);
         closeButton.setOnClickListener(this);

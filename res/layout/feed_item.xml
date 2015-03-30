@@ -56,11 +56,20 @@
                     android:padding="4dp" />
 
                 <TextView
-                    android:id="@+id/fdescription"
+                    android:id="@+id/flocation"
                     style="@style/customTextViewRozyLighr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/fName"
+                    android:padding="5dp"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/fdescription"
+                    style="@style/customTextViewRozyLighr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/flocation"
                     android:padding="5dp"
                     android:visibility="gone" />
 
@@ -116,7 +125,7 @@
                         style="@style/customTextViewRozyLighr"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="@string/likes" />
+                        android:text="@string/crowns" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -163,7 +172,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/postButtonsPadding"
-                            android:background="@drawable/post_heart_selector" />
+                            android:background="@drawable/post_heart_selector"
+                            android:visibility="gone" />
 
                         <Button
                             android:id="@+id/fcomment"

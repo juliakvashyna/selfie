@@ -30,6 +30,8 @@ public class SelfieImage implements Parcelable {
     @DatabaseField
     private String description;
     @DatabaseField
+    private String location;
+    @DatabaseField
     private int like;
     @DatabaseField
     private int comment;
@@ -37,6 +39,47 @@ public class SelfieImage implements Parcelable {
     private boolean liked;
     @DatabaseField
     public int inContest;
+    @DatabaseField
+    private float rate;
+    private Star stars;
+    @DatabaseField
+    private String userAvatar;
+    @DatabaseField
+    private int userId;
+    @DatabaseField
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
+
+    public float getRate() {
+        return rate;
+    }
+
+    public void setRate(float rate) {
+        this.rate = rate;
+    }
 
     public boolean isInContest() {
         return inContest == 1;
@@ -193,6 +236,7 @@ public class SelfieImage implements Parcelable {
         dest.writeInt(comment);
         dest.writeByte((byte) (liked ? 1 : 0));
         dest.writeString(date);
+        dest.writeParcelable(stars, 0);
         // dest.writeByteArray(bytesImage);
     }
 
@@ -215,9 +259,26 @@ public class SelfieImage implements Parcelable {
         comment = in.readInt();
         liked = in.readByte() != 0;
         date = in.readString();
+        stars = in.readParcelable(null);
         // in.readByteArray(bytesImage);
         // convertByteToBitmap();
 
+    }
+
+    public Star getStars() {
+        return stars;
+    }
+
+    public void setStars(Star stars) {
+        this.stars = stars;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
 }

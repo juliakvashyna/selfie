@@ -40,9 +40,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.vending.billing.IabException;
 import com.android.vending.billing.IabHelper;
 import com.android.vending.billing.IabHelper.OnIabPurchaseFinishedListener;
 import com.android.vending.billing.IabResult;
+import com.android.vending.billing.Inventory;
 import com.android.vending.billing.Purchase;
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
@@ -103,6 +105,8 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     PaymentDialog paydialog;
     Location location;
     private boolean addToContest;
+    private Bitmap imageOriginal;
+    private String countryName;
 
     @Override
     public void onPause() {
@@ -127,9 +131,22 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
                 if (!result.isSuccess()) {
                     Log.d(TAG, "Problem setting up In-app Billing: " + result);
                 } else {
+                    List<String> list = new ArrayList<String>();
+                    list.add(WATERMARK);
+                    Inventory inventory = null;
+                    try {
+                        inventory = mHelper.queryInventory(true, list);
+                    } catch (IabException e) {
+                        e.printStackTrace();
+                    }
+                    Purchase purchase = inventory.getPurchase(WATERMARK);
+                    if (purchase != null) {
+                        deleteMark();
+                    } else {
+                        initPaymentDialog();
+                    }
                     Log.d(TAG, "Setting up In-app Billing: SUCCESS DONE");
                 }
-
             }
         });
     }
@@ -184,8 +201,6 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
-        // setCityCountry();
-
     }
 
     @Override
@@ -210,19 +225,17 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
-
         initView();
+        initIabHelper();
         initImage();
         initListeners();
-        initIabHelper();
-
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
         Fabric.with(this, new TweetComposer());
         mGoogleApiClient = new GoogleApiClient.Builder(this).addApi(Plus.API).addScope(Plus.SCOPE_PLUS_LOGIN).build();
-        initPaymentDialog();
+        // if not pay
+        // initPaymentDialog();
         displayCountry();
-
     }
 
     private void initPaymentDialog() {
@@ -233,7 +246,6 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
                 mHelper.launchPurchaseFlow(ShareActivity.this, WATERMARK, PURCHASE_REQUEST_CODE, new OnIabPurchaseFinishedListener() {
                     @Override
                     public void onIabPurchaseFinished(IabResult result, Purchase info) {
-
                         Toast.makeText(ShareActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -241,7 +253,6 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         };
         paydialog = new PaymentDialog(this, image, listener);
         paydialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        // dialog.getWindow().setLayout(LayoutParams.WRAP_CONTENT, 600);
         paydialog.show();
     }
 
@@ -252,7 +263,6 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
 
     protected void onStop() {
         super.onStop();
-
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -337,14 +347,13 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
             // options.inSampleSize = 2;
             options.inDither = true;
             image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
+            imageOriginal = Bitmap.createBitmap(image);
         } catch (NullPointerException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
-        // if(mHelper.queryInventory(querySkuDetails, moreSkus))
         addWaterMark();
-
         DatabaseManager.getInstance().updateSelfie(editImage);
         imageView.setImageBitmap(image);
         myImageUri = getImageUri(getApplicationContext(), image);
@@ -359,6 +368,15 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         Canvas canvas = new Canvas(mutableBitmap);
         canvas.drawBitmap(watermark, 220, 290, null);
         image = Bitmap.createBitmap(mutableBitmap);
+        imageView.setImageBitmap(image);
+        myImageUri = getImageUri(getApplicationContext(), image);
+    }
+
+    private void deleteMark() {
+
+        image = Bitmap.createBitmap(imageOriginal);
+        imageView.setImageBitmap(image);
+        myImageUri = getImageUri(getApplicationContext(), image);
     }
 
     private void initListeners() {
@@ -403,7 +421,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
                 dialog = ProgressDialog.show(ShareActivity.this, "", "");
                 dialog.setContentView(new ProgressBar(ShareActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-                startCommandLoader();
+                startCommandLoaderContest();
                 addToContest = true;
             }
 
@@ -444,7 +462,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
 
     private Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        inImage.compress(Bitmap.CompressFormat.PNG, 0, bytes);
         String path = Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
         Uri uri = Uri.parse(path);
         return uri;
@@ -473,7 +491,23 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         selfie.setBytesImage(byteArray);
         selfie.setDescription(editText.getText().toString());
         selfie.setToken(LoginManagerImpl.getInstance().getToken());
+        selfie.setLocation(countryName);
         Command command = new Command(Command.POST_SELFIE);
+        command.setSelfieImage(selfie);
+        bundle.putParcelable("command", command);
+        getLoaderManager().initLoader(LOADER_ID, bundle, ShareActivity.this).forceLoad();
+    }
+
+    private void startCommandLoaderContest() {
+        Bundle bundle = new Bundle();
+        SelfieImage selfie = new SelfieImage();
+        // if()
+        editImage.createBytesFilter(image);
+        byteArray = editImage.getFilterImageBytes();
+        selfie.setBytesImage(byteArray);
+        selfie.setDescription(editText.getText().toString());
+        selfie.setToken(LoginManagerImpl.getInstance().getToken());
+        Command command = new Command(Command.POST_SELFIE_CONTEST);
         command.setSelfieImage(selfie);
         bundle.putParcelable("command", command);
         getLoaderManager().initLoader(LOADER_ID, bundle, ShareActivity.this).forceLoad();
@@ -531,7 +565,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         }
 
         if (addresses.size() > 0) {
-            String countryName = addresses.get(0).getCountryName();
+            countryName = addresses.get(0).getCountryName();
             countryTextView.setText(countryName + ", " + addresses.get(0).getLocality());
         } else {
             countryTextView.setText("Search...");

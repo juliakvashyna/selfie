@@ -19,6 +19,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     private Context context;
     private int r;
     private List<Comment> objects;
+    private boolean isNotification;
 
     public CommentAdapter(Context context, int resource, List<Comment> objects) {
         super(context, resource, objects);
@@ -50,6 +51,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
             holder.userTextView = (TextView) convertView.findViewById(R.id.commentUser);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
             holder.commentTextView = (TextView) convertView.findViewById(R.id.commentText);
+          
             CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").into(holder.avatar);
 
             convertView.setTag(holder);
@@ -61,6 +63,14 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         holder.userTextView.setText(comment.getUserName());
         holder.commentTextView.setText(comment.getText());
         return convertView;
+    }
+
+    public boolean isNotification() {
+        return isNotification;
+    }
+
+    public void setNotification(boolean isNotification) {
+        this.isNotification = isNotification;
     }
 
     class ViewHolder {

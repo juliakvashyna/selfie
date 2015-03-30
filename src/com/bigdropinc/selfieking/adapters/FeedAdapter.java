@@ -12,12 +12,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,11 +28,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
+import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.activities.profile.ProfileActivity;
 import com.bigdropinc.selfieking.activities.social.CommentsActivity;
+import com.bigdropinc.selfieking.activities.social.ContestFragment;
+import com.bigdropinc.selfieking.activities.social.FeedFragment;
 import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
 import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
 import com.bigdropinc.selfieking.controller.CustomPicasso;
@@ -54,6 +61,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     private Activity context;
     private int r;
     private List<SelfieImage> objects;
+    private ContestFragment contestFragment;
 
     public FeedAdapter(Activity context, int r, List<SelfieImage> objects) {
         super(context, 0, objects);
@@ -65,61 +73,94 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        SelfieImage feedItem = getItem(position);
+        final SelfieImage feedItem = getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(r, parent, false);
             holder = new ViewHolder();
             holder.imageView = (ImageView) convertView.findViewById(R.id.fimage);
-            holder.timeTextView = (TextView) convertView.findViewById(R.id.ftime);
-            holder.likes = (TextView) convertView.findViewById(R.id.likes);
-            holder.comments = (TextView) convertView.findViewById(R.id.comments);
-            holder.nameTextView = (TextView) convertView.findViewById(R.id.fName);
             holder.descTextView = (TextView) convertView.findViewById(R.id.fdescription);
-            holder.likeButton = (Button) convertView.findViewById(R.id.flike);
-            holder.contentButton = (Button) convertView.findViewById(R.id.fcontent);
-            holder.commentButton = (Button) convertView.findViewById(R.id.fcomment);
-            holder.commentsTextView = (TextView) convertView.findViewById(R.id.commentsListTextView);
-            // holder.commentEditText = (EditText)
-            // convertView.findViewById(R.id.commentEditText);
-            holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
+            holder.locationTextView = (TextView) convertView.findViewById(R.id.flocation);
+            if (r == R.layout.feed_item) {
+                holder.timeTextView = (TextView) convertView.findViewById(R.id.ftime);
+                holder.likes = (TextView) convertView.findViewById(R.id.likes);
+                holder.comments = (TextView) convertView.findViewById(R.id.comments);
+                holder.nameTextView = (TextView) convertView.findViewById(R.id.fName);
+                holder.likeButton = (Button) convertView.findViewById(R.id.flike);
+                holder.contentButton = (Button) convertView.findViewById(R.id.fcontent);
+                holder.commentButton = (Button) convertView.findViewById(R.id.fcomment);
+                holder.commentsTextView = (TextView) convertView.findViewById(R.id.commentsListTextView);
+                holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
+            } else {
+                holder.contentButton = (Button) convertView.findViewById(R.id.contestButton);
+            }
             holder.progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
             holder.progressBar.setVisibility(View.VISIBLE);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
-        initListeners(holder, feedItem, position);
-        String token = LoginManagerImpl.getInstance().getToken();
-        User user = DatabaseManager.getInstance().findUser(token);
-        holder.nameTextView.setText(user.getUserName());
-
+        if (r == R.layout.feed_item) {
+            initListeners(holder, feedItem, position);
+            holder.nameTextView.setText("" + feedItem.getUserName());
+        } else {
+            initAddToContest(holder, feedItem);
+        }
         if (feedItem != null) {
-            String imageUrl = getImageUrl(feedItem);
-            CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
-                @Override
-                public void onSuccess() {
-                    if (this.progressBar != null) {
-                        this.progressBar.setVisibility(View.GONE);
-                    }
-                }
-            });
-            holder.likes.setText(String.valueOf(feedItem.getLikes()));
-            holder.comments.setText(String.valueOf(feedItem.getComment()));
-            if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
-                holder.descTextView.setText(feedItem.getDescription());
-                holder.descTextView.setVisibility(View.VISIBLE);
-            } else {
-                holder.descTextView.setVisibility(View.GONE);
-            }
-
-            holder.likeButton.setSelected(feedItem.isLiked());
-            holder.contentButton.setSelected(feedItem.isInContest());
-            holder.commentButton.setSelected(feedItem.getComment() != 0);
-            holder.timeTextView.setText(getTimeString(feedItem.getDate()));
-            CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").into(holder.avatar);
+            fillSelfe(holder, feedItem);
         }
         return convertView;
+    }
+
+    private void fillSelfe(ViewHolder holder, final SelfieImage feedItem) {
+        fillImage(holder, feedItem);
+        holder.locationTextView.setText(feedItem.getLocation());
+        if (r == R.layout.feed_item) {
+            if (feedItem.getStars() != null) {
+                holder.likes.setText(String.valueOf(feedItem.getStars().getTotal()));
+                holder.comments.setText(String.valueOf(feedItem.getComment()));
+                if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
+                    holder.descTextView.setText(feedItem.getDescription());
+                    holder.descTextView.setVisibility(View.VISIBLE);
+                } else {
+                    holder.descTextView.setVisibility(View.GONE);
+                }
+                holder.likeButton.setSelected(feedItem.isLiked());
+                holder.contentButton.setSelected(feedItem.isInContest());
+                holder.commentButton.setSelected(feedItem.getComment() != 0);
+                holder.timeTextView.setText(getTimeString(feedItem.getDate()));
+                String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
+                String userAvatar = feedItem.getUserAvatar();
+                if (userAvatar != null && userAvatar != "")
+                    url = UrlRequest.ADDRESS + userAvatar;
+                CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
+            }
+        } else {
+            if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
+                holder.descTextView.setText(feedItem.getDescription());
+
+            }
+        }
+    }
+
+    private void fillImage(ViewHolder holder, final SelfieImage feedItem) {
+        String imageUrl = getImageUrl(feedItem);
+        CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
+            @Override
+            public void onSuccess() {
+                if (this.progressBar != null) {
+                    this.progressBar.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void initAddToContest(ViewHolder holder, final SelfieImage feedItem) {
+        holder.contentButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((OneSelfieActivity) context).contest(feedItem);
+            }
+        });
     }
 
     private class ImageLoadedCallback implements Callback {
@@ -154,9 +195,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         return objects.size();
     }
 
-    private void showPopup(ViewHolder holder) {
-        int popupWidth = 200;
-        int popupHeight = 150;
+    private void showPopup(ViewHolder holder, final SelfieImage selfie) {
 
         // Inflate the popup_layout.xml
         LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.popup);
@@ -164,36 +203,26 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         View layout = layoutInflater.inflate(R.layout.popup_crowns, viewGroup);
 
         // Creating the PopupWindow
-        final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(layout);
-       // popup.setWidth(popupWidth);
-    //     popup.setHeight(popupHeight);
-        popup.setFocusable(true);
-
-        // Some offset to align the popup a bit to the right, and a bit down,
-        // relative to button's position.
-        int OFFSET_X = 20;
-        int OFFSET_Y = 20;
-
-        // Clear the default translucent background
+        final PopupWindow popup = new PopupWindow(layout, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
+        popup.setOutsideTouchable(true);
         popup.setBackgroundDrawable(new BitmapDrawable());
+        RatingBar ratingBar = (RatingBar) layout.findViewById(R.id.ratingBarCrowns);
+        ratingBar.setMax(5);
+        if (selfie != null && selfie.getStars() != null)
+            ratingBar.setProgress((int) selfie.getStars().getMy());
+        ratingBar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
 
-        // Displaying the popup at the specified location, + offsets.
-        Point p = new Point();
-        p.x = (int) (holder.contentButton.getX());
-        p.y = (int) (holder.contentButton.getY());
-        popup.showAtLocation(layout, Gravity.CENTER_VERTICAL, p.x + OFFSET_X, p.y + OFFSET_Y);
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if (context instanceof OneSelfieActivity)
+                    ((OneSelfieActivity) context).vote(selfie.getId(), (int) rating);
+                popup.dismiss();
 
-        // Getting a reference to Close button, and close the popup when
-        // clicked.
-        // Button close = (Button) layout.findViewById(R.id.close);
-        // close.setOnClickListener(new OnClickListener() {
+            }
+        });
 
-        // @Override
-        // public void onClick(View v) {
-        // popup.dismiss();
-        // }
-        // });
+        popup.showAsDropDown(holder.contentButton, 0, -230);
+
     }
 
     private void initListeners(final ViewHolder holder, final SelfieImage selfie, final int position) {
@@ -208,7 +237,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         holder.contentButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPopup(holder);
+                showPopup(holder, selfie);
                 // contest(selfie, position);
             }
         });
@@ -238,6 +267,16 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
                 startComment(selfie, position);
             }
 
+        });
+        holder.avatar.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                intent.putExtra("userId", selfie.getUserId());
+                context.startActivity(intent);
+
+            }
         });
     }
 
@@ -309,6 +348,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     class ViewHolder {
         private ImageView imageView;
         private TextView descTextView;
+        private TextView locationTextView;
         private TextView timeTextView;
         private TextView nameTextView;
         private TextView likes;
@@ -336,4 +376,5 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(holder.commentEditText.getWindowToken(), 0);
     }
+
 }

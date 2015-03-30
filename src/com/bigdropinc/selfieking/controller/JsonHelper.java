@@ -44,10 +44,11 @@ public class JsonHelper {
         if (responce == null) {
             throw new ApiException("ResponceUser is null");
         } else if (responce.error != null) {
-            throw new ApiException(responce.status, responce.error);
+            throw new ApiException(responce.status, responce.error); 
         } else {
             user = responce.user;
-            user.setToken(responce.token);
+            if (user != null)
+                user.setToken(responce.token);
         }
         return user;
     }
@@ -88,6 +89,30 @@ public class JsonHelper {
             throw new ApiException(response.status, response.error);
         }
         return response.posts.list;
+
+    }
+
+    public ResponseListSelfie parseResponseListSelfie(String content) throws ApiException {
+        ResponseListSelfie response = null;
+        try {
+            response = new ObjectMapper().readValue(content, ResponseListSelfie.class);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+            initInternetException();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+            initInternetException();
+        } catch (IOException e) {
+            e.printStackTrace();
+            initInternetException();
+        }
+        if (response == null) {
+            Log.d(TAG, "ResponseListSelfie is null");
+            return response;
+        } else if (response.error != null) {
+            throw new ApiException(response.status, response.error);
+        }
+        return response;
 
     }
 

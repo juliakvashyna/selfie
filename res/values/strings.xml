@@ -33,7 +33,7 @@
     <string name="erepeat">Passwords are not equal</string>
     <!-- reset -->
     <string name="send">Send</string>
-    <string name="link">a link was sent to email to reset password</string>
+    <string name="link">A link was sent to email to reset password</string>
 
     <!-- main -->
     <string name="title_activity_main">MainActivity</string>
@@ -110,10 +110,12 @@
     <!-- share -->
     <string name="addDesc">Add a description</string>
     <string name="comments">comments</string>
+    <string name="crowns">crowns</string>
     <string name="likes">likes</string>
     <string name="inContest">In contest</string>
+    <string name="drafts">Drafts</string>
     <string name="votes">Votes left</string>
-       <string name="mostRecent">Most recent</string>
+    <string name="mostRecent">Most recent</string>
     <string name="payText">Do you want to remove our cool logo from your selfies? just pay 4.99$ and forget about it!</string>
 
 </resources>

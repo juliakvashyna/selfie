@@ -14,6 +14,7 @@ public class ResponcePosts {
     public int offset;
     public int limit;
     public int count;
+    public int vote;
     public String order;
     public List<SelfieImage> list;
 }

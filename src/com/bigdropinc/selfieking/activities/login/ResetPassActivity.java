@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.controller.loaders.Command;
@@ -29,26 +30,14 @@ public class ResetPassActivity extends Activity implements LoaderManager.LoaderC
         setContentView(R.layout.activity_reset_pass);
         final EditText email = (EditText) findViewById(R.id.resetEmailEditText);
         Button send = (Button) findViewById(R.id.resetPasswordSendButton);
-        send.setOnClickListener(new OnClickListener() {
+        initListeners(email, send);
+    }
 
+    private void initListeners(final EditText email, Button send) {
+        send.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                Bundle bundle = new Bundle();
-                User user = new User();
-                user.setEmail(email.getText().toString());
-                bundle.putParcelable("command", new Command(Command.RESET_PASSWORD, user));
-                getLoaderManager().initLoader(LOADER_ID, bundle, ResetPassActivity.this).forceLoad();
-
-                try {
-                    code = loader.registrTask.get();
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
+                resetPass(email);
             }
         });
     }
@@ -64,7 +53,8 @@ public class ResetPassActivity extends Activity implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<StatusCode> arg0, StatusCode arg1) {
-        // TODO Auto-generated method stub
+        Toast.makeText(this, "Check your email,  please", Toast.LENGTH_LONG).show();
+        this.finish();
 
     }
 
@@ -72,6 +62,28 @@ public class ResetPassActivity extends Activity implements LoaderManager.LoaderC
     public void onLoaderReset(Loader<StatusCode> arg0) {
         // TODO Auto-generated method stub
 
+    }
+
+    private void resetPass(final EditText email) {
+        if (email.getText().toString().isEmpty()) {
+            Toast.makeText(ResetPassActivity.this, "Type email, please", Toast.LENGTH_LONG).show();
+        } else {
+            Bundle bundle = new Bundle();
+            User user = new User();
+            user.setEmail(email.getText().toString());
+            bundle.putParcelable("command", new Command(Command.RESET_PASSWORD, user));
+            getLoaderManager().initLoader(LOADER_ID, bundle, ResetPassActivity.this).forceLoad();
+
+            try {
+                code = loader.registrTask.get();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
 }

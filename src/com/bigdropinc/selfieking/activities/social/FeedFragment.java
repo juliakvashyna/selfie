@@ -33,14 +33,17 @@ import com.bigdropinc.selfieking.adapters.ImageAdapter;
 import com.bigdropinc.selfieking.controller.InternetChecker;
 import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
+import com.bigdropinc.selfieking.controller.loaders.Constants;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
+import com.bigdropinc.selfieking.model.selfie.Vote;
 
 public class FeedFragment extends Fragment implements LoaderManager.LoaderCallbacks<StatusCode> {
 
     public static final int LIMIT = EndlessScrollListener.VISIBLETHRESHOLD;
     private static final int LOADER_ID = 5;
+    private static final int LOADER_ID_VOTE = 6;
 
     private ArrayList<SelfieImage> feedList = new ArrayList<SelfieImage>();
     private FeedAdapter feedAdapter;
@@ -61,24 +64,29 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     private boolean end;
 
     @Override
-    public Loader<StatusCode> onCreateLoader(int id, Bundle args) {  
+    public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
         loader = new CommandLoader(getActivity(), args);
         return loader;
     }
 
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode code) {
-        if (code.isSuccess()) {
-            more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
-             if (more.size() > 0) {
-                feedList.addAll(more);
-                feedAdapter.notifyDataSetChanged();
-                adapter.notifyDataSetChanged();
-            } else {
-                end = true;
-            }
+        if (loader.getId() == LOADER_ID_VOTE) {
+            Toast.makeText(getActivity(), "Thanks for vote!", Toast.LENGTH_SHORT).show();
+
         } else {
-            Toast.makeText(getActivity(), code.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
+            if (code.isSuccess()) {
+                more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
+                if (more.size() > 0) {
+                    feedList.addAll(more);
+                     feedAdapter.notifyDataSetChanged();
+                    adapter.notifyDataSetChanged();
+                } else {
+                    end = true;
+                }
+            } else {
+                Toast.makeText(getActivity(), code.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
+            }
         }
         getLoaderManager().destroyLoader(loader.getId());
     }
@@ -121,7 +129,8 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private boolean checkFragment() {
-        return (getTag().equals(MyActionBarActivity.TAB_LIKED));
+    //    return (getTag().equals(MyActionBarActivity.TAB_LIKED));
+        return false;
     }
 
     private void initViews() {
@@ -173,14 +182,25 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
 
     private void initFeed() {
         feedAdapter = new FeedAdapter(getActivity(), R.layout.feed_item, feedList);
+      //  feedAdapter.setFeedFragment(this);
         listView.setAdapter(feedAdapter);
         listView.setOnScrollListener(new EndlessScrollListener() {
+
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 loadMore(page);
             }
         });
         startLoader(0);
+    }
+
+    public void vote(int postId, int rate) {
+        Bundle bundle = new Bundle();
+        Command command = new Command(Command.VOTE);
+        command.setVote(new Vote(postId, rate));
+        bundle.putParcelable(Constants.COMMAND, command);
+        getLoaderManager().initLoader(LOADER_ID_VOTE, bundle, FeedFragment.this).forceLoad();
+
     }
 
     private void loadMore(int page) {
@@ -207,7 +227,5 @@ public class FeedFragment extends Fragment implements LoaderManager.LoaderCallba
         }
         tile = !tile;
     }
-
-
 
 }

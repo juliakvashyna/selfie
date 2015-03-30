@@ -219,7 +219,7 @@ public class EditImage {
                 // }
 
             } else {
-                bitmap = getSelfieWithOutBackground();
+                bitmap = getSelfieWithOutBackground();  
             }
             createBytes(bitmap);
         }

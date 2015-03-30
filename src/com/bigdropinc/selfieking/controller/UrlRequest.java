@@ -25,4 +25,6 @@ public interface UrlRequest {
     String ADD_CONTEST = ADDRESS + "/api/contest/add";
     String GET_CONTEST = ADDRESS + "/api/contest/get";
     String GET_LIKED = ADDRESS + "/api/post/liked";
+    String VOTE = ADDRESS + "/api/post/vote";
+    String AVATAR = ADDRESS + "/api/profile/avatar";
 }

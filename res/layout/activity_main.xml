@@ -62,25 +62,48 @@
             android:contentDescription="@string/back" />
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/ri"
-        android:layout_marginTop="35dp"
-        android:orientation="vertical" >
+        android:layout_below="@id/ri" >
+
+        <RelativeLayout
+            android:id="@+id/buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true" 
+            android:layout_marginBottom="10dp">
+
+            <ImageButton
+                android:id="@+id/bgCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@color/transparent"
+                android:src="@drawable/icon_make_shot" />
+
+            <ImageButton
+                android:id="@+id/bgGaleria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="37dp"
+                android:background="@color/transparent"
+                android:src="@drawable/add_image_selector" />
+        </RelativeLayout>
 
         <com.devsmart.android.ui.HorizontalListView
             android:id="@+id/bottomMenuCurrent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/buttons"
             android:layout_gravity="center"
-            android:padding="0dp"
             android:visibility="visible" >
         </com.devsmart.android.ui.HorizontalListView>
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

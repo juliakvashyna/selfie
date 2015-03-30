@@ -6,6 +6,7 @@ import com.bigdropinc.selfieking.model.selfie.Comment;
 import com.bigdropinc.selfieking.model.selfie.Contest;
 import com.bigdropinc.selfieking.model.selfie.Like;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
+import com.bigdropinc.selfieking.model.selfie.Vote;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,6 +18,7 @@ public class Command implements Parcelable {
     public static final String RESET_PASSWORD = "resetPassword";
     public static final String LOGIN = "login";
     public static final String POST_SELFIE = "postSelfie";
+    public static final String POST_SELFIE_CONTEST = "postSelfieContest";
     public static final String GET_SELFIES = "selfies";
     public static final String GET_SELFIE = "selfie";
     public static final String EDIT_PROFILE = "editProfile";
@@ -31,6 +33,8 @@ public class Command implements Parcelable {
     public static final String GET_CONTEST = "getContest";
     public static final String GET_LIKED = "getLiked";
     public static final String LOGIN_FB = "loginFB";
+    public static final String VOTE = "vote";
+    public static final String AVATAR = "avatar";
     private String command;
     private Password password;
     private int offset;
@@ -39,6 +43,7 @@ public class Command implements Parcelable {
     private Comment comment;
     private Contest contest;
     private Like like;
+    private Vote vote;
 
     public Contest getContest() {
         return contest;
@@ -151,6 +156,14 @@ public class Command implements Parcelable {
 
     public Command(String command) {
         this.command = command;
+    }
+
+    public Vote getVote() {
+        return vote;
+    }
+
+    public void setVote(Vote vote) {
+        this.vote = vote;
     }
 
 }

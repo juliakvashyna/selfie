@@ -1,31 +1,41 @@
 package com.bigdropinc.selfieking.adapters;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.activities.social.ContestFragment;
 import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
+import com.bigdropinc.selfieking.model.selfie.Contest;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
+    private static final String TOP_RATED = "Top rated";
+    private static final String MOST_RECENT = "Most recent";
     // Views that can be reused.
     private final List<View> mDiscardedViews = new ArrayList<View>();
     // Views that are already in use.
@@ -34,11 +44,22 @@ public class ViewPagerAdapter extends PagerAdapter {
     private final ArrayList<ViewPagerItem> mItems;
     private final LayoutInflater mInflator;
     private final int mResourceId;
-    private final Context context;
+    private final Activity context;
     private ViewPager mViewPager;
     private ContestFragment fragment;
+    GridView gridView;
+    public GridView getGridView() {
+        return gridView;
+    }
 
-    public ViewPagerAdapter(Context context, int viewRes, List<ViewPagerItem> list, Fragment fragment) {
+    public void setGridView(GridView gridView) {
+        this.gridView = gridView;
+    }
+
+    ImageAdapter imageAdapter;
+    int mypage = 0;
+
+    public ViewPagerAdapter(Activity context, int viewRes, List<ViewPagerItem> list, Fragment fragment) {
         this.mItems = (ArrayList<ViewPagerItem>) list;
         this.context = context;
         mInflator = LayoutInflater.from(context);
@@ -108,11 +129,90 @@ public class ViewPagerAdapter extends PagerAdapter {
      */
     public void initView(View v, ViewPagerItem item, int position) {
         TextView month = (TextView) v.findViewById(R.id.monthTextView);
-        month.setText(item.getMonth()+", "+item.getYear());
-        TextView count = (TextView) v.findViewById(R.id.count);
-        count.setText(String.valueOf(item.getCount()));
+        LinearLayout layout = (LinearLayout) v.findViewById(R.id.winnerLayout);
+        LinearLayout monthlayout = (LinearLayout) v.findViewById(R.id.monthLayout);
         initGridView(v, item);
+        month.setText(item.getMonth() + ", " + item.getYear());
+        if (item.getMonthNumber() < Calendar.getInstance().get(Calendar.MONTH)) {
+            layout.setVisibility(View.VISIBLE);
+            monthlayout.setVisibility(View.GONE);
+            if (item.getWinner() != null) {
+                TextView name = (TextView) v.findViewById(R.id.winnerName);
+                TextView location = (TextView) v.findViewById(R.id.location);
+                TextView role = (TextView) v.findViewById(R.id.winnerRole);
+                TextView crowns = (TextView) v.findViewById(R.id.winnerCrowns);
+                if (item.getWinner() != null) {
+                    name.setText(item.getWinner().getUserName());
+                    // location.setText(item.getWinner().getLocation());
+                    // role.setText(item.getWinner().getRole());
+                    crowns.setText(String.valueOf(item.getWinner().getStars()));
+                }
+            }
+        } else {
+            layout.setVisibility(View.GONE);
+            monthlayout.setVisibility(View.VISIBLE);
+        }
+        TextView count = (TextView) v.findViewById(R.id.count);
+        TextView vote = (TextView) v.findViewById(R.id.votesLeft);
+        initTopRecent(v, item);
+        count.setText(String.valueOf(item.getCount()));
+        vote.setText(String.valueOf(item.getVote()));
+
         initButtons(v);
+    }
+
+    private void changeTopRecent(final TextView topRecent, final ImageButton topRecentImage, ViewPagerItem item) {
+        item.getContest().setOrder();
+
+        changeTitle(topRecent, topRecentImage, item);
+        fragment.changeSort(item.getContest(), item.getMonthNumber());
+
+    }
+
+    private void changeTitle(final TextView topRecent, final ImageButton topRecentImage, ViewPagerItem item) {
+        String title = topRecent.getText().toString();
+
+        if (item.getContest().getOrder().equals(Contest.rate_desc)) {
+            topRecent.setText(TOP_RATED);
+            topRecentImage.setImageResource(R.drawable.icon_view);
+
+        } else {
+            topRecent.setText(MOST_RECENT);
+            topRecentImage.setImageResource(R.drawable.icon_calendar);
+
+        }
+        // item.getContest().setOrder();
+    }
+
+    private void changeTitle2(final TextView topRecent, final ImageButton topRecentImage, ViewPagerItem item) {
+        String title = topRecent.getText().toString();
+        if (title.equals(MOST_RECENT)) {
+            topRecent.setText(TOP_RATED);
+            topRecentImage.setImageResource(R.drawable.icon_view);
+
+        } else {
+            topRecent.setText(MOST_RECENT);
+            topRecentImage.setImageResource(R.drawable.icon_calendar);
+
+        }
+    }
+
+    private void initTopRecent(View v, final ViewPagerItem item) {
+        final TextView topRecent = (TextView) v.findViewById(R.id.topRecentTextView);
+        final ImageButton topRecentImage = (ImageButton) v.findViewById(R.id.topRecentImageButton);
+        changeTitle(topRecent, topRecentImage, item);
+        topRecent.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeTopRecent(topRecent, topRecentImage, item);
+            }
+        });
+        topRecentImage.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeTopRecent(topRecent, topRecentImage, item);
+            }
+        });
     }
 
     private void initButtons(View v) {
@@ -137,8 +237,18 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     private void initGridView(View v, final ViewPagerItem item) {
-        GridView gridView = (GridView) v.findViewById(R.id.contestGridView);
-        gridView.setAdapter(new ImageAdapter(context, R.layout.image_item_gridview, item.getSelfies()));
+        gridView = (GridView) v.findViewById(R.id.contestGridView);
+        imageAdapter = new ImageAdapter(context, R.layout.image_item_gridview, item.getSelfies());
+        gridView.setAdapter(imageAdapter);
+        gridView.setOnScrollListener(new EndlessScrollListener() {
+
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                fragment.loadMore(item.getMonthNumber(), totalItemsCount);
+
+            }
+        });
+
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 startOneActivity(item.getSelfies().get(position).getId());
@@ -150,9 +260,21 @@ public class ViewPagerAdapter extends PagerAdapter {
         if (id != 0) {
             Intent intent = new Intent(context, OneSelfieActivity.class);
             intent.putExtra("selfieId", id);
-            context.startActivity(intent);
+            context.startActivityForResult(intent, 99);
         } else {
             Toast.makeText(context, "Post was deleted", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void updateImageAdapter() {
+        imageAdapter.notifyDataSetChanged();
+    }
+
+    public ImageAdapter getImageAdapter() {
+        return imageAdapter;
+    }
+
+    public void setImageAdapter(ImageAdapter imageAdapter) {
+        this.imageAdapter = imageAdapter;
     }
 }

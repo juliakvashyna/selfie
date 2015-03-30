@@ -1,7 +1,10 @@
 package com.bigdropinc.selfieking.adapters;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.bigdropinc.selfieking.model.responce.Winner;
+import com.bigdropinc.selfieking.model.selfie.Contest;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 
 public class ViewPagerItem {
@@ -9,10 +12,12 @@ public class ViewPagerItem {
     private int viewPagerItemId;
     private String month;
     private int year;
-
+    private int vote;
+    private Contest contest;
     private int monthNumber;
     private int count;
-    private List<SelfieImage> selfies;
+    private Winner winner;
+    private List<SelfieImage> selfies = new ArrayList<SelfieImage>();
 
     public ViewPagerItem(int selfieId) {
         super();
@@ -43,6 +48,14 @@ public class ViewPagerItem {
         this.selfies = selfies;
     }
 
+    public void addSelfies(List<SelfieImage> selfies) {
+        if (selfies != null&&selfies.size()>0) {
+            if (!this.selfies.containsAll(selfies))
+                this.selfies.addAll(selfies);
+
+        }
+    }
+
     public int getSelfieId() {
         return viewPagerItemId;
     }
@@ -65,5 +78,29 @@ public class ViewPagerItem {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    public Winner getWinner() {
+        return winner;
+    }
+
+    public void setWinner(Winner winner) {
+        this.winner = winner;
+    }
+
+    public Contest getContest() {
+        return contest;
+    }
+
+    public void setContest(Contest contest) {
+        this.contest = contest;
+    }
+
+    public int getVote() {
+        return vote;
+    }
+
+    public void setVote(int vote) {
+        this.vote = vote;
     }
 }

@@ -142,7 +142,7 @@ public class CropActivity extends Activity {
 
             // Decode image size
             BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
+            o.inJustDecodeBounds = true; 
             o.inPurgeable = true;
             o.inPreferredConfig = Config.RGB_565;
             o.inDither = true;

@@ -248,7 +248,7 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
     private void resetPass() {
         Intent intent = new Intent(getApplicationContext(), ResetPassActivity.class);
         startActivity(intent);
-        this.finish();
+      //  this.finish();
 
     }
 

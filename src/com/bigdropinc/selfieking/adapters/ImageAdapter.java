@@ -19,6 +19,14 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
     private Context mContext;
     private List<SelfieImage> images;
 
+    public List<SelfieImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<SelfieImage> images) {
+        this.images = images;
+    }
+
     public ImageAdapter(Context context, int r, List<SelfieImage> images) {
         super(context, 0, images);
         this.images = images;
@@ -34,7 +42,9 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
 
     @Override
     public SelfieImage getItem(int position) {
+        if(position<images.size())
         return images.get(position);
+        return null;
     }
 
     @Override
@@ -42,7 +52,7 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         return 0;
     }
 
-    private static final int IMAGE_SIZE = 150;
+    private static final int IMAGE_SIZE = 120;
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -58,7 +68,7 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         SelfieImage image = getItem(position);
         if (image != null) {
             String imageUrl = getImageUrl(image);
-            CustomPicasso.getImageLoader(mContext).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).error(R.drawable.notfound).into(imageView);
+            CustomPicasso.getImageLoader(mContext).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).error(R.drawable.notfound).placeholder(R.drawable.placeholder).into(imageView);
         }
         return imageView;
     }
@@ -73,8 +83,8 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         return imageUrl;
     }
 
-    class ViewHolder {
-        ImageView imageView;
-    }
+    // class ViewHolder {
+    // ImageView imageView;
+    // }
 
 }

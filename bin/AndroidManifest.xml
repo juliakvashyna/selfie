@@ -69,6 +69,8 @@
         </activity>
         <activity android:name="com.bigdropinc.selfieking.activities.social.CommentsActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
+                <activity android:name="com.bigdropinc.selfieking.activities.profile.ProfileActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
+        </activity>
 
         <receiver android:label="NetworkConnection" android:name="com.bigdropinc.selfieking.receiver.ConnectionChangeReceiver">
             <intent-filter>

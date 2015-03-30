@@ -17,7 +17,8 @@
             style="@style/customImageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_back" />
+            android:src="@drawable/icon_back"
+            android:visibility="invisible" />
 
         <ImageButton
             android:id="@+id/profileEditButton"
@@ -57,13 +58,22 @@
         android:textSize="20sp" />
 
     <TextView
-        android:layout_margin="5dp"
         android:id="@+id/profileCountTextView"
         style="@style/customEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:background="@drawable/amount_bg"
         android:gravity="center" />
+
+    <Button
+        android:id="@+id/sortinContestButton"
+        style="@style/customEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:padding="5dp"
+        android:text="@string/inContest" />
 
     <GridView
         android:id="@+id/profileGridView"

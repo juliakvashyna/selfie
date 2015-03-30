@@ -43,6 +43,17 @@ public class User implements Parcelable {
     private String status;
     @DatabaseField
     private String phone;
+    @DatabaseField
+    private String userAvatar;
+    private byte[] avatarBytes;
+
+    public String getAvatar() {
+        return userAvatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.userAvatar = avatar;
+    }
 
     public User(String email, String password) {
         this.email = email;
@@ -154,7 +165,6 @@ public class User implements Parcelable {
         dest.writeString(password);
         dest.writeString(token);
     }
-    
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
         public User createFromParcel(Parcel in) {
@@ -208,5 +218,13 @@ public class User implements Parcelable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public byte[] getAvatarBytes() {
+        return avatarBytes;
+    }
+
+    public void setAvatarBytes(byte[] avatarBytes) {
+        this.avatarBytes = avatarBytes;
     }
 }

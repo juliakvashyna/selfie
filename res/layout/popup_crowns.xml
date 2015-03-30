@@ -3,17 +3,17 @@
     android:id="@+id/popup"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
     android:background="@drawable/bk_favorites_rate"
     android:orientation="vertical" >
 
     <RatingBar
-        android:visibility="invisible"
         android:id="@+id/ratingBarCrowns"
         android:layout_width="wrap_content"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:numStars="5"
-        android:progressDrawable="@drawable/rating_selector" />
+        android:minHeight="23dp"
+        android:paddingTop="10dp"
+        android:progressDrawable="@drawable/rating_custom_bar" />
 
-</LinearLayout>
+</LinearLayout> 

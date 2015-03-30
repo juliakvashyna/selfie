@@ -29,9 +29,11 @@ import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.Comment;
 import com.bigdropinc.selfieking.model.selfie.Like;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
+import com.bigdropinc.selfieking.model.selfie.Vote;
 
 public class OneSelfieActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode> {
     public static final String INTENT_SELFIE_ID = "selfieId";
+    public static final String FROM_PROFILE = "fromProfile";
     private static final int LOADER_ID_ONESELFIE = 1;
     private ArrayList<SelfieImage> feedList;
     private FeedAdapter feedAdapter;
@@ -42,9 +44,11 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     private int LOADER_ID_LIKE = 8;
     private int LOADER_ID_DISLIKE = 9;
     private static final int LOADER_ID_CONTEST = 10;
+    private static final int LOADER_ID_VOTE = 0;
     private CommandLoader loader;
     private Bundle bundle;
     private Command command;
+    private boolean fromProfile;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -55,6 +59,11 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
 
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode statusCode) {
+        if (loader.getId() == LOADER_ID_VOTE) {
+            updateGridView(loader);
+            Toast.makeText(this, "Thanks for vote!", Toast.LENGTH_SHORT).show();
+            ContestFragment.vote = true;
+        }
         if (loader.getId() == LOADER_ID_ONESELFIE) {
             initSelfie();
         } else {
@@ -103,8 +112,13 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     }
 
     public void contest(SelfieImage selfieImage) {
-        Bundle bundle = getContestBundle(selfieImage);
-        getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, OneSelfieActivity.this).forceLoad();
+        if (!selfieImage.isInContest()) {
+            Bundle bundle = getContestBundle(selfieImage);
+            getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, OneSelfieActivity.this).forceLoad();
+        } else {
+            Toast.makeText(this, "Post already in contest", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     @Override
@@ -117,10 +131,10 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fromProfile = getIntent().getExtras().getBoolean(FROM_PROFILE);
         setContentView(R.layout.activity_one_selfie);
-      
         init();
-       
+
     }
 
     private void initSelfie() {
@@ -144,12 +158,15 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         if (statusCode.isSuccess()) {
             if (loader.getId() == LOADER_ID_CONTEST) {
                 Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
-            } 
-                updateGridView(loader);
-            
+                setResult(66);
+                finish();
+              }
+            updateGridView(loader);
+
         } else {
             Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void resetLoader(Like like, int id) {
@@ -171,9 +188,11 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
 
     private void initFeed() {
         feedList = new ArrayList<SelfieImage>();
-        feedAdapter = new FeedAdapter(this, R.layout.feed_item, feedList);
+        int layout = R.layout.feed_item;
+        if (fromProfile)
+            layout = R.layout.feed_item_inprofile;
+        feedAdapter = new FeedAdapter(this, layout, feedList);
         listView.setAdapter(feedAdapter);
-
     }
 
     private void showPopup(int message) {
@@ -231,5 +250,15 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         command.setSelfieImage(selfieImage);
         bundle.putParcelable(Constants.COMMAND, command);
         return bundle;
+    }
+
+    public void vote(int postId, int rate) {
+        Bundle bundle = new Bundle();
+        Command command = new Command(Command.VOTE);
+        command.setVote(new Vote(postId, rate));
+        command.setSelfieImage(selfieImage);
+        bundle.putParcelable(Constants.COMMAND, command);
+        getLoaderManager().initLoader(LOADER_ID_VOTE, bundle, OneSelfieActivity.this).forceLoad();
+
     }
 }

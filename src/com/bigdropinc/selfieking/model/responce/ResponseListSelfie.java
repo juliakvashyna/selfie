@@ -9,7 +9,9 @@ import java.util.List;
  */
 public class ResponseListSelfie {
     public String status;
+
     public List<ResponceError> error;
     public  ResponcePosts posts;
+    public Winner winner;
  
 }
