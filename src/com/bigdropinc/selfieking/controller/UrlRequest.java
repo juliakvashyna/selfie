@@ -27,4 +27,6 @@ public interface UrlRequest {
     String GET_LIKED = ADDRESS + "/api/post/liked";
     String VOTE = ADDRESS + "/api/post/vote";
     String AVATAR = ADDRESS + "/api/profile/avatar";
+    String DEVICE_REGISTR = ADDRESS + "/api/device/register";
+    String NOTIFICATIONS = ADDRESS + "/api/notification/list";
 }

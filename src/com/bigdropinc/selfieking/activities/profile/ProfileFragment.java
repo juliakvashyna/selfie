@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ComponentName;
@@ -48,6 +49,7 @@ import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.User;
+import com.bigdropinc.selfieking.model.responce.ResponseListSelfie;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.views.RoundedImageView;
@@ -56,6 +58,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private static final int REQUEST_EDIT = 35;
     private static final int LOADER_ID = 1;
     private static final int LOADER_ID_AVATAR = 2;
+    private static final int LOADER_ID_USER = 3;
     private RoundedImageView avatar;
     private int IMAGE_SIZE = 200;
     private View rootView;
@@ -78,15 +81,26 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private Uri outputFileUri;
     private int YOUR_SELECT_PICTURE_REQUEST_CODE = 33;
     private Button sortButton;
+    int mypage = 0;
+    boolean end;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         initViews();
-        initUser();
+        // if (user == null) {
+        startUser();
         initFeed();
+        // }
         initListeners();
         return rootView;
+    }
+
+    private void startUser() {
+        Command command = new Command(Command.GET_USER);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(Command.BUNDLE_NAME, command);
+        getLoaderManager().initLoader(LOADER_ID_USER, bundle, this).forceLoad();
     }
 
     @Override
@@ -97,15 +111,21 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onLoadFinished(android.content.Loader<StatusCode> arg0, StatusCode statusCode) {
+    public void onLoadFinished(android.content.Loader<StatusCode> loader, StatusCode statusCode) {
+        ResponseListSelfie responseListSelfie = ((CommandLoader) loader).getResponseListSelfie();
         if (loader.getId() == LOADER_ID_AVATAR) {
             User user = ((CommandLoader) loader).getUser();
             String url = UrlRequest.ADDRESS + user.getAvatar();
             CustomPicasso.getImageLoader(getActivity()).load(url).into(avatar);
             DatabaseManager.getInstance().updateUser(user);
+        } else if (loader.getId() == LOADER_ID_USER) {
+            user = ((CommandLoader) loader).getUser();
+            initUser();
         } else {
-            updateGridview(statusCode);
+            updateGridview(responseListSelfie, statusCode);
+
         }
+
         getLoaderManager().destroyLoader(loader.getId());
     }
 
@@ -113,22 +133,74 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoaderReset(android.content.Loader<StatusCode> arg0) {
     }
 
-    private void updateGridview(StatusCode statusCode) {
-        if (statusCode.isSuccess()) {
-            more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
-            if (more != null) {
-                images.addAll(more);
-                for (SelfieImage image : more) {
-                    if (image.isInContest()) {
-                        incontest.add(image);
-                    } else
-                        drafts.add(image);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK)
+            if (requestCode == YOUR_SELECT_PICTURE_REQUEST_CODE) {
+                final boolean isCamera;
+                if (data == null) {
+                    isCamera = true;
+                } else {
+                    final String action = data.getAction();
+                    if (action == null) {
+                        isCamera = false;
+                    } else {
+                        isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                    }
                 }
-                countTextView.setText(String.valueOf(images.size()));
+                Uri selectedImageUri;
+                if (isCamera) {
+                    selectedImageUri = outputFileUri;
+                } else {
+                    selectedImageUri = data == null ? null : data.getData();
+                }
+                if (selectedImageUri != null)
+                    loadAvatar(selectedImageUri);
+            } else if (requestCode == REQUEST_EDIT) {
+                startUser();
             }
-            adapter.notifyDataSetChanged();
+            else if(requestCode==77){
+                initFeed();
+            }
+    }
+
+    private void updateGridview(ResponseListSelfie responseListSelfie, StatusCode statusCode) {
+        if (statusCode.isSuccess()) {
+            more = (ArrayList<SelfieImage>) responseListSelfie.posts.list;
+            if (more != null) {
+                updateLists();
+            }
+
         } else {
             Toast.makeText(getActivity(), statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateAdapter() {
+        if (sortButton.getText().toString().equals("In contest")) {
+            adapter.setImages(incontest);
+        } else {
+            adapter.setImages(drafts);
+        }
+        adapter.notifyDataSetChanged();
+        gridView.setAdapter(adapter);
+        countTextView.setText(String.valueOf(adapter.getCount()));
+    }
+
+    private void updateLists() {
+        if (more.size() > 0) {
+            images.addAll(more);
+            for (SelfieImage image : more) {
+                if (image.isInContest()) {
+                    incontest.add(image);
+                } else {
+                    drafts.add(image);
+                }
+            }
+            updateAdapter();
+        } else {
+            end = true;
         }
     }
 
@@ -142,15 +214,20 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void initUser() {
-        user = DatabaseManager.getInstance().findUser(LoginManagerImpl.getInstance().getToken());
-        nameTextView.setText(user.getUserName());
-        emailTextView.setText(user.getEmail());
+        initUserNames();
         String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
         String userAvatar = user.getAvatar();
         if (userAvatar != null && userAvatar != "")
             url = UrlRequest.ADDRESS + userAvatar;
         CustomPicasso.getImageLoader(getActivity()).load(url).into(avatar);
 
+    }
+
+    private void initUserNames() {
+        // user =
+        // DatabaseManager.getInstance().findUser(LoginManagerImpl.getInstance().getToken());
+        nameTextView.setText(user.getUserName());
+        emailTextView.setText(user.getEmail());
     }
 
     private void initViews() {
@@ -188,21 +265,9 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
             }
         });
         sortButton.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
-                if (sortButton.getText().toString().equals("In contest")) {
-                    sortButton.setText(R.string.drafts);
-                    adapter.setImages(drafts);
-
-                } else {
-                    sortButton.setText(R.string.inContest);
-                    adapter.setImages(incontest);
-
-                }
-                adapter.notifyDataSetChanged();
-
+                sort();
             }
         });
     }
@@ -210,12 +275,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private void initGridview() {
         adapter = new ImageAdapter(getActivity(), R.layout.image_item_gridview, incontest);
         gridView.setAdapter(adapter);
-        gridView.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                loadMore(page);
-            }
-        });
+        initOnScrollListener();
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 startOneSelfieActivity(parent, position);
@@ -223,9 +283,21 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         });
     }
 
+    private void initOnScrollListener() {
+        gridView.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                if (!end) {
+                    mypage = mypage + 5;
+                    loadMore(mypage);
+                }
+            }
+        });
+    }
+
     private void startGetSelfieLoader() {
         bundle = new Bundle();
-        command = new Command(Command.GET_SELFIES, user);
+        command = new Command(Command.GET_SELFIES);
         command.setOffset(0);
         bundle.putParcelable(Command.BUNDLE_NAME, command);
         getLoaderManager().initLoader(LOADER_ID, bundle, ProfileFragment.this).forceLoad();
@@ -234,7 +306,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private void startEditActivity(int id) {
         Intent intent = new Intent(getActivity().getApplicationContext(), ProfileEditActivity.class);
         intent.putExtra("userId", id);
-        getActivity().startActivityForResult(intent, REQUEST_EDIT);
+        startActivityForResult(intent, REQUEST_EDIT);
     }
 
     private void loadMore(int page) {
@@ -288,34 +360,6 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         startActivityForResult(chooserIntent, YOUR_SELECT_PICTURE_REQUEST_CODE);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == YOUR_SELECT_PICTURE_REQUEST_CODE) {
-            final boolean isCamera;
-            if (data == null) {
-                isCamera = true;
-            } else {
-                final String action = data.getAction();
-                if (action == null) {
-                    isCamera = false;
-                } else {
-                    isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                }
-            }
-
-            Uri selectedImageUri;
-            if (isCamera) {
-                selectedImageUri = outputFileUri;
-            } else {
-                selectedImageUri = data == null ? null : data.getData();
-            }
-
-            loadAvatar(selectedImageUri);
-
-        }
-    }
-
     private void loadAvatar(Uri selectedImageUri) {
         Bitmap bitmap = getBitmap(selectedImageUri);
         bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
@@ -330,7 +374,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
 
     }
 
-    public byte[] getBytes(InputStream inputStream) throws IOException {
+    private byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
@@ -396,6 +440,23 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        } catch (NullPointerException e) {
+
+            e.printStackTrace();
+            return null;
         }
+    }
+
+    private void sort() {
+        if (sortButton.getText().toString().equals("In contest")) {
+            sortButton.setText(R.string.drafts);
+            adapter.setImages(drafts);
+
+        } else {
+            sortButton.setText(R.string.inContest);
+            adapter.setImages(incontest);
+        }
+        countTextView.setText(String.valueOf(adapter.getCount()));
+        adapter.notifyDataSetChanged();
     }
 }

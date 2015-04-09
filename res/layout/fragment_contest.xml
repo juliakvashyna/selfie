@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:tag="TAB_CONTEST"
     tools:context="com.bigdropinc.selfieking.activities.social.ContestFragment" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="@drawable/top_bar"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_bar" >
 
         <com.makeramen.segmented.SegmentedRadioGroup
             android:id="@+id/segment_text"
@@ -54,6 +55,7 @@
         <ListView
             android:id="@+id/notificationsListView"
             android:layout_width="match_parent"
+            android:divider="@null"
             android:layout_height="wrap_content"
             android:padding="1dp" >
         </ListView>

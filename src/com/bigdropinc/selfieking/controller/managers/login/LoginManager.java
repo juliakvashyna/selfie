@@ -18,4 +18,6 @@ public interface LoginManager {
 
     void setToken(String token);
 
+    int getId();
+
 }

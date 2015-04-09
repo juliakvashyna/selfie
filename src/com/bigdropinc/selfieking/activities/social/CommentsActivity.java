@@ -43,6 +43,7 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
     private int position;
     private int LOADER_ID_COMMENT = 25;
     private CommentSelfieImage selfieImage;
+    private int userId;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -81,6 +82,7 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
         initListeners();
         postId = getIntent().getExtras().getInt("postId");
         position = getIntent().getExtras().getInt("position");
+        userId=getIntent().getExtras().getInt("userId");
         previousActivity = getIntent().getExtras().getParcelable("previous");
         if (InternetChecker.isNetworkConnected()) {
             startLoader();
@@ -146,6 +148,7 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
     private Comment createComment() {
         Comment comment = new Comment();
         comment.setPostId(postId);
+        comment.setUserId(userId);
         comment.setText(commentEditText.getText().toString());
         return comment;
     }
@@ -169,6 +172,7 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
         SelfieImage selfieImage = new SelfieImage();
         selfieImage.setToken(LoginManagerImpl.getInstance().getToken());
         selfieImage.setId(postId);
+        selfieImage.setUserId(userId);
         command.setSelfieImage(selfieImage);
 
         budle.putParcelable(Command.BUNDLE_NAME, command);
@@ -178,7 +182,7 @@ public class CommentsActivity extends Activity implements LoaderManager.LoaderCa
     private void initComments(Loader<StatusCode> loader) {
         selfieImage = ((CommandLoader) loader).getCommentSelfieImage();
         commentsList = selfieImage.getComments();
-        adapter = new CommentAdapter(getApplicationContext(), R.layout.comment_item, commentsList);
+        adapter = new CommentAdapter(this, R.layout.comment_item, commentsList);
         listView.setAdapter(adapter);
     }
 

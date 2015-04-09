@@ -1,13 +1,29 @@
 package com.bigdropinc.selfieking.activities.login;
 
+import java.util.UUID;
+
 import android.app.Activity;
+import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 
+import com.bigdrop.selfieking.gcm.DeviceInfo;
+import com.bigdropinc.selfieking.GCMHelper;
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.R.layout;
 import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
+import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
+import com.bigdropinc.selfieking.model.responce.StatusCode;
+import com.google.android.gcm.GCMRegistrar;
 
 public class LogoActivity extends Activity {
 
@@ -53,4 +69,5 @@ public class LogoActivity extends Activity {
         startActivity(intent);
         LogoActivity.this.finish();
     }
+
 }

@@ -1,5 +1,6 @@
 package com.bigdropinc.selfieking.controller.loaders;
 
+import com.bigdrop.selfieking.gcm.DeviceInfo;
 import com.bigdropinc.selfieking.model.Password;
 import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.selfie.Comment;
@@ -14,6 +15,7 @@ import android.os.Parcelable;
 public class Command implements Parcelable {
     public static final String BUNDLE_NAME = "command";
     public static final String REGISTR = "registr";
+    public static final String REGISTR_DEVICE = "registrDevice";
     public static final String DELETE_SELFIE = "delete";
     public static final String RESET_PASSWORD = "resetPassword";
     public static final String LOGIN = "login";
@@ -35,6 +37,7 @@ public class Command implements Parcelable {
     public static final String LOGIN_FB = "loginFB";
     public static final String VOTE = "vote";
     public static final String AVATAR = "avatar";
+    public static final String GET_NOTIFICATIONS = "notifications";
     private String command;
     private Password password;
     private int offset;
@@ -44,6 +47,7 @@ public class Command implements Parcelable {
     private Contest contest;
     private Like like;
     private Vote vote;
+    private DeviceInfo deviceInfo;
 
     public Contest getContest() {
         return contest;
@@ -164,6 +168,14 @@ public class Command implements Parcelable {
 
     public void setVote(Vote vote) {
         this.vote = vote;
+    }
+
+    public DeviceInfo getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public void setDeviceInfo(DeviceInfo deviceInfo) {
+        this.deviceInfo = deviceInfo;
     }
 
 }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +16,9 @@ import android.view.ContextThemeWrapper;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -49,6 +52,7 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     private Bundle bundle;
     private Command command;
     private boolean fromProfile;
+    private ImageButton backButton;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -127,6 +131,10 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         startLoaderForSelfie();
         initFeed();
     }
+    @Override
+    public void onBackPressed() {
+       finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +168,7 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
                 Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
                 setResult(66);
                 finish();
-              }
+            }
             updateGridView(loader);
 
         } else {
@@ -183,6 +191,15 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
 
     private void init() {
         listView = (ListView) findViewById(R.id.oneSelfieListView);
+        backButton = (ImageButton) findViewById(R.id.backButton);
+        backButton.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+                
+            }
+        });
         listView.setItemsCanFocus(true);
     }
 
@@ -198,13 +215,13 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     private void showPopup(int message) {
         AlertDialog.Builder popupBuilder = new AlertDialog.Builder(new ContextThemeWrapper(this, android.R.style.Theme_Holo_Dialog));
         popupBuilder.setMessage(message);
-        popupBuilder.setPositiveButton("Delete", new OnClickListener() {
+        popupBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 delete();
             }
         });
-        popupBuilder.setNegativeButton("Cancel", new OnClickListener() {
+        popupBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();

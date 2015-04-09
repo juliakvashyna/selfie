@@ -23,6 +23,16 @@ public class Comment implements Parcelable {
     private String date;
     @JsonIgnore
     private String token;
+    @JsonIgnore
+    private String userAvatar;
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
 
     public Comment() {
     }

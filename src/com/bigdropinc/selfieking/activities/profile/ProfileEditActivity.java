@@ -195,7 +195,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
 
     private void initUser() {
         user = DatabaseManager.getInstance().findUser(LoginManagerImpl.getInstance().getToken());
-        Command command = new Command(Command.GET_USER, user);
+        Command command = new Command(Command.GET_USER);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Command.BUNDLE_NAME, command);
         getLoaderManager().initLoader(LOADER_ID, bundle, ProfileEditActivity.this).forceLoad();
@@ -220,6 +220,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
                 fillUser();
             } else if (loader.getId() == LOADER_ID_EDIT) {
                 Toast.makeText(this, "Profile was edited", Toast.LENGTH_SHORT).show();
+                hideSoftKeyboard(this);
                 finish();
             }
         } else {

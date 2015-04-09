@@ -30,14 +30,31 @@
         </ImageView>
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/flocation"
-        style="@style/customTextViewRozyLighr"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="10dp"
-        android:padding="5dp"
-        android:textSize="12sp" />
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <ImageView
+            android:id="@+id/place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/icon_place" />
+
+        <TextView
+            android:id="@+id/flocation"
+            style="@style/customTextViewRozyLighr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="2dp"
+            android:textSize="12sp" />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/fdescription"

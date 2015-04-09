@@ -1,11 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:tag="TAB_PROFILE"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="5dp"
-    tools:context="com.bigdropinc.selfieking.fragments.ProfileActivity" >
+    android:padding="5dp" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -48,21 +48,22 @@
         style="@style/customEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/profileEmailTextView"
         style="@style/customEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp" />
+        android:textColor="#FEC7BA"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/profileCountTextView"
         style="@style/customEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="2dp"
         android:background="@drawable/amount_bg"
         android:gravity="center" />
 
@@ -72,8 +73,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:padding="5dp"
-        android:text="@string/inContest" />
+        android:padding="2dp"
+        android:text="@string/inContest"
+        android:textSize="15sp" />
 
     <GridView
         android:id="@+id/profileGridView"

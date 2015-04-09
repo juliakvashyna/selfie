@@ -42,8 +42,8 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
 
     @Override
     public SelfieImage getItem(int position) {
-        if(position<images.size())
-        return images.get(position);
+        if (position < images.size())
+            return images.get(position);
         return null;
     }
 
@@ -81,6 +81,12 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         else
             imageUrl = feedItem.getImage();
         return imageUrl;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        // TODO Auto-generated method stub
+        super.notifyDataSetChanged();
     }
 
     // class ViewHolder {

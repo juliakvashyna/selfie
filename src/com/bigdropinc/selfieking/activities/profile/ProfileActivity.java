@@ -49,6 +49,7 @@ import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.User;
+import com.bigdropinc.selfieking.model.responce.ResponseListSelfie;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.views.RoundedImageView;
@@ -72,6 +73,8 @@ public class ProfileActivity extends Activity implements LoaderManager.LoaderCal
     private Command command;
     private ImageAdapter adapter;
     private ArrayList<SelfieImage> more;
+    private boolean end;
+    private int mypage;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,11 +102,13 @@ public class ProfileActivity extends Activity implements LoaderManager.LoaderCal
 
     @Override
     public void onLoadFinished(android.content.Loader<StatusCode> loader, StatusCode statusCode) {
+        ResponseListSelfie responseListSelfie = ((CommandLoader) loader).getResponseListSelfie();
         if (loader.getId() == LOADER_ID_USER) {
             user = ((CommandLoader) loader).getUser();
             initUser();
         } else {
-            updateGridview(statusCode);
+            countTextView.setText(String.valueOf(responseListSelfie.posts.count));
+            updateGridview(responseListSelfie, statusCode);
         }
         getLoaderManager().destroyLoader(loader.getId());
     }
@@ -112,18 +117,27 @@ public class ProfileActivity extends Activity implements LoaderManager.LoaderCal
     public void onLoaderReset(android.content.Loader<StatusCode> arg0) {
     }
 
-    private void updateGridview(StatusCode statusCode) {
+    private void updateGridview(ResponseListSelfie responseListSelfie, StatusCode statusCode) {
         if (statusCode.isSuccess()) {
-            more = (ArrayList<SelfieImage>) ((CommandLoader) loader).getSelfies();
+            more = (ArrayList<SelfieImage>) responseListSelfie.posts.list;
             if (more != null) {
-                if (!images.containsAll(more))
-                    images.addAll(more);
-                countTextView.setText(String.valueOf(images.size()));
+                if (more.size() > 0) {
+                    updateAdapter();
+                } else {
+                    end = true;
+                    mypage=0;
+                }
             }
-            adapter.notifyDataSetChanged();
         } else {
             Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void updateAdapter() {
+        if (!images.containsAll(more))
+            images.addAll(more);
+        adapter.setImages(images);
+        adapter.notifyDataSetChanged();
     }
 
     private void initFeed() {
@@ -172,7 +186,10 @@ public class ProfileActivity extends Activity implements LoaderManager.LoaderCal
         gridView.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                loadMore(page);
+                if (!end) {
+                    mypage = mypage + 5;
+                    loadMore(mypage);
+                }
             }
         });
         gridView.setOnItemClickListener(new OnItemClickListener() {

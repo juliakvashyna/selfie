@@ -20,6 +20,8 @@ public class User implements Parcelable {
     @DatabaseField
     @JsonProperty("username")
     private String userName;
+    @JsonProperty("name")
+    private String name;
     @DatabaseField
     private String email;
     private String password;
@@ -38,6 +40,7 @@ public class User implements Parcelable {
     @DatabaseField
     private String reg_date;
     @DatabaseField
+    @JsonProperty("token")
     private String token;
     @DatabaseField
     private String status;
@@ -45,6 +48,7 @@ public class User implements Parcelable {
     private String phone;
     @DatabaseField
     private String userAvatar;
+    private String avatar;
     private byte[] avatarBytes;
 
     public String getAvatar() {
@@ -164,6 +168,9 @@ public class User implements Parcelable {
         dest.writeString(email);
         dest.writeString(password);
         dest.writeString(token);
+        dest.writeString(phone);
+        dest.writeString(site);
+        dest.writeString(job);
     }
 
     public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
@@ -182,6 +189,9 @@ public class User implements Parcelable {
         email = in.readString();
         password = in.readString();
         token = in.readString();
+        phone = in.readString();
+        site = in.readString();
+        job = in.readString();
     }
 
     public User() {

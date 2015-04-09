@@ -11,7 +11,7 @@ public class ResponseListSelfie {
     public String status;
 
     public List<ResponceError> error;
-    public  ResponcePosts posts;
+    public  ResponcePosts posts= new ResponcePosts();
     public Winner winner;
  
 }

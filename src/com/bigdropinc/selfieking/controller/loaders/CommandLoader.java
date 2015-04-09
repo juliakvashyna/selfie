@@ -17,8 +17,10 @@ import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
 import com.bigdropinc.selfieking.model.Password;
 import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.responce.ResponceError;
+import com.bigdropinc.selfieking.model.responce.ResponseListNotification;
 import com.bigdropinc.selfieking.model.responce.ResponseListSelfie;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
+import com.bigdropinc.selfieking.model.responce.notification.Notification;
 import com.bigdropinc.selfieking.model.selfie.CommentSelfieImage;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.model.selfie.Vote;
@@ -39,6 +41,7 @@ public class CommandLoader extends Loader<StatusCode> {
     private Command command;
     private Activity activity;
     private ResponseListSelfie responseListSelfie;
+    private List<Notification> notifications;
 
     public CommandLoader(Activity activity, Bundle bundle) {
         super(activity.getApplicationContext());
@@ -159,13 +162,16 @@ public class CommandLoader extends Loader<StatusCode> {
                 } else if (Command.RESET_PASSWORD.equals(commandName)) {
                     statusCode = helper.resetPassword(user);
                 } else if (Command.POST_SELFIE.equals(commandName)) {
-                    statusCode = helper.postSelfie(selfieImage);
+                    statusCode = helper.postSelfie(selfieImage, false);
                 } else if (Command.POST_SELFIE_CONTEST.equals(commandName)) {
                     statusCode = helper.postSelfie(selfieImage, true);
                 } else if (Command.DELETE_SELFIE.equals(commandName)) {
                     statusCode = helper.deleteSelfie(selfieImage);
                 } else if (Command.GET_SELFIES.equals(commandName)) {
-                    setSelfies(helper.getSelfies(command.getOffset(), user.getId()));
+                    if (user != null)
+                        setResponseListSelfie(helper.getSelfies(command.getOffset(), user.getId()));
+                    else
+                        setResponseListSelfie(helper.getSelfies(command.getOffset()));
 
                 } else if (Command.LOGIN.equals(commandName)) {
                     user = helper.getUser(user.getEmail(), user.getPassword());
@@ -202,6 +208,10 @@ public class CommandLoader extends Loader<StatusCode> {
                 } else if (Command.VOTE.equals(commandName)) {
                     Vote vote = command.getVote();
                     selfieImage = helper.vote(vote.getPostId(), vote.getRate());
+                } else if (Command.REGISTR_DEVICE.equals(commandName)) {
+                    statusCode = helper.registrDevice(command.getDeviceInfo());
+                } else if (Command.GET_NOTIFICATIONS.equals(commandName)) {
+                    notifications = helper.getNotifications(command.getOffset());
                 }
             } catch (ApiException e) {
                 statusCode.setCode(e.status);
@@ -218,5 +228,13 @@ public class CommandLoader extends Loader<StatusCode> {
             super.onPostExecute(result);
             getResultFromTask(result);
         }
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 }

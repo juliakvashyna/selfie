@@ -54,7 +54,7 @@ public abstract class EndlessScrollListener implements OnScrollListener {
 
     public void incremetnPage() {
         currentPage += VISIBLETHRESHOLD - 1;
-       
+
     }
 
     @SuppressLint("NewApi")
@@ -93,11 +93,6 @@ public abstract class EndlessScrollListener implements OnScrollListener {
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        // if (scrollState != 0)
-        // ((HouseAdapter) gridView.getAdapter()).isScrolling = true;
-        // else {
-        // ((HouseAdapter) gridView.getAdapter()).isScrolling = false;
-        // ((HouseAdapter) gridView.getAdapter()).notifyDataSetChanged();
-        // }
+
     }
 }

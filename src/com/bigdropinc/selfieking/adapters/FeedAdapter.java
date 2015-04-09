@@ -10,11 +10,8 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,23 +24,21 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.PopupWindow.OnDismissListener;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
 
-import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.activities.profile.ProfileActivity;
 import com.bigdropinc.selfieking.activities.social.CommentsActivity;
 import com.bigdropinc.selfieking.activities.social.ContestFragment;
-import com.bigdropinc.selfieking.activities.social.FeedFragment;
 import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
 import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
 import com.bigdropinc.selfieking.controller.CustomPicasso;
 import com.bigdropinc.selfieking.controller.UrlRequest;
 import com.bigdropinc.selfieking.controller.managers.login.LoginManagerImpl;
-import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.selfie.Like;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.views.RoundedImageView;
@@ -80,6 +75,9 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             holder.imageView = (ImageView) convertView.findViewById(R.id.fimage);
             holder.descTextView = (TextView) convertView.findViewById(R.id.fdescription);
             holder.locationTextView = (TextView) convertView.findViewById(R.id.flocation);
+            holder.placeImageView = (ImageView) convertView.findViewById(R.id.place);
+            holder.progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
+            holder.progressBar.setVisibility(View.VISIBLE);
             if (r == R.layout.feed_item) {
                 holder.timeTextView = (TextView) convertView.findViewById(R.id.ftime);
                 holder.likes = (TextView) convertView.findViewById(R.id.likes);
@@ -93,15 +91,12 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             } else {
                 holder.contentButton = (Button) convertView.findViewById(R.id.contestButton);
             }
-            holder.progressBar = (ProgressBar) convertView.findViewById(R.id.progressBar);
-            holder.progressBar.setVisibility(View.VISIBLE);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         if (r == R.layout.feed_item) {
             initListeners(holder, feedItem, position);
-            holder.nameTextView.setText("" + feedItem.getUserName());
         } else {
             initAddToContest(holder, feedItem);
         }
@@ -113,32 +108,42 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
     private void fillSelfe(ViewHolder holder, final SelfieImage feedItem) {
         fillImage(holder, feedItem);
-        holder.locationTextView.setText(feedItem.getLocation());
-        if (r == R.layout.feed_item) {
-            if (feedItem.getStars() != null) {
-                holder.likes.setText(String.valueOf(feedItem.getStars().getTotal()));
-                holder.comments.setText(String.valueOf(feedItem.getComment()));
-                if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
-                    holder.descTextView.setText(feedItem.getDescription());
-                    holder.descTextView.setVisibility(View.VISIBLE);
-                } else {
-                    holder.descTextView.setVisibility(View.GONE);
-                }
-                holder.likeButton.setSelected(feedItem.isLiked());
-                holder.contentButton.setSelected(feedItem.isInContest());
-                holder.commentButton.setSelected(feedItem.getComment() != 0);
-                holder.timeTextView.setText(getTimeString(feedItem.getDate()));
-                String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
-                String userAvatar = feedItem.getUserAvatar();
-                if (userAvatar != null && userAvatar != "")
-                    url = UrlRequest.ADDRESS + userAvatar;
-                CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
-            }
+        fillDescription(holder, feedItem);
+        if (feedItem.getLocation() != null && !feedItem.getLocation().isEmpty()) {
+            holder.locationTextView.setText(feedItem.getLocation());
+            holder.locationTextView.setVisibility(View.VISIBLE);
+            holder.placeImageView.setVisibility(View.VISIBLE);
         } else {
-            if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
-                holder.descTextView.setText(feedItem.getDescription());
+            holder.locationTextView.setVisibility(View.GONE);
+            holder.placeImageView.setVisibility(View.GONE);
+        }
+        if (r == R.layout.feed_item) {
+            holder.likes.setText(String.valueOf(feedItem.getStars().getTotal()));
+            holder.comments.setText(String.valueOf(feedItem.getComment()));
+            holder.nameTextView.setText(feedItem.getUserName());
+            holder.likeButton.setSelected(feedItem.isLiked());
+            holder.contentButton.setSelected(feedItem.isInContest());
+            holder.commentButton.setSelected(feedItem.getComment() != 0);
+            holder.timeTextView.setText(getTimeString(feedItem.getDate()));
+            fillAvatar(holder, feedItem);
 
-            }
+        }
+    }
+
+    private void fillAvatar(ViewHolder holder, final SelfieImage feedItem) {
+        String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
+        String userAvatar = feedItem.getUserAvatar();
+        if (userAvatar != null && userAvatar != "")
+            url = UrlRequest.ADDRESS + userAvatar;
+        CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
+    }
+
+    private void fillDescription(ViewHolder holder, final SelfieImage feedItem) {
+        if (feedItem.getDescription() != null && !feedItem.getDescription().isEmpty()) {
+            holder.descTextView.setText(feedItem.getDescription());
+            holder.descTextView.setVisibility(View.VISIBLE);
+        } else {
+            holder.descTextView.setVisibility(View.GONE);
         }
     }
 
@@ -196,7 +201,6 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     }
 
     private void showPopup(ViewHolder holder, final SelfieImage selfie) {
-
         // Inflate the popup_layout.xml
         LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.popup);
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -206,23 +210,18 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         final PopupWindow popup = new PopupWindow(layout, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, true);
         popup.setOutsideTouchable(true);
         popup.setBackgroundDrawable(new BitmapDrawable());
-        RatingBar ratingBar = (RatingBar) layout.findViewById(R.id.ratingBarCrowns);
+        final RatingBar ratingBar = (RatingBar) layout.findViewById(R.id.ratingBarCrowns);
         ratingBar.setMax(5);
         if (selfie != null && selfie.getStars() != null)
             ratingBar.setProgress((int) selfie.getStars().getMy());
-        ratingBar.setOnRatingBarChangeListener(new OnRatingBarChangeListener() {
-
+        popup.showAsDropDown(holder.contentButton, 0, -230);
+        popup.setOnDismissListener(new OnDismissListener() {
             @Override
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+            public void onDismiss() {
                 if (context instanceof OneSelfieActivity)
-                    ((OneSelfieActivity) context).vote(selfie.getId(), (int) rating);
-                popup.dismiss();
-
+                    ((OneSelfieActivity) context).vote(selfie.getId(), (int) ratingBar.getRating());
             }
         });
-
-        popup.showAsDropDown(holder.contentButton, 0, -230);
-
     }
 
     private void initListeners(final ViewHolder holder, final SelfieImage selfie, final int position) {
@@ -269,13 +268,9 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
         });
         holder.avatar.setOnClickListener(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                intent.putExtra("userId", selfie.getUserId());
-                context.startActivity(intent);
-
+                gotoUserProfile(selfie);
             }
         });
     }
@@ -284,6 +279,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         Intent intent = new Intent(context.getApplicationContext(), CommentsActivity.class);
         intent.putExtra("postId", selfie.getId());
         intent.putExtra("index", position);
+        intent.putExtra("userId", selfie.getUserId());
         context.startActivityForResult(intent, 10);
     }
 
@@ -349,6 +345,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         private ImageView imageView;
         private TextView descTextView;
         private TextView locationTextView;
+        private ImageView placeImageView;
         private TextView timeTextView;
         private TextView nameTextView;
         private TextView likes;
@@ -375,6 +372,13 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     private void hideKeyboard(final ViewHolder holder) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(holder.commentEditText.getWindowToken(), 0);
+    }
+
+    private void gotoUserProfile(final SelfieImage selfie) {
+        Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+        int userId = selfie.getUserId();
+        intent.putExtra("userId", userId);
+        context.startActivity(intent);
     }
 
 }

@@ -28,9 +28,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.activities.profile.ProfileActivity;
 import com.bigdropinc.selfieking.activities.social.ContestFragment;
 import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
+import com.bigdropinc.selfieking.controller.CustomPicasso;
+import com.bigdropinc.selfieking.controller.UrlRequest;
 import com.bigdropinc.selfieking.model.selfie.Contest;
+import com.bigdropinc.selfieking.views.RoundedImageView;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
@@ -48,6 +52,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     private ViewPager mViewPager;
     private ContestFragment fragment;
     GridView gridView;
+
     public GridView getGridView() {
         return gridView;
     }
@@ -127,28 +132,25 @@ public class ViewPagerAdapter extends PagerAdapter {
     /**
      * Initiate the view here.
      */
-    public void initView(View v, ViewPagerItem item, int position) {
+    public void initView(View v, final ViewPagerItem item, int position) {
         TextView month = (TextView) v.findViewById(R.id.monthTextView);
         LinearLayout layout = (LinearLayout) v.findViewById(R.id.winnerLayout);
         LinearLayout monthlayout = (LinearLayout) v.findViewById(R.id.monthLayout);
+        TextView topRecent = (TextView) v.findViewById(R.id.topRecentTextView);
+        ImageButton topRecentImage = (ImageButton) v.findViewById(R.id.topRecentImageButton);
         initGridView(v, item);
         month.setText(item.getMonth() + ", " + item.getYear());
         if (item.getMonthNumber() < Calendar.getInstance().get(Calendar.MONTH)) {
             layout.setVisibility(View.VISIBLE);
             monthlayout.setVisibility(View.GONE);
+            topRecent.setVisibility(View.GONE);
+            topRecentImage.setVisibility(View.GONE);
             if (item.getWinner() != null) {
-                TextView name = (TextView) v.findViewById(R.id.winnerName);
-                TextView location = (TextView) v.findViewById(R.id.location);
-                TextView role = (TextView) v.findViewById(R.id.winnerRole);
-                TextView crowns = (TextView) v.findViewById(R.id.winnerCrowns);
-                if (item.getWinner() != null) {
-                    name.setText(item.getWinner().getUserName());
-                    // location.setText(item.getWinner().getLocation());
-                    // role.setText(item.getWinner().getRole());
-                    crowns.setText(String.valueOf(item.getWinner().getStars()));
-                }
+                initWinner(v, item);
             }
         } else {
+            topRecent.setVisibility(View.VISIBLE);
+            topRecentImage.setVisibility(View.VISIBLE);
             layout.setVisibility(View.GONE);
             monthlayout.setVisibility(View.VISIBLE);
         }
@@ -161,9 +163,39 @@ public class ViewPagerAdapter extends PagerAdapter {
         initButtons(v);
     }
 
+    private void initWinner(View v, final ViewPagerItem item) {
+        TextView name = (TextView) v.findViewById(R.id.winnerName);
+        TextView location = (TextView) v.findViewById(R.id.location);
+        TextView role = (TextView) v.findViewById(R.id.winnerRole);
+        TextView crowns = (TextView) v.findViewById(R.id.winnerCrowns);
+        RoundedImageView avatar = (RoundedImageView) v.findViewById(R.id.avatarWinner);
+        if (item.getWinner() != null) {
+            name.setText(item.getWinner().getUserName());
+            location.setText(item.getWinner().getLocation());
+            // role.setText(item.getWinner().getRole());
+            crowns.setText(String.valueOf(item.getWinner().getRate()));
+            if (item.getWinner().getUserAvatar() != null && !item.getWinner().getUserAvatar().isEmpty()) {
+                String url = UrlRequest.ADDRESS + item.getSelfies().get(0).getUserAvatar();
+                CustomPicasso.getImageLoader(context).load(url).into(avatar);
+            }
+        }
+        avatar.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                gotoUserProfile(item.getWinner().getUserId());
+            }
+        });
+    }
+
+    protected void gotoUserProfile(int userId) {
+        Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+        intent.putExtra("userId", userId);
+        context.startActivity(intent);
+
+    }
+
     private void changeTopRecent(final TextView topRecent, final ImageButton topRecentImage, ViewPagerItem item) {
         item.getContest().setOrder();
-
         changeTitle(topRecent, topRecentImage, item);
         fragment.changeSort(item.getContest(), item.getMonthNumber());
 
@@ -244,8 +276,9 @@ public class ViewPagerAdapter extends PagerAdapter {
 
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                fragment.loadMore(item.getMonthNumber(), totalItemsCount);
-
+                mypage = mypage + 5;
+                fragment.loadMore(item, mypage);
+              
             }
         });
 
@@ -267,7 +300,8 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     public void updateImageAdapter() {
-        imageAdapter.notifyDataSetChanged();
+        if (imageAdapter != null)
+            imageAdapter.notifyDataSetChanged();
     }
 
     public ImageAdapter getImageAdapter() {

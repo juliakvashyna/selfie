@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -12,12 +14,20 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <uses-feature android:name="android.hardware.camera"/>
     <uses-feature android:name="android.hardware.camera.autofocus"/>
     <uses-feature android:name="android.hardware.camera.flashlight"/>
 
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
     <uses-permission android:name="com.android.vending.BILLING"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+
+    <permission android:name="com.bigdropinc.selfieking.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+
+    <uses-permission android:name="com.bigdropinc.selfieking.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
@@ -26,6 +36,7 @@
         <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
 
         <activity android:label="@string/app_name" android:name="com.bigdropinc.selfieking.activities.login.LogoActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen">
+            <intent-filter android:label="@string/app_name"/>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -69,7 +80,7 @@
         </activity>
         <activity android:name="com.bigdropinc.selfieking.activities.social.CommentsActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
-                <activity android:name="com.bigdropinc.selfieking.activities.profile.ProfileActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
+        <activity android:name="com.bigdropinc.selfieking.activities.profile.ProfileActivity" android:screenOrientation="portrait" android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
 
         <receiver android:label="NetworkConnection" android:name="com.bigdropinc.selfieking.receiver.ConnectionChangeReceiver">
@@ -86,6 +97,17 @@
         <provider android:authorities="com.facebook.app.NativeAppCallContentProvider799554853444316" android:exported="true" android:name="com.facebook.NativeAppCallContentProvider"/>
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="9600793ec266638c25e60da1cdff7a7d24300b1d"/>
+
+        <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+
+                <category android:name="com.bigdropinc.selfieking"/>
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.bigdropinc.selfieking.GCMIntentService"/>
         <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.PhoneNumberActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
         <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:name="com.digits.sdk.android.ConfirmationCodeActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>
         <activity android:configChanges="orientation|screenSize" android:excludeFromRecents="true" android:exported="false" android:launchMode="singleTop" android:name="com.digits.sdk.android.LoginCodeActivity" android:taskAffinity="com.digits.sdk.android" android:windowSoftInputMode="stateVisible"/>

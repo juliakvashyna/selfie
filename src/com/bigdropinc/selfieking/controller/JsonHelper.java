@@ -16,8 +16,10 @@ import com.bigdropinc.selfieking.model.responce.ResponceCommentSelfie;
 import com.bigdropinc.selfieking.model.responce.ResponceError;
 import com.bigdropinc.selfieking.model.responce.ResponceSelfie;
 import com.bigdropinc.selfieking.model.responce.ResponceUser;
+import com.bigdropinc.selfieking.model.responce.ResponseListNotification;
 import com.bigdropinc.selfieking.model.responce.ResponseListSelfie;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
+import com.bigdropinc.selfieking.model.responce.notification.Notification;
 import com.bigdropinc.selfieking.model.selfie.CommentSelfieImage;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 
@@ -44,7 +46,7 @@ public class JsonHelper {
         if (responce == null) {
             throw new ApiException("ResponceUser is null");
         } else if (responce.error != null) {
-            throw new ApiException(responce.status, responce.error); 
+            throw new ApiException(responce.status, responce.error);
         } else {
             user = responce.user;
             if (user != null)
@@ -91,6 +93,30 @@ public class JsonHelper {
         return response.posts.list;
 
     }
+    public List<Notification> parseNotifications(String content) throws ApiException {
+        ResponseListNotification response = null;
+        try {
+            response = new ObjectMapper().readValue(content, ResponseListNotification.class);
+        } catch (JsonParseException e) {
+            e.printStackTrace();
+            initInternetException();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+            initInternetException();
+        } catch (IOException e) {
+            e.printStackTrace();
+            initInternetException();
+        }
+        if (response == null) {
+            Log.d(TAG, "ResponseListSelfie is null");
+            return new ArrayList<Notification>();
+        } else if (response.error != null) {
+            throw new ApiException(response.status, response.error);
+        }
+        return response.notifications.list;
+
+    }
+    
 
     public ResponseListSelfie parseResponseListSelfie(String content) throws ApiException {
         ResponseListSelfie response = null;

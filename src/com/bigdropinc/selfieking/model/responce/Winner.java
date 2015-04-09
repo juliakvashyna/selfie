@@ -1,18 +1,27 @@
 package com.bigdropinc.selfieking.model.responce;
 
 public class Winner {
-    public String userId;
+    public int userId;
     public String userName;
+    public String location;
     public String userAvatar;
     public Integer postId;
     public int stars;
     public int rate;
 
-    public String getUserId() {
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 

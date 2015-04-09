@@ -221,6 +221,12 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
 
     }
 
+    public void contest(SelfieImage selfieImage) {
+        Bundle bundle = getContestBundle(selfieImage);
+        getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, ShareActivity.this).forceLoad();
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -385,7 +391,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
             public void onClick(View v) {
                 dialog = ProgressDialog.show(ShareActivity.this, "", "");
                 dialog.setContentView(new ProgressBar(ShareActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                startCommandLoader();
+                startCommandLoader(Command.POST_SELFIE);
             }
         });
         fbButton.setOnClickListener(new OnClickListener() {
@@ -421,7 +427,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
                 dialog = ProgressDialog.show(ShareActivity.this, "", "");
                 dialog.setContentView(new ProgressBar(ShareActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
 
-                startCommandLoaderContest();
+                startCommandLoader(Command.POST_SELFIE_CONTEST);
                 addToContest = true;
             }
 
@@ -441,13 +447,6 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         hideSoftKeyboard(this);
         getApplicationContext().getContentResolver().delete(myImageUri, null, null);
         startActivity(intent);
-
-    }
-
-    public void contest(SelfieImage selfieImage) {
-
-        Bundle bundle = getContestBundle(selfieImage);
-        getLoaderManager().initLoader(LOADER_ID_CONTEST, bundle, ShareActivity.this).forceLoad();
 
     }
 
@@ -482,32 +481,32 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void startCommandLoader() {
-        Bundle bundle = new Bundle();
-        SelfieImage selfie = new SelfieImage();
-        // if()
-        editImage.createBytesFilter(image);
-        byteArray = editImage.getFilterImageBytes();
-        selfie.setBytesImage(byteArray);
-        selfie.setDescription(editText.getText().toString());
-        selfie.setToken(LoginManagerImpl.getInstance().getToken());
-        selfie.setLocation(countryName);
-        Command command = new Command(Command.POST_SELFIE);
-        command.setSelfieImage(selfie);
-        bundle.putParcelable("command", command);
-        getLoaderManager().initLoader(LOADER_ID, bundle, ShareActivity.this).forceLoad();
-    }
+    // private void startCommandLoader() {
+    // Bundle bundle = new Bundle();
+    // SelfieImage selfie = new SelfieImage();
+    // editImage.createBytesFilter(image);
+    // byteArray = editImage.getFilterImageBytes();
+    // selfie.setBytesImage(byteArray);
+    // selfie.setDescription(editText.getText().toString());
+    // selfie.setToken(LoginManagerImpl.getInstance().getToken());
+    // selfie.setLocation(countryName);
+    // Command command = new Command(Command.POST_SELFIE);
+    // command.setSelfieImage(selfie);
+    // bundle.putParcelable("command", command);
+    // getLoaderManager().initLoader(LOADER_ID, bundle,
+    // ShareActivity.this).forceLoad();
+    // }
 
-    private void startCommandLoaderContest() {
+    private void startCommandLoader(String commandName) {
         Bundle bundle = new Bundle();
         SelfieImage selfie = new SelfieImage();
-        // if()
         editImage.createBytesFilter(image);
         byteArray = editImage.getFilterImageBytes();
         selfie.setBytesImage(byteArray);
         selfie.setDescription(editText.getText().toString());
         selfie.setToken(LoginManagerImpl.getInstance().getToken());
-        Command command = new Command(Command.POST_SELFIE_CONTEST);
+        selfie.setLocation(countryTextView.getText().toString());
+        Command command = new Command(commandName);
         command.setSelfieImage(selfie);
         bundle.putParcelable("command", command);
         getLoaderManager().initLoader(LOADER_ID, bundle, ShareActivity.this).forceLoad();

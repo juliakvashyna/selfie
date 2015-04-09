@@ -237,6 +237,8 @@ public class SelfieImage implements Parcelable {
         dest.writeByte((byte) (liked ? 1 : 0));
         dest.writeString(date);
         dest.writeParcelable(stars, 0);
+        dest.writeInt(userId);
+        dest.writeString(userAvatar);
         // dest.writeByteArray(bytesImage);
     }
 
@@ -260,6 +262,8 @@ public class SelfieImage implements Parcelable {
         liked = in.readByte() != 0;
         date = in.readString();
         stars = in.readParcelable(null);
+        userId = in.readInt();
+        userAvatar = in.readString();
         // in.readByteArray(bytesImage);
         // convertByteToBitmap();
 

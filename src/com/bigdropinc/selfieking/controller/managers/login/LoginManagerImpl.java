@@ -66,7 +66,7 @@ public final class LoginManagerImpl implements LoginManager {
             User user = new User(sharedpreferences.getString(email, ""), sharedpreferences.getString(pass, ""));
             user.setToken(sharedpreferences.getString(TOKEN, ""));
             return user;
-        }  
+        }
         return null;
     }
 
@@ -85,5 +85,11 @@ public final class LoginManagerImpl implements LoginManager {
     public void setToken(String token) {
         editor.putString(TOKEN, token);
         editor.commit();
+    }
+
+    @Override
+    public int getId() {
+        // TODO Auto-generated method stub
+        return sharedpreferences.getInt(idKey, -1);
     }
 }

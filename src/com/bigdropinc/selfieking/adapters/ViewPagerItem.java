@@ -17,6 +17,7 @@ public class ViewPagerItem {
     private int monthNumber;
     private int count;
     private Winner winner;
+    public boolean end;
     private List<SelfieImage> selfies = new ArrayList<SelfieImage>();
 
     public ViewPagerItem(int selfieId) {
