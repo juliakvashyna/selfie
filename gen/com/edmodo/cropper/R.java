@@ -21,14 +21,14 @@ public final class R {
 		public static final int dot_size = 0x7f0200dc;
 	}
 	public static final class id {
-		public static final int CropOverlayView = 0x7f0c00ef;
-		public static final int ImageView_image = 0x7f0c00ee;
+		public static final int CropOverlayView = 0x7f0c00f0;
+		public static final int ImageView_image = 0x7f0c00ef;
 		public static final int off = 0x7f0c0027;
 		public static final int on = 0x7f0c0028;
 		public static final int onTouch = 0x7f0c0029;
 	}
 	public static final class layout {
-		public static final int crop_image_view = 0x7f03003a;
+		public static final int crop_image_view = 0x7f03003b;
 	}
 	public static final class string {
 		public static final int app_name = 0x7f08005f;

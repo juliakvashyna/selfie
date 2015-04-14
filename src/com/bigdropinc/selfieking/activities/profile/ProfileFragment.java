@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
 import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
 import com.bigdropinc.selfieking.adapters.EndlessScrollListener;
 import com.bigdropinc.selfieking.adapters.ImageAdapter;
@@ -55,6 +56,7 @@ import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.views.RoundedImageView;
 
 public class ProfileFragment extends Fragment implements LoaderManager.LoaderCallbacks<StatusCode> {
+    public static final int REQUEST_CODE_ONE_SELFIE = 77;
     private static final int REQUEST_EDIT = 35;
     private static final int LOADER_ID = 1;
     private static final int LOADER_ID_AVATAR = 2;
@@ -96,7 +98,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         return rootView;
     }
 
-    private void startUser() {
+    public void startUser() {
         Command command = new Command(Command.GET_USER);
         Bundle bundle = new Bundle();
         bundle.putParcelable(Command.BUNDLE_NAME, command);
@@ -136,7 +138,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK)
+        if (resultCode == Activity.RESULT_OK) {
             if (requestCode == YOUR_SELECT_PICTURE_REQUEST_CODE) {
                 final boolean isCamera;
                 if (data == null) {
@@ -159,10 +161,13 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
                     loadAvatar(selectedImageUri);
             } else if (requestCode == REQUEST_EDIT) {
                 startUser();
-            }
-            else if(requestCode==77){
+            } else if (requestCode == REQUEST_CODE_ONE_SELFIE) {
                 initFeed();
             }
+        } else if (resultCode == 44) {
+            initFeed();
+            ((MyActionBarActivity) getActivity()).mTabHost.setCurrentTab(0);
+        }
     }
 
     private void updateGridview(ResponseListSelfie responseListSelfie, StatusCode statusCode) {
@@ -178,13 +183,22 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void updateAdapter() {
+        adapter.setNotifyOnChange(false); // Prevents 'clear()' from
+                                          // clearing/resetting the listview
         if (sortButton.getText().toString().equals("In contest")) {
             adapter.setImages(incontest);
         } else {
             adapter.setImages(drafts);
         }
+
+        // note that a call to notifyDataSetChanged() implicitly sets the
+        // setNotifyOnChange back to 'true'!
+        // That's why the call 'setNotifyOnChange(false) should be called first
+        // every time (see call before 'clear()').
         adapter.notifyDataSetChanged();
-        gridView.setAdapter(adapter);
+
+        // adapter.notifyDataSetChanged();
+        // gridView.setAdapter(adapter);
         countTextView.setText(String.valueOf(adapter.getCount()));
     }
 
@@ -204,7 +218,9 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
-    private void initFeed() {
+    public void initFeed() {
+        drafts = new ArrayList<SelfieImage>();
+        incontest = new ArrayList<SelfieImage>();
         if (InternetChecker.isNetworkConnected()) {
             initGridview();
             startGetSelfieLoader();
@@ -321,7 +337,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
 
         intent.putExtra(OneSelfieActivity.INTENT_SELFIE_ID, selfie.getId());
         intent.putExtra(OneSelfieActivity.FROM_PROFILE, !selfie.isInContest());
-        getActivity().startActivityForResult(intent, 77);
+        startActivityForResult(intent, REQUEST_CODE_ONE_SELFIE);
     }
 
     private void openImageIntent() {

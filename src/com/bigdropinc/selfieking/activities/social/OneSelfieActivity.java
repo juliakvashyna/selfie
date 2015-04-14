@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.LoaderManager;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
@@ -66,7 +67,13 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         if (loader.getId() == LOADER_ID_VOTE) {
             updateGridView(loader);
             Toast.makeText(this, "Thanks for vote!", Toast.LENGTH_SHORT).show();
-            ContestFragment.vote = true;
+            if (getIntent() != null && getIntent().getExtras() != null) {
+                ContestFragment.vote = true;
+                ContestFragment.curMonthNumber = getIntent().getExtras().getInt("monthNumber");
+                ContestFragment.curOrder = getIntent().getExtras().getString("order");
+            }
+        } else {
+            ContestFragment.vote = false;
         }
         if (loader.getId() == LOADER_ID_ONESELFIE) {
             initSelfie();
@@ -131,9 +138,10 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         startLoaderForSelfie();
         initFeed();
     }
+
     @Override
     public void onBackPressed() {
-       finish();
+        finish();
     }
 
     @Override
@@ -166,8 +174,9 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         if (statusCode.isSuccess()) {
             if (loader.getId() == LOADER_ID_CONTEST) {
                 Toast.makeText(this, "Post is added to contest", Toast.LENGTH_SHORT).show();
-                setResult(66);
-                finish();
+                this.setResult(44);
+
+                this.finish();
             }
             updateGridView(loader);
 
@@ -193,11 +202,9 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         listView = (ListView) findViewById(R.id.oneSelfieListView);
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new OnClickListener() {
-            
             @Override
             public void onClick(View v) {
                 onBackPressed();
-                
             }
         });
         listView.setItemsCanFocus(true);
@@ -276,6 +283,5 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
         command.setSelfieImage(selfieImage);
         bundle.putParcelable(Constants.COMMAND, command);
         getLoaderManager().initLoader(LOADER_ID_VOTE, bundle, OneSelfieActivity.this).forceLoad();
-
     }
 }

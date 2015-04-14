@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.activities.profile.ProfileActivity;
+import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
 import com.bigdropinc.selfieking.controller.CustomPicasso;
 import com.bigdropinc.selfieking.controller.UrlRequest;
 import com.bigdropinc.selfieking.model.responce.notification.Notification;
@@ -57,7 +58,6 @@ public class NotificationtAdapter extends ArrayAdapter<Notification> {
             holder = new ViewHolder();
             holder.userTextView = (TextView) convertView.findViewById(R.id.commentUser);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
-            holder.commentTextView = (TextView) convertView.findViewById(R.id.commentText);
             holder.dateTextView = (TextView) convertView.findViewById(R.id.commentDate);
             holder.image = (com.makeramen.roundedimageview.RoundedImageView) convertView.findViewById(R.id.smallImage);
 
@@ -72,21 +72,33 @@ public class NotificationtAdapter extends ArrayAdapter<Notification> {
         String text = "";
         if (notification.getType().equals("comment")) {
             text = "<font color=#ffdfdd ><b>" + notification.getActor().getName() + "<b></font> <font color=#de8d8a> commented on your photo:</font> <font color=#ffdfdd> \"" + notification.getObj().getComment().getText() + "\"</font>";
+            holder.dateTextView.setText(notification.getObj().getComment().getDate());
         } else if (notification.getType().equals("rating")) {
-            text = "votes your photo";
+            text = "<font color=#ffdfdd ><b>" + notification.getActor().getName() + "<b></font> <font color=#de8d8a> voted your photo! </font>";
+            holder.dateTextView.setText(notification.getObj().getVote().getDate());
         }
         holder.userTextView.setText(Html.fromHtml(text));
-        holder.dateTextView.setText(notification.getObj().getComment().getDate());
+       
         CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + notification.getObj().getImage()).resize(50, 50).into(holder.image);
 
         return convertView;
     }
 
-    private void initListeners(ViewHolder holder, final Notification comment) {
+    private void initListeners(ViewHolder holder, final Notification notification) {
         holder.avatar.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                gotoUserProfile(comment.getUserId());
+                gotoUserProfile(notification.getActor().getId());
+            }
+        });
+        holder.image.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context.getApplicationContext(), OneSelfieActivity.class);
+                intent.putExtra("selfieId", notification.getObj().getId());
+                context.startActivity(intent);
+                
             }
         });
     }

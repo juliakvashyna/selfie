@@ -51,18 +51,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     private final Activity context;
     private ViewPager mViewPager;
     private ContestFragment fragment;
-    GridView gridView;
-
-    public GridView getGridView() {
-        return gridView;
-    }
-
-    public void setGridView(GridView gridView) {
-        this.gridView = gridView;
-    }
-
-    ImageAdapter imageAdapter;
-    int mypage = 0;
 
     public ViewPagerAdapter(Activity context, int viewRes, List<ViewPagerItem> list, Fragment fragment) {
         this.mItems = (ArrayList<ViewPagerItem>) list;
@@ -140,7 +128,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         ImageButton topRecentImage = (ImageButton) v.findViewById(R.id.topRecentImageButton);
         initGridView(v, item);
         month.setText(item.getMonth() + ", " + item.getYear());
-        if (item.getMonthNumber() < Calendar.getInstance().get(Calendar.MONTH)) {
+        if (item.getMonthNumber() <= Calendar.getInstance().get(Calendar.MONTH)) {
             layout.setVisibility(View.VISIBLE);
             monthlayout.setVisibility(View.GONE);
             topRecent.setVisibility(View.GONE);
@@ -160,7 +148,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         count.setText(String.valueOf(item.getCount()));
         vote.setText(String.valueOf(item.getVote()));
 
-        initButtons(v);
+        initButtons(v, item);
     }
 
     private void initWinner(View v, final ViewPagerItem item) {
@@ -197,6 +185,8 @@ public class ViewPagerAdapter extends PagerAdapter {
     private void changeTopRecent(final TextView topRecent, final ImageButton topRecentImage, ViewPagerItem item) {
         item.getContest().setOrder();
         changeTitle(topRecent, topRecentImage, item);
+        item.mypage = 0;
+        item.getSelfies().clear();
         fragment.changeSort(item.getContest(), item.getMonthNumber());
 
     }
@@ -247,9 +237,20 @@ public class ViewPagerAdapter extends PagerAdapter {
         });
     }
 
-    private void initButtons(View v) {
+    private void initButtons(View v, ViewPagerItem item) {
         Button next = (Button) v.findViewById(R.id.nextMonth);
+
         Button back = (Button) v.findViewById(R.id.backMonth);
+        if (item.getMonthNumber() == 1) {
+            back.setVisibility(View.INVISIBLE);
+        } else {
+            back.setVisibility(View.VISIBLE);
+        }
+        if (item.getMonthNumber() == Calendar.getInstance().get(Calendar.MONTH) + 1) {
+            next.setVisibility(View.INVISIBLE);
+        } else {
+            next.setVisibility(View.VISIBLE);
+        }
         next.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,46 +270,37 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     private void initGridView(View v, final ViewPagerItem item) {
-        gridView = (GridView) v.findViewById(R.id.contestGridView);
-        imageAdapter = new ImageAdapter(context, R.layout.image_item_gridview, item.getSelfies());
-        gridView.setAdapter(imageAdapter);
-        gridView.setOnScrollListener(new EndlessScrollListener() {
+        item.setGridView((GridView) v.findViewById(R.id.contestGridView));
+        item.setImageAdapter(new ImageAdapter(context, R.layout.image_item_gridview, item.getSelfies()));
+        item.getGridView().setAdapter(item.getImageAdapter());
+        item.getGridView().setOnScrollListener(new EndlessScrollListener() {
 
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                mypage = mypage + 5;
-                fragment.loadMore(item, mypage);
-              
+                item.mypage = item.mypage + 9;
+                fragment.loadMore(item);
+
             }
         });
 
-        gridView.setOnItemClickListener(new OnItemClickListener() {
+        item.getGridView().setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                startOneActivity(item.getSelfies().get(position).getId());
+                startOneActivity(item, position);
             }
         });
     }
 
-    private void startOneActivity(int id) {
+    private void startOneActivity(ViewPagerItem item, int position) {
+        int id = item.getSelfies().get(position).getId();
         if (id != 0) {
             Intent intent = new Intent(context, OneSelfieActivity.class);
             intent.putExtra("selfieId", id);
+            intent.putExtra("monthNumber", item.getMonthNumber());
+            intent.putExtra("order", item.getContest().getOrder());
             context.startActivityForResult(intent, 99);
         } else {
             Toast.makeText(context, "Post was deleted", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void updateImageAdapter() {
-        if (imageAdapter != null)
-            imageAdapter.notifyDataSetChanged();
-    }
-
-    public ImageAdapter getImageAdapter() {
-        return imageAdapter;
-    }
-
-    public void setImageAdapter(ImageAdapter imageAdapter) {
-        this.imageAdapter = imageAdapter;
-    }
 }

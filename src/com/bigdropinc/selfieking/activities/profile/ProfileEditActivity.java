@@ -221,12 +221,13 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
             } else if (loader.getId() == LOADER_ID_EDIT) {
                 Toast.makeText(this, "Profile was edited", Toast.LENGTH_SHORT).show();
                 hideSoftKeyboard(this);
+                setResult(Activity.RESULT_OK);
                 finish();
             }
         } else {
             Toast.makeText(this, "User error", Toast.LENGTH_SHORT).show();
         }
-    }
+    } 
 
     private void fillUser() {
         userNameEditText.setText(user.getUserName());

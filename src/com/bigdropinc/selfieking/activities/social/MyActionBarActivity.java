@@ -47,6 +47,7 @@ import com.google.android.gcm.GCMRegistrar;
 
 public class MyActionBarActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode> {
 
+    private static final int REQUEST_CODE_PUSH_ONE_SELFIE = 33;
     public static final String M_CURRENT_TAB = "M_CURRENT_TAB";
     private static final String TAB_HOME = "TAB_HOME";
     private static final String TAB_LIKED = "TAB_LIKED";
@@ -55,7 +56,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     public static final String TAB_PROFILE = "TAB_PROFILE";
 
     private String mCurrentTab = TAB_PROFILE;
-    private TabHost mTabHost;
+    public TabHost mTabHost;
     private int LOADER_ID_COMMENT = 21;
     private int LOADER_ID_CONTEST = 22;
     private CommandLoader loader;
@@ -71,7 +72,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     private static final String PREF_REQ_ID = "PREF_UNIQUE_ID";
     public static String regId = "";
     private int LOADER_ID = 10;
-    Fragment contestFragment = new ContestFragment();
+    ContestFragment contestFragment = new ContestFragment();
 
     ProfileFragment profileFragment = new ProfileFragment();
 
@@ -234,46 +235,52 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
      * create 3 tabs with name and image and add it to TabHost
      */
     public void initializeTabs() {
+        if (mTabHost.getTabWidget().getTabCount() == 0) {
+            TabHost.TabSpec spec;
+            spec = mTabHost.newTabSpec(TAB_CONTEST);
+            spec.setContent(new TabHost.TabContentFactory() {
+                public View createTabContent(String tag) {
+                    return findViewById(R.id.realtabcontent);
+                }
+            });
+            spec.setIndicator(createTabView(R.drawable.contest_selector, "contest"));
+            mTabHost.addTab(spec);
 
-        TabHost.TabSpec spec;
-        spec = mTabHost.newTabSpec(TAB_CONTEST);
-        spec.setContent(new TabHost.TabContentFactory() {
-            public View createTabContent(String tag) {
-                return findViewById(R.id.realtabcontent);
-            }
-        });
-        spec.setIndicator(createTabView(R.drawable.contest_selector, "contest"));
-        mTabHost.addTab(spec);
+            spec = mTabHost.newTabSpec(TAB_CAMERA);
+            spec.setContent(new TabHost.TabContentFactory() {
+                public View createTabContent(String tag) {
+                    return findViewById(R.id.realtabcontent);
+                }
+            });
+            spec.setIndicator(createTabView(R.drawable.make_shot, "camera"));
+            mTabHost.addTab(spec);
 
-        spec = mTabHost.newTabSpec(TAB_CAMERA);
-        spec.setContent(new TabHost.TabContentFactory() {
-            public View createTabContent(String tag) {
-                return findViewById(R.id.realtabcontent);
-            }
-        });
-        spec.setIndicator(createTabView(R.drawable.make_shot, "camera"));
-        mTabHost.addTab(spec);
-
-        spec = mTabHost.newTabSpec(TAB_PROFILE);
-        spec.setContent(new TabHost.TabContentFactory() {
-            public View createTabContent(String tag) {
-                return findViewById(R.id.realtabcontent);
-            }
-        });
-        spec.setIndicator(createTabView(R.drawable.profile_selector, "profile"));
-        mTabHost.addTab(spec);
+            spec = mTabHost.newTabSpec(TAB_PROFILE);
+            spec.setContent(new TabHost.TabContentFactory() {
+                public View createTabContent(String tag) {
+                    return findViewById(R.id.realtabcontent);
+                }
+            });
+            spec.setIndicator(createTabView(R.drawable.profile_selector, "profile"));
+            mTabHost.addTab(spec);
+        }
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 33) {
+        if (requestCode == REQUEST_CODE_PUSH_ONE_SELFIE) {
             mTabHost.setCurrentTabByTag(mCurrentTab);
             mTabHost.setOnTabChangedListener(listener);
             initializeTabs();
         } else if (requestCode == 66)
             mTabHost.setCurrentTab(0);
+        else if (requestCode == ProfileFragment.REQUEST_CODE_ONE_SELFIE) {
+            contestFragment.initPager();
+            profileFragment.initFeed();
+            mTabHost.setCurrentTab(0);
+        }
         if (data != null) {
             SelfieImage selfieImage = data.getExtras().getParcelable("selfie");
             index = data.getExtras().getInt("index");
@@ -301,7 +308,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             if (id != 0) {
                 Intent i = new Intent(getApplicationContext(), OneSelfieActivity.class);
                 i.putExtra(OneSelfieActivity.INTENT_SELFIE_ID, id);
-                startActivityForResult(i, 33);
+                startActivityForResult(i, REQUEST_CODE_PUSH_ONE_SELFIE);
 
             }
         }
@@ -348,12 +355,10 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
 
         if (fromCamera) {
             mTabHost.setCurrentTab(2);
-        }
-        if (fromContest) {
+        } else if (fromContest) {
             fromContest = false;
             mTabHost.setCurrentTab(0);
-        }
-        if (!LoginManagerImpl.getInstance().check()) {
+        } else if (!LoginManagerImpl.getInstance().check()) {
             finish();
             Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
             startActivity(intent);

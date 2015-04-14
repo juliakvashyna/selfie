@@ -51,7 +51,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     private static final int day = 86400000;
     private static final int hour = 3600000;
     private static final int minute = 60000;
-    private int IMAGE_SIZE = 400;
+    private int IMAGE_SIZE = 320;
     private int AVATAR_SIZE = 200;
     private Activity context;
     private int r;
@@ -149,7 +149,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
     private void fillImage(ViewHolder holder, final SelfieImage feedItem) {
         String imageUrl = getImageUrl(feedItem);
-        CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
+        CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop().into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
             @Override
             public void onSuccess() {
                 if (this.progressBar != null) {
@@ -188,10 +188,10 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
     private String getImageUrl(SelfieImage feedItem) {
         String imageUrl;
-        if (feedItem.getImageMedium() != null && !feedItem.getImageMedium().equals("false"))
-            imageUrl = feedItem.getImageMedium();
-        else
+        if (feedItem.getImage() != null && !feedItem.getImage().equals("false"))
             imageUrl = feedItem.getImage();
+        else
+            imageUrl = feedItem.getImageMedium();
         return imageUrl;
     }
 
@@ -218,8 +218,10 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         popup.setOnDismissListener(new OnDismissListener() {
             @Override
             public void onDismiss() {
-                if (context instanceof OneSelfieActivity)
-                    ((OneSelfieActivity) context).vote(selfie.getId(), (int) ratingBar.getRating());
+                if (context instanceof OneSelfieActivity) {
+                    if ((int) ratingBar.getRating() != selfie.getStars().getMy())
+                        ((OneSelfieActivity) context).vote(selfie.getId(), (int) ratingBar.getRating());
+                }
             }
         });
     }

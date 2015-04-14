@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/layoutTop"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="340dp" >
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -18,15 +18,14 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
             android:layout_marginTop="20dp"
             android:visibility="gone" />
 
         <ImageView
             android:id="@+id/fimage"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/sizeImageFeed"
-            android:scaleType="centerCrop" >
+            android:layout_height="340dp"
+            android:scaleType="fitXY" >
         </ImageView>
     </RelativeLayout>
 
@@ -35,8 +34,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@id/layoutTop"
-        android:layout_marginTop="10dp" >
+        android:layout_below="@id/layoutTop" >
 
         <LinearLayout
             android:id="@+id/lavatar"
@@ -59,9 +57,10 @@
                 style="@style/customTextViewRozyLightBig"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical"
-                android:textSize="13sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <RelativeLayout
@@ -70,18 +69,23 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/lavatar"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp"
             android:gravity="center_vertical" >
 
             <LinearLayout
                 android:id="@+id/llocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal" >
 
                 <ImageView
                     android:id="@+id/place"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginLeft="5dp"
                     android:src="@drawable/icon_place_outlined"
                     android:visibility="gone" />
@@ -91,7 +95,10 @@
                     style="@style/customTextViewRozyLighr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="2dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:textColor="#b46c83"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -102,30 +109,31 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/llocation"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
                 android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_gravity="end"
-                android:orientation="horizontal"
-                android:padding="2dp" >
+                android:orientation="horizontal" >
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
                     android:paddingLeft="3dp"
                     android:paddingRight="3dp"
+                    android:paddingTop="2dp"
                     android:src="@drawable/icon_clock" />
 
                 <TextView
                     android:id="@+id/ftime"
-                    style="@style/customTextViewRozyLighr"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical" />
+                    android:layout_marginRight="5dp"
+                    android:textColor="#b46c83"
+                    android:textSize="12sp" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -151,6 +159,7 @@
                     android:layout_height="match_parent"
                     android:paddingLeft="0dp"
                     android:paddingRight="2dp"
+                    android:textColor="#df9bb4"
                     android:textSize="12sp" />
 
                 <TextView
@@ -158,6 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/crowns"
+                    android:textColor="#df9bb4"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -174,6 +184,7 @@
                     android:layout_height="match_parent"
                     android:paddingLeft="0dp"
                     android:paddingRight="2dp"
+                    android:textColor="#df9bb4"
                     android:textSize="12sp" />
 
                 <TextView
@@ -182,6 +193,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/comments"
+                    android:textColor="#df9bb4"
                     android:textSize="12sp" />
             </LinearLayout>
 

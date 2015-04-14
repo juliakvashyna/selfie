@@ -4,12 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginLeft="10dp"
-        android:padding="5dp" >
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical" >
 
         <com.bigdropinc.selfieking.views.RoundedImageView
             android:id="@+id/favatar"
@@ -19,25 +21,29 @@
         </com.bigdropinc.selfieking.views.RoundedImageView>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/favatar"
+            android:layout_marginRight="5dp"
+            android:gravity="center_vertical"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/commentUser"
-                style="@style/customEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:textStyle="bold" />
+                android:singleLine="false"
+                android:padding="3dp"
+                android:textSize="14sp" />
 
             <TextView
-                android:id="@+id/commentText"
+                android:id="@+id/commentDate"
                 style="@style/customTextViewRozyLighr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="5dp" />
+                android:textColor="#cd635e"
+                android:textSize="12sp" />
         </LinearLayout>
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

@@ -53,27 +53,24 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
     public List<ViewPagerItem> list = new ArrayList<ViewPagerItem>(12);
     private List<Notification> notificationsList = new ArrayList<Notification>(30);
     private ViewPagerAdapter adapter;
-
     private Calendar calendar = Calendar.getInstance();
     private ListView notificationsListView;
     private int LOADER_ID = 100;
     private int LOADER_ID_NOTIFICATIONS = 25;
     private int LOADER_ID_ORDER = 1000;
-    // private boolean end;
-    // private List<SelfieImage> more;
+    private int LOADER_ID_VOTE = 35;
     private ProgressDialog dialog;
     private int monthNumber;
+    public static int curMonthNumber;
+    public static String curOrder;
     private String order;
-    private int page;
     NotificationtAdapter notificationtAdapter;
     public static boolean vote;
     private boolean was;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
         super.onSaveInstanceState(outState);
-
     }
 
     @Override
@@ -89,7 +86,9 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
     public void onResume() {
         super.onResume();
         if (vote) {
-            updateVote(monthNumber);
+            Contest contest = getContest(curMonthNumber, curOrder);
+            Bundle bundle = getContestBundle(contest, 0);
+            getLoaderManager().initLoader(LOADER_ID_VOTE, bundle, this).forceLoad();
             vote = false;
         }
     }
@@ -102,14 +101,35 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
 
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode statusCode) {
-        Log.d("notification", "loader " + loader.getId());
         was = true;
         if (loader.getId() == LOADER_ID_NOTIFICATIONS) {
             showNotifications(loader, statusCode);
+        } else if (loader.getId() == LOADER_ID_VOTE) {
+            updateAfterVote(loader);
         } else {
             showContest(loader, statusCode);
         }
         getLoaderManager().destroyLoader(loader.getId());
+    }
+
+    private void updateAfterVote(Loader<StatusCode> loader) {
+        ResponseListSelfie responseListSelfie = ((CommandLoader) loader).getResponseListSelfie();
+        if (responseListSelfie != null && responseListSelfie.posts != null) {
+            Contest contest = getContest(monthNumber, ((CommandLoader) loader).getCommand().getContest().getOrder());
+            int i = monthNumber - 1;
+            if (i >= 0 && i < list.size()) {
+                ViewPagerItem itemfromlist = list.get(i);
+                itemfromlist.mypage = 0;
+                ArrayList<SelfieImage> more = (ArrayList<SelfieImage>) responseListSelfie.posts.list;
+                itemfromlist.setContest(contest);
+                itemfromlist.end = false;
+                itemfromlist.getSelfies().clear();
+                itemfromlist.setSelfies(more);
+                itemfromlist.setVote(responseListSelfie.posts.vote);
+                adapter.notifyDataSetChanged();
+            }
+
+        }
     }
 
     @Override
@@ -137,13 +157,14 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
         getLoaderManager().initLoader(id, bundle, this).forceLoad();
     }
 
-    public void loadMore(ViewPagerItem item, int page) {
-        this.page = page;
-        if (!item.end) {
+    public void loadMore(ViewPagerItem item) {
+
+        Log.d("contest", "loadMore page " + item.mypage);
+        if (!item.end && item.getSelfies().size() < item.getCount()) {
 
             Contest contest = getContest(item.getMonthNumber(), item.getContest().getOrder());
-            Bundle bundle = getContestBundle(contest, page);
-            getLoaderManager().initLoader(LOADER_ID + item.getMonthNumber() + page, bundle, this).forceLoad();
+            Bundle bundle = getContestBundle(contest, item.mypage);
+            getLoaderManager().initLoader(LOADER_ID + item.getMonthNumber() + item.mypage, bundle, this).forceLoad();
 
         }
     }
@@ -153,11 +174,9 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
             notificationtAdapter = new NotificationtAdapter(getActivity(), R.layout.notification_item, notificationsList);
             notificationsListView.setAdapter(notificationtAdapter);
             notificationsListView.setOnScrollListener(new EndlessScrollListener() {
-
                 @Override
                 public void onLoadMore(int page, int totalItemsCount) {
                     startNotifications(page);
-
                 }
             });
             startNotifications(0);
@@ -175,11 +194,9 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
     private void showContest(Loader<StatusCode> loader, StatusCode statusCode) {
         ResponseListSelfie responseListSelfie = ((CommandLoader) loader).getResponseListSelfie();
         int monthNumber = ((CommandLoader) loader).getCommand().getContest().getMonth();
-        Log.d("contest", "monthNumber " + monthNumber);
-
         Contest contest = getContest(monthNumber, ((CommandLoader) loader).getCommand().getContest().getOrder());
         int i = monthNumber - 1;
-        if (i < list.size()) {
+        if (i >= 0 && i < list.size()) {
             ViewPagerItem itemfromlist = list.get(i);
             itemfromlist.setContest(contest);
 
@@ -189,10 +206,8 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
                     Log.d("contest", "order");
                     changeorder(responseListSelfie, itemfromlist, more);
                 } else if (loader.getId() > LOADER_ID) {
-                    Log.d("contest", "addMore");
                     addMoreOrEnd(itemfromlist, more);
                 } else if (statusCode.isSuccess()) {
-                    Log.d("contest", "setSelfie");
                     setSelfies(responseListSelfie, itemfromlist, contest);
                 }
             }
@@ -202,63 +217,47 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
     }
 
     private void showNotifications(Loader<StatusCode> loader, StatusCode statusCode) {
-        // if (statusCode.isSuccess()) {
         notificationsList = ((CommandLoader) loader).getNotifications();
-        // } else {
-        // Notification notification = new Notification();
-        // notification.setUserName("Julia");
-        // notificationsList.add(notification);
-        // notification = new Notification();
-        // notification.setUserName("Anna");
-        // notificationsList.add(notification);
-        // notification = new Notification();
-        // notification.setUserName("Olga");
-        // notificationsList.add(notification);
-        // notification = new Notification();
-        // notification.setUserName("Yurik");
-        // notificationsList.add(notification);
-        // notification = new Notification();
-        // notification.setUserName("Marina");
-        // notificationsList.add(notification);
-        // }
-        notificationtAdapter.addAll(notificationsList);
-        notificationtAdapter.notifyDataSetChanged();
-
+        if (notificationsList != null) {
+            notificationtAdapter.addAll(notificationsList);
+            notificationtAdapter.notifyDataSetChanged();
+        }
     }
 
     private void addMoreOrEnd(ViewPagerItem itemfromlist, ArrayList<SelfieImage> more) {
         if (more.size() > 0) {
             addMore(itemfromlist, more);
+            Log.d("contest", "addMore " + itemfromlist.getMonth() + "list size " + itemfromlist.getSelfies().size());
         } else {
             itemfromlist.end = true;
+            Log.d("contest", "end true " + itemfromlist.getMonth());
         }
 
     }
 
-    private void addMore(ViewPagerItem itemfromlist, ArrayList<SelfieImage> more) {
+    private void addMore(ViewPagerItem itemfromlist, List<SelfieImage> more) {
         itemfromlist.addSelfies(more);
-        adapter.updateImageAdapter();
-        adapter.notifyDataSetChanged();
-        adapter.getGridView().smoothScrollByOffset(page);
     }
 
     private void changeorder(ResponseListSelfie responseListSelfie, ViewPagerItem itemfromlist, List<SelfieImage> more) {
         itemfromlist.end = false;
+        itemfromlist.getSelfies().clear();
         itemfromlist.setSelfies(more);
-        adapter.updateImageAdapter();
         adapter.notifyDataSetChanged();
         if (dialog != null)
             dialog.cancel();
     }
 
     private void setSelfies(ResponseListSelfie responseListSelfie, ViewPagerItem itemfromlist, Contest contest) {
-        itemfromlist.setSelfies(responseListSelfie.posts.list);
-        adapter.updateImageAdapter();
-        itemfromlist.setVote(responseListSelfie.posts.vote);
-        itemfromlist.setContest(contest);
-        itemfromlist.setCount(responseListSelfie.posts.count);
-        itemfromlist.setWinner(responseListSelfie.winner);
-        adapter.notifyDataSetChanged();
+        if (responseListSelfie != null && responseListSelfie.posts != null && itemfromlist != null) {
+            itemfromlist.setSelfies(responseListSelfie.posts.list);
+            itemfromlist.setVote(responseListSelfie.posts.vote);
+            itemfromlist.setContest(contest);
+
+            itemfromlist.setCount(responseListSelfie.posts.count);
+            itemfromlist.setWinner(responseListSelfie.winner);
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private Bundle getContestBundle(Contest contest) {
@@ -279,16 +278,12 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
         return bundle;
     }
 
-    private void initPager() {
+    public void initPager() {
         viewPager = (ViewPager) rootView.findViewById(R.id.contestViewPager);
-        // if (!was)
         initMonths();
-
         int current = Calendar.getInstance().get(Calendar.MONTH);
-        // viewPager.setOffscreenPageLimit(5);
+        viewPager.setOffscreenPageLimit(1);
         adapter = new ViewPagerAdapter(getActivity(), R.layout.contest_view_pager_item, list, this);
-        // adapter.getImageAdapter().setNotifyOnChange(true);
-
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(current);
         adapter.setmViewPager(viewPager);

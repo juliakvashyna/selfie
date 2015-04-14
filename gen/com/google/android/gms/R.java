@@ -57,8 +57,8 @@ public final class R {
 		public static final int common_signin_btn_light_text_disabled = 0x7f070028;
 		public static final int common_signin_btn_light_text_focused = 0x7f070029;
 		public static final int common_signin_btn_light_text_pressed = 0x7f070027;
-		public static final int common_signin_btn_text_dark = 0x7f070043;
-		public static final int common_signin_btn_text_light = 0x7f070044;
+		public static final int common_signin_btn_text_dark = 0x7f070044;
+		public static final int common_signin_btn_text_light = 0x7f070045;
 		public static final int wallet_bright_foreground_disabled_holo_light = 0x7f070031;
 		public static final int wallet_bright_foreground_holo_dark = 0x7f07002c;
 		public static final int wallet_bright_foreground_holo_light = 0x7f070032;
@@ -72,8 +72,8 @@ public final class R {
 		public static final int wallet_hint_foreground_holo_light = 0x7f070033;
 		public static final int wallet_holo_blue_light = 0x7f070037;
 		public static final int wallet_link_text_light = 0x7f070038;
-		public static final int wallet_primary_text_holo_light = 0x7f070045;
-		public static final int wallet_secondary_text_holo_dark = 0x7f070046;
+		public static final int wallet_primary_text_holo_light = 0x7f070046;
+		public static final int wallet_secondary_text_holo_dark = 0x7f070047;
 	}
 	public static final class drawable {
 		public static final int common_full_open_on_phone = 0x7f0200af;

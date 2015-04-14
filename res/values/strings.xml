@@ -117,5 +117,8 @@
     <string name="votes">Votes left</string>
     <string name="mostRecent">Most recent</string>
     <string name="payText">Do you want to remove our cool logo from your selfies? just pay 4.99$ and forget about it!</string>
+    <string name="title_activity_tutorial">TutorialActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

@@ -4,6 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Vote implements Parcelable {
+    int postId;
+    int rate;
+    String date;
+
     public int getPostId() {
         return postId;
     }
@@ -20,8 +24,13 @@ public class Vote implements Parcelable {
         this.rate = rate;
     }
 
-    int postId;
-    int rate;
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

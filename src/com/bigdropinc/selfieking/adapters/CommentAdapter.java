@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -54,8 +55,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
             holder = new ViewHolder();
             holder.userTextView = (TextView) convertView.findViewById(R.id.commentUser);
             holder.avatar = (RoundedImageView) convertView.findViewById(R.id.favatar);
-            holder.commentTextView = (TextView) convertView.findViewById(R.id.commentText);
-
+            holder.dateTextView = (TextView) convertView.findViewById(R.id.commentDate);
             // CustomPicasso.getImageLoader(context).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").into(holder.avatar);
 
             convertView.setTag(holder);
@@ -65,8 +65,9 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         }
         fillAvatar(holder, comment);
         initListeners(holder, comment);
-        holder.userTextView.setText(comment.getUserName());
-        holder.commentTextView.setText(comment.getText());
+        String text = "<font color=#ffdfdd ><b>" + comment.getUserName() + "<b></font> <font color=#de8d8a> commented on your photo:</font> <font color=#ffdfdd> \"" + comment.getText() + "\"</font>";
+        holder.dateTextView.setText(comment.getDate());
+        holder.userTextView.setText(Html.fromHtml(text));
         return convertView;
     }
 
@@ -105,6 +106,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     class ViewHolder {
         TextView userTextView;
         TextView commentTextView;
+        TextView dateTextView;
         private RoundedImageView avatar;
 
     }

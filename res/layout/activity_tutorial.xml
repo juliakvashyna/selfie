@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.bigdropinc.selfieking.activities.login.TutorialActivity" >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/tutorialViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="1dp" >
+    </android.support.v4.view.ViewPager>
+
+</LinearLayout>

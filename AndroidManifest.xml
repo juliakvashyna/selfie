@@ -10,7 +10,6 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -42,7 +41,7 @@
         android:value="@integer/google_play_services_version" />
 
     <application
-        android:name="com.bigdropinc.selfieking.MyApplication"
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
@@ -57,7 +56,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.bigdropinc.selfieking.activities.login.LogoActivity"
+            android:name=".activities.login.LogoActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
@@ -183,7 +182,7 @@
         </receiver>
 
         <activity
-            android:name="com.bigdropinc.selfieking.activities.editimages.AddFilterActivity"
+            android:name=".activities.editimages.AddFilterActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar" >
         </activity>
@@ -210,7 +209,13 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.bigdropinc.selfieking.GCMIntentService" />
+        <service android:name=".GCMIntentService" />
+
+        <activity
+            android:name="com.bigdropinc.selfieking.activities.login.TutorialActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light.NoTitleBar.Fullscreen" >
+        </activity>
     </application>
 
 </manifest>
