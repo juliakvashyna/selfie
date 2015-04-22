@@ -33,7 +33,7 @@ public class User implements Parcelable {
     private String site;
     @JsonProperty("gender")
     @DatabaseField
-    private byte gender;
+    private int gender;
     @DatabaseField
     private Date userRegDate;
     @DatabaseField
@@ -140,11 +140,11 @@ public class User implements Parcelable {
         this.site = site;
     }
 
-    public byte getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(byte gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 

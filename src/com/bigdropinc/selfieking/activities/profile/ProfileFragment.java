@@ -78,7 +78,8 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private Bundle bundle;
     private Command command;
     private ImageAdapter adapter;
-    private ArrayList<SelfieImage> more;
+    private ArrayList<SelfieImage> moreContest = new ArrayList<SelfieImage>();;
+    private ArrayList<SelfieImage> moreDrafts = new ArrayList<SelfieImage>();;
 
     private List<SelfieImage> drafts = new ArrayList<SelfieImage>();
     private List<SelfieImage> incontest = new ArrayList<SelfieImage>();
@@ -87,6 +88,9 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private Button sortButton;
     int mypage = 0;
     boolean end;
+    private int countInContest;
+    private int countDrafts;
+    private boolean draft;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -96,6 +100,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
             startUser();
         initFeed();
         initListeners();
+        draft = ((MyActionBarActivity) getActivity()).draft;
         return rootView;
     }
 
@@ -130,7 +135,6 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
             }
         } else {
             updateGridview(responseListSelfie, statusCode);
-
         }
 
         getLoaderManager().destroyLoader(loader.getId());
@@ -184,9 +188,13 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
 
     private void updateGridview(ResponseListSelfie responseListSelfie, StatusCode statusCode) {
         if (statusCode.isSuccess()) {
-            more = (ArrayList<SelfieImage>) responseListSelfie.posts.list;
-            if (more != null) {
+            images = (ArrayList<SelfieImage>) responseListSelfie.posts.list;
+            countInContest = responseListSelfie.posts.inContest;
+            countDrafts = responseListSelfie.posts.count - countInContest;
+            if (images != null) {
                 updateLists();
+            } else {
+                end = true;
             }
 
         } else {
@@ -195,33 +203,36 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void updateAdapter() {
-        // adapter.setNotifyOnChange(false); // Prevents 'clear()' from
-        // clearing/resetting the listview
         if (sortButton.getText().toString().equals("In contest")) {
-            adapter.addAll(more);
+            adapter.setImages(incontest);
+            countTextView.setText(String.valueOf(countInContest));
         } else {
-            adapter.addAll(more);
+            adapter.setImages(drafts);
+            countTextView.setText(String.valueOf(countDrafts));
         }
-
-        // note that a call to notifyDataSetChanged() implicitly sets the
-        // setNotifyOnChange back to 'true'!
-        // That's why the call 'setNotifyOnChange(false) should be called first
-        // every time (see call before 'clear()').
         adapter.notifyDataSetChanged();
+        logAdapter();
+    }
 
-        // adapter.notifyDataSetChanged();
-        // gridView.setAdapter(adapter);
-        countTextView.setText(String.valueOf(adapter.getCount()));
+    private void logAdapter() {
+        String log = "count = " + adapter.getCount() + " adapter.getImages() ";
+        for (SelfieImage selfieImage : adapter.getImages()) {
+            log += selfieImage.getId() + ", ";
+        }
+        Log.d("profile", log);
     }
 
     private void updateLists() {
-        if (more.size() > 0) {
-            images.addAll(more);
-            for (SelfieImage image : more) {
+        if (images.size() > 0 && incontest.size() <= countInContest && drafts.size() <= countDrafts) {
+            for (SelfieImage image : images) {
                 if (image.isInContest()) {
-                    incontest.add(image);
+                    if (!incontest.contains(image)) {
+                        incontest.add(image);
+                    }
                 } else {
-                    drafts.add(image);
+                    if (!drafts.contains(image)) {
+                        drafts.add(image);
+                    }
                 }
             }
             updateAdapter();
@@ -247,9 +258,9 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         String userAvatar = user.getAvatar();
         if (userAvatar != null && userAvatar != "") {
             url = UrlRequest.ADDRESS + userAvatar;
-            CustomPicasso.getImageLoader(getActivity()).load(url).into(avatar);
+            if (!url.isEmpty())
+                CustomPicasso.getImageLoader(getActivity()).load(url).into(avatar);
         }
-
     }
 
     private void initUserNames() {
@@ -260,7 +271,6 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private void initViews() {
         avatar = (RoundedImageView) rootView.findViewById(R.id.avatar);
         gridView = (GridView) rootView.findViewById(R.id.profileGridView);
-
         editProfileButton = (ImageButton) rootView.findViewById(R.id.profileEditButton);
         nameTextView = (TextView) rootView.findViewById(R.id.profileUserNameTextView);
         emailTextView = (TextView) rootView.findViewById(R.id.profileEmailTextView);
@@ -299,19 +309,25 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void initGridview() {
-        adapter = new ImageAdapter(getActivity(), R.layout.image_item_gridview, incontest);
+        if (((MyActionBarActivity)getActivity()).draft) {
+            ((MyActionBarActivity)getActivity()).draft=false;
+            sortButton.setText(R.string.drafts);
+            adapter = new ImageAdapter(getActivity(), R.layout.image_item_gridview, drafts);
+        } else {
+            sortButton.setText(R.string.inContest);
+            adapter = new ImageAdapter(getActivity(), R.layout.image_item_gridview, incontest);
+        }
         gridView.setAdapter(adapter);
-        adapter.setImages(incontest);
         initOnScrollListener();
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
                 startOneSelfieActivity(parent, position);
             }
         });
+        adapter.notifyDataSetChanged();
     }
 
     private void initOnScrollListener() {
-        adapter.notifyDataSetChanged();
         gridView.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
@@ -478,13 +494,10 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private void sort() {
         if (sortButton.getText().toString().equals("In contest")) {
             sortButton.setText(R.string.drafts);
-            adapter.setImages(drafts);
-
         } else {
             sortButton.setText(R.string.inContest);
-            adapter.setImages(incontest);
         }
-        countTextView.setText(String.valueOf(adapter.getCount()));
-        adapter.notifyDataSetChanged();
+        updateAdapter();
+        logAdapter();
     }
 }

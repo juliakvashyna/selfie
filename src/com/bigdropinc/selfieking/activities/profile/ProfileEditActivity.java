@@ -106,7 +106,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
             genderSpinner.setText(FEMALE);
         } else
             genderSpinner.setText(MALE);
-        
+
     }
 
     @Override
@@ -198,7 +198,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         user.setPhone(phoneEditText.getText().toString());
         user.setJob(jobEditText.getText().toString());
         user.setSite(siteEditText.getText().toString());
-        byte gender;
+        int gender;
         if (genderSpinner.getText().toString().equals(MALE)) {
             gender = 2;
         } else
@@ -251,10 +251,9 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         siteEditText.setText(user.getSite());
         emailEditText.setText(user.getEmail());
         phoneEditText.setText(user.getPhone());
-        if(user.getGender()==2){
+        if (user.getGender() == 2) {
             genderSpinner.setText(MALE);
-        }
-        else{
+        } else {
             genderSpinner.setText(FEMALE);
         }
     }

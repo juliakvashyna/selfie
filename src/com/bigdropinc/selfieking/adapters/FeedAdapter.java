@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import android.app.Activity;
 import android.content.Context;
@@ -193,7 +194,7 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
         if (feedItem.getImage() != null && !feedItem.getImage().equals("false"))
             imageUrl = feedItem.getImage();
         else
-            imageUrl = feedItem.getImageMedium();
+            imageUrl = feedItem.getImage();
         return imageUrl;
     }
 
@@ -296,8 +297,8 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
             Calendar now = Calendar.getInstance();
             now.setTime(new Date());
             long difference = now.getTimeInMillis() - post.getTimeInMillis();
-            if (difference <= minute) {
-                timeStr = String.valueOf(difference / second) + " sec";
+            if (difference <= minute) { 
+                timeStr = String.valueOf(Math.abs(difference / second)) + " sec";
             } else if (difference <= hour) {
                 timeStr = String.valueOf(difference / minute) + " min";
             } else if (difference <= day) {
@@ -314,7 +315,10 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     private Date getDate(String dateString) {
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH).parse(dateString);
+            SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = format.parse(dateString);
+            
         } catch (ParseException e) {
 
             e.printStackTrace();

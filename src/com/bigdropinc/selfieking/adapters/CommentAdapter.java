@@ -1,6 +1,12 @@
 package com.bigdropinc.selfieking.adapters;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.Intent;
@@ -66,9 +72,30 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         fillAvatar(holder, comment);
         initListeners(holder, comment);
         String text = "<font color=#ffdfdd ><b>" + comment.getUserName() + "<b></font> <br></br> <font color=#ffdfdd> \"" + comment.getText() + "\"</font>";
-        holder.dateTextView.setText(comment.getDate());
+
+        holder.dateTextView.setText(getDate(comment.getDate()));
         holder.userTextView.setText(Html.fromHtml(text));
         return convertView;
+    }
+
+    private String getDate(String dateString) {
+        Date date = null;
+        SimpleDateFormat format = null;
+        try {
+            format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale.ENGLISH);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = format.parse(dateString);
+
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+
+            e.printStackTrace();
+        }
+        format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale.ENGLISH);
+        String strDate = format.format(date);
+        return strDate;
     }
 
     private void initListeners(ViewHolder holder, final Comment comment) {
@@ -85,7 +112,8 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         String userAvatar = feedItem.getUserAvatar();
         if (userAvatar != null && userAvatar != "")
             url = UrlRequest.ADDRESS + userAvatar;
-        CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
+        if (!url.isEmpty())
+            CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
     }
 
     public boolean isNotification() {

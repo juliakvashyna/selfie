@@ -399,8 +399,8 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
             int top = mutableBitmap.getHeight() - watermark.getHeight() + 160;
             canvas.drawBitmap(watermark, left, top, null);
             image = Bitmap.createBitmap(mutableBitmap);
-        //    imageView.setImageBitmap(image);
-         //   myImageUri = getImageUri(getApplicationContext(), image);
+            // imageView.setImageBitmap(image);
+            // myImageUri = getImageUri(getApplicationContext(), image);
         }
     }
 
@@ -493,6 +493,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
 
     private void share() {
         Intent intent = new Intent(getApplicationContext(), MyActionBarActivity.class);
+        intent.putExtra("draft", true);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         DatabaseManager.getInstance().deleteSelfie(editImage.getId());
         hideSoftKeyboard(this);
@@ -521,20 +522,24 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
     }
 
     private void shareFb() {
-        if (!fbSelected) {
-            fbSelected = true;
-            fbButton.setSelected(fbSelected);
-            // ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            if (image != null && uiHelper!=null) {
-                // image.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-                ArrayList<Bitmap> col = new ArrayList<Bitmap>();
-                col.add(image);
-                FacebookDialog shareDialog = new FacebookDialog.PhotoShareDialogBuilder(this).addPhotos(col).build();
-                uiHelper.trackPendingDialogCall(shareDialog.present());
+        try {
+            if (!fbSelected) {
+                fbSelected = true;
+                fbButton.setSelected(fbSelected);
+                // ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                if (image != null && uiHelper != null) {
+                    // image.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+                    ArrayList<Bitmap> col = new ArrayList<Bitmap>();
+                    col.add(image);
+                    FacebookDialog shareDialog = new FacebookDialog.PhotoShareDialogBuilder(this).addPhotos(col).build();
+                    uiHelper.trackPendingDialogCall(shareDialog.present());
+                } else {
+                    Toast.makeText(this, "Sorry, Facebook error!", Toast.LENGTH_LONG).show();
+                }
             }
-            else{
-                Toast.makeText(this, "Sorry, Facebook error!", Toast.LENGTH_LONG).show();
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Sorry, Facebook error!", Toast.LENGTH_LONG).show();
         }
 
     }

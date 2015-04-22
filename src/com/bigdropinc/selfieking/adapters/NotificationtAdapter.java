@@ -1,6 +1,11 @@
 package com.bigdropinc.selfieking.adapters;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.Intent;
@@ -72,18 +77,36 @@ public class NotificationtAdapter extends ArrayAdapter<Notification> {
         String text = "";
         if (notification.getType().equals("comment")) {
             text = "<font color=#ffdfdd ><b>" + notification.getActor().getName() + "<b></font> <font color=#de8d8a> commented on your photo:</font> <font color=#ffdfdd> \"" + notification.getObj().getComment().getText() + "\"</font>";
-            holder.dateTextView.setText(notification.getObj().getComment().getDate());
+            holder.dateTextView.setText(getDate(notification.getObj().getComment().getDate()));
         } else if (notification.getType().equals("rating")) {
             text = "<font color=#ffdfdd ><b>" + notification.getActor().getName() + "<b></font> <font color=#de8d8a> voted your photo! </font>";
             holder.dateTextView.setText(notification.getObj().getVote().getDate());
         }
         holder.userTextView.setText(Html.fromHtml(text));
-       
+
         CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + notification.getObj().getImage()).resize(50, 50).into(holder.image);
 
         return convertView;
     }
+    private String getDate(String dateString) {
+        Date date = null;
+        SimpleDateFormat format = null;
+        try {
+            format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale.ENGLISH);
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            date = format.parse(dateString);
 
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+
+            e.printStackTrace();
+        }
+        format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss", Locale.ENGLISH);
+        String strDate = format.format(date);
+        return strDate;
+    }
     private void initListeners(ViewHolder holder, final Notification notification) {
         holder.avatar.setOnClickListener(new OnClickListener() {
             @Override
@@ -92,23 +115,24 @@ public class NotificationtAdapter extends ArrayAdapter<Notification> {
             }
         });
         holder.image.setOnClickListener(new OnClickListener() {
-            
+
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context.getApplicationContext(), OneSelfieActivity.class);
                 intent.putExtra("selfieId", notification.getObj().getId());
                 context.startActivity(intent);
-                
+
             }
         });
     }
 
     private void fillAvatar(ViewHolder holder, final Notification feedItem) {
-        String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
+        String url = "";
         String userAvatar = feedItem.getActor().getAvatar();
         if (userAvatar != null && userAvatar != "")
             url = UrlRequest.ADDRESS + userAvatar;
-        CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
+        if (!url.isEmpty())
+            CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
     }
 
     public boolean isNotification() {

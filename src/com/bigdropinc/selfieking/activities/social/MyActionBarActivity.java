@@ -75,6 +75,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
     ContestFragment contestFragment = new ContestFragment();
 
     ProfileFragment profileFragment = new ProfileFragment();
+    public boolean draft;
 
     @Override
     public Loader<StatusCode> onCreateLoader(int id, Bundle args) {
@@ -183,7 +184,6 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             if (!fragment.isAdded())
                 ft.add(fragment, tag);
             if (tag == TAB_CONTEST) {
-
                 ft.hide(profileFragment);
             } else {
 
@@ -296,6 +296,9 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actionbar);
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            draft = getIntent().getExtras().getBoolean("draft");
+        }
         if (mTabHost == null) {
             initTab(savedInstanceState);
         }
@@ -337,7 +340,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             Boolean b = getIntent().getExtras().getBoolean(Command.ADD_CONTEST);
 
             if (b != false) {
-                mCurrentTab = TAB_PROFILE;
+                mCurrentTab = TAB_CONTEST;
                 fromContest = true;
                 mTabHost.setCurrentTabByTag(mCurrentTab);
                 mTabHost.setOnTabChangedListener(listener);
@@ -356,6 +359,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             mTabHost.setOnTabChangedListener(listener);
             initializeTabs();
         }
+
         mTabHost.setCurrentTabByTag(TAB_PROFILE);
 
     }
@@ -366,7 +370,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
 
         if (fromCamera) {
             mTabHost.setCurrentTab(2);
-            fromCamera=false;
+            fromCamera = false;
         } else if (fromContest) {
             fromContest = false;
             mTabHost.setCurrentTab(0);
@@ -395,6 +399,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             if (fromContest) {
                 tabId = TAB_CONTEST;
                 mCurrentTab = TAB_CONTEST;
+                fromContest = false;
             } else {
                 mCurrentTab = tabId;
             }

@@ -285,4 +285,23 @@ public class SelfieImage implements Parcelable {
         this.location = location;
     }
 
+    @Override
+    public int hashCode() {
+
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SelfieImage other = (SelfieImage) obj;
+        if (id != other.id)
+            return false;
+        return true;
+    }
 }

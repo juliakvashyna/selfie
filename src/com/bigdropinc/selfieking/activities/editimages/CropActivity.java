@@ -254,6 +254,7 @@ public class CropActivity extends Activity {
                 image = getBitmap(uri);
                 selfieImage = new EditImage();
                 selfieImage = DatabaseManager.getInstance().addSelfie(selfieImage);
+           //     getApplicationContext().getContentResolver().delete(uri, null, null);
             } else {
                 selfieImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
                 byte[] byteArray = selfieImage.getResult();

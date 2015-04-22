@@ -83,7 +83,7 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         if (feedItem.getImageSmall() != null && !feedItem.getImageSmall().equals("false"))
             imageUrl = feedItem.getImageSmall();
         else
-            imageUrl = feedItem.getImage();
+            imageUrl = feedItem.getImage ();
         return imageUrl;
     }
 

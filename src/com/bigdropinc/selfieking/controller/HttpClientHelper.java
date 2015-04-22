@@ -436,7 +436,7 @@ public class HttpClientHelper {
         params.add(new BasicNameValuePair(TOKEN, token));
         params.add(new BasicNameValuePair(FIELDS, "basic, extended, imageSmall, imageMedium"));
         params.add(new BasicNameValuePair(OFFSET, String.valueOf(offset)));
-        params.add(new BasicNameValuePair(LIMIT, String.valueOf(LIMIT_COUNT)));
+        params.add(new BasicNameValuePair(LIMIT, String.valueOf(20)));
         InputStream inputStream = postData(UrlRequest.GET_SELFIES, params);
         String content = convertStreamToString(inputStream);
         ResponseListSelfie list = jsonHelper.parseResponseListSelfie(content);
