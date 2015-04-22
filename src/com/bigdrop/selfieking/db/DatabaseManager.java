@@ -90,17 +90,19 @@ public final class DatabaseManager {
     }
 
     public void updateSelfie(EditImage editImage) {
-        int i = 0;
-        try {
-            i = helper.getSelfieDao().update(editImage);
-            System.out.println(i);
-        } catch (SQLException e) {
+        if (editImage != null) {
+            int i = 0;
+            try {
+                i = helper.getSelfieDao().update(editImage);
+                System.out.println(i);
+            } catch (SQLException e) {
 
-            e.printStackTrace();
+                e.printStackTrace();
+            }
+            // Log.d("db", "update " + editImage.toString());
+
+            Log.d("db", "update i= " + i);
         }
-        Log.d("db", "update " + editImage.toString());
-
-        Log.d("db", "update i= " + i);
     }
 
     public void addSelfies(List<EditImage> task) {
@@ -113,14 +115,22 @@ public final class DatabaseManager {
         }
     }
 
-    public void EditImage(EditImage task) {
-        try {
-            helper.getSelfieDao().update(task);
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-        }
-    }
+    // public void EditImage(EditImage task) {
+    // try {
+    // helper.getSelfieDao().update(task);
+    // } catch (SQLException e) {
+    //
+    // e.printStackTrace();
+    // }
+    // // finally{
+    // // try {
+    // // helper.getSelfieDao().closeLastIterator();
+    // // } catch (SQLException e) {
+    // // // TODO Auto-generated catch block
+    // // e.printStackTrace();
+    // // }
+    // // }
+    // }
 
     public void removeSelfie(EditImage task) {
         try {
@@ -152,9 +162,11 @@ public final class DatabaseManager {
 
     public EditImage findEditImage(int id) {
         List<EditImage> tasks = new ArrayList<EditImage>();
+        EditImage editImage = null;
+        QueryBuilder<EditImage, Integer> queryBuilder;
         try {
 
-            QueryBuilder<EditImage, Integer> queryBuilder = helper.getSelfieDao().queryBuilder();
+            queryBuilder = helper.getSelfieDao().queryBuilder();
 
             queryBuilder.where().eq("id", id);
 
@@ -163,16 +175,18 @@ public final class DatabaseManager {
             tasks = helper.getSelfieDao().query(preparedQuery);
 
             if (tasks.size() > 0)
-                return tasks.get(0);
+                editImage = tasks.get(0);
         } catch (SQLException e) {
 
             e.printStackTrace();
         } catch (RuntimeException e) {
 
             e.printStackTrace();
+        } finally {
+
         }
- 
+
         Log.d("db", "get" + tasks.toString());
-        return new EditImage(id);
+        return editImage;
     }
 }

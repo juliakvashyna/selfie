@@ -3,33 +3,30 @@ package com.bigdropinc.selfieking.activities.editimages;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ComponentName;
-import android.content.ContentResolver;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.RectF;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.util.FloatMath;
 import android.util.Log;
@@ -102,11 +99,13 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private String mCurrentPhotoPath;
     private File photoFile;
     private Uri mImageUri;
-    final private int PIC_CROP = 13;
+    final public static int PIC_CROP = 13;
     private int backHeight;
     private int backWidth;
     private Uri outputFileUri;
     private Uri mCropImagedUri;
+    private int dimension;
+    private boolean notcrop;
 
     // private IabHelper mHelper;
 
@@ -167,85 +166,145 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         switch (requestCode) {
+
         case RESULT_GALLERY:
             if (resultCode == Activity.RESULT_OK) {
                 startCropIntent(data);
             }
             break;
         case REQUEST_IMAGE_CAPTURE:
-            startCropIntent(data);
+            if (resultCode == Activity.RESULT_OK) {
+                Intent newdata= new Intent();
+                newdata.setData(outputFileUri);
+                startCropIntent(newdata);
+            }
             break;
         case PIC_CROP: {
-            // if (resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 Uri imageUri = data.getData();
+                w = getWindowManager().getDefaultDisplay().getWidth();
+                h = getIntent().getIntExtra("h", 0);
                 Bitmap back = null;
-                // if (imageUri == null)
-                // imageUri = Uri.fromFile(photoFile);
                 if (imageUri != null)
                     back = getBitmap(imageUri);
-                // back =
-                // MediaStore.Images.Media.getBitmap(this.getContentResolver(),
-                // imageUri);
-                if (back != null)
-                    back = Bitmap.createScaledBitmap(back, backWidth, backHeight, false);
+                if (back != null) {
+                    back = Bitmap.createScaledBitmap(back, w, h, false);
+                }
                 selfieImage.setBackground(back);
                 backImageView.setImageBitmap(back);
-                // getContentResolver().delete(outputFileUri,
-                // getExternalCacheDir().getAbsolutePath(), new String[] { "1"
-                // });
-
-                // }
-                // photoFile.delete();
+                getApplicationContext().getContentResolver().delete(imageUri, null, null);
             }
             break;
         }
         default:
             break;
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void startCropIntent(Intent data) {
-        Intent cropIntent = new Intent("com.android.camera.action.CROP");
-        cropIntent.setClassName("com.android.camera", "com.android.camera.CropImage");
-        // indicate image type and Uri
-        // cropIntent.setDataAndType(data.getData(), "image/*");
-        // set crop properties
-        cropIntent.putExtra("crop", "true");
-        // indicate aspect of desired crop
-        cropIntent.putExtra("aspectX", 1);
-        cropIntent.putExtra("aspectY", 1);
-        // indicate output X and Y
-        cropIntent.putExtra("outputX", 360);
-        cropIntent.putExtra("outputY", 360);
-        cropIntent.putExtra("scale", true);
-        cropIntent.putExtra("return-data", false);
-        // cropIntent.setDataAndType(outputFileUri, "image/*");
-        // photoFile.delete();
-        // try {
-        // photoFile = File.createTempFile("crop1", "png",
-        // Environment.getExternalStorageDirectory());
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        if (data == null || data.getData() == null) {
-            data = new Intent();
-            data.setData(outputFileUri);
-        } else
-            mCropImagedUri = data.getData();
-        cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
-        // start the activity - we handle returning in onActivityResult
-        try {
-            startActivityForResult(cropIntent, PIC_CROP);
-        } catch (Exception e) {
-            onActivityResult(PIC_CROP, 1, data);
-        }
-        // photoFile.delete();
+    public Bitmap scaleCenterCrop(Bitmap source, int newHeight, int newWidth) {
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+
+        // Compute the scaling factors to fit the new height and width,
+        // respectively.
+        // To cover the final image, the final scaling will be the bigger
+        // of these two.
+        float xScale = (float) newWidth / sourceWidth;
+        float yScale = (float) newHeight / sourceHeight;
+        float scale = Math.max(xScale, yScale);
+
+        // Now get the size of the source bitmap when scaled
+        float scaledWidth = scale * sourceWidth;
+        float scaledHeight = scale * sourceHeight;
+
+        // Let's find out the upper left coordinates if the scaled bitmap
+        // should be centered in the new size give by the parameters
+        float left = (newWidth - scaledWidth) / 2;
+        float top = (newHeight - scaledHeight) / 2;
+
+        // The target rectangle for the new, scaled version of the source bitmap
+        // will now
+        // be
+        RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
+
+        // Finally, we create a new bitmap of the specified size and draw our
+        // new,
+        // scaled bitmap onto it.
+        Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
+        Canvas canvas = new Canvas(dest);
+        canvas.drawBitmap(source, null, targetRect, null);
+
+        return dest;
     }
- 
+
+    public int getSquareCropDimensionForBitmap(Bitmap bitmap) {
+        // If the bitmap is wider than it is tall
+        // use the height as the square crop dimension
+        if (bitmap.getWidth() >= bitmap.getHeight()) {
+            dimension = bitmap.getHeight();
+        }
+        // If the bitmap is taller than it is wide
+        // use the width as the square crop dimension
+        else {
+            dimension = bitmap.getWidth();
+        }
+        return dimension;
+    }
+
+    // private void startCropIntent(Intent data) {
+    // Intent cropIntent = new Intent("com.android.camera.action.CROP");
+    // cropIntent.setClassName("com.android.camera",
+    // "com.android.camera.CropImage");
+    // // indicate image type and Uri
+    // // cropIntent.setDataAndType(data.getData(), "image/*");
+    // // set crop properties
+    // cropIntent.putExtra("crop", "true");
+    // // indicate aspect of desired crop
+    // cropIntent.putExtra("aspectX", 1);
+    // cropIntent.putExtra("aspectY", 1);
+    // // indicate output X and Y
+    // cropIntent.putExtra("outputX", 360);
+    // cropIntent.putExtra("outputY", 360);
+    // cropIntent.putExtra("scale", true);
+    // cropIntent.putExtra("return-data", false);
+    // // cropIntent.setDataAndType(outputFileUri, "image/*");
+    // // photoFile.delete();
+    // // try {
+    // // photoFile = File.createTempFile("crop1", "png",
+    // // Environment.getExternalStorageDirectory());
+    // // } catch (IOException e) {
+    // // // TODO Auto-generated catch block
+    // // e.printStackTrace();
+    // // }
+    // if (data == null || data.getData() == null) {
+    // data = new Intent();
+    // data.setData(outputFileUri);
+    // } else
+    // mCropImagedUri = data.getData();
+    // cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCropImagedUri);
+    // // start the activity - we handle returning in onActivityResult
+    // try {
+    // startActivityForResult(cropIntent, PIC_CROP);
+    // } catch (Exception e) {
+    // notcrop = true;
+    // onActivityResult(PIC_CROP, 1, data);
+    // }
+    // // photoFile.delete();
+    // }
+    private void startCropIntent(Intent data) {
+        if (data != null) {
+            Intent intent = new Intent(getApplicationContext(), CropActivity.class);
+            Uri mCropImagedUri = data.getData();
+            intent.putExtra(SelectImageActivity.EXTRA_IMAGE_URI, mCropImagedUri);
+            intent.putExtra("fromBG", true);
+            startActivityForResult(intent, PIC_CROP);
+        }
+    }
+
     private void initIabHelper() {
         // String base64EncodedPublicKey =
         // "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAppnnGKdUh/6nuk2BL1LZuyN9r60w0q/Zqx3Hkmw6IKZLj/MhpN/+KygSSlje5IlasacAd5r1fw9uQWdL3VlmWHgJ16RAkAyeqGqXT+MH43zGEdiHrKCfUJZGOvbo6jTe/rnzAvpdZl1BCLZ0G2CuY/tr2VDIUcOCTk4AHkj8V13zqekqQBK8TuNP2Eq86B17fwQtqlrLRIQOIyVcHVphGVIaDYy5VqkyH5Erfb5oMh+KLFlCUXz72mHxPINp1yYFJ/Xp4hCuHxpmCK9F+mqnSPA8+7zWaWXbWLneMDXa+AZnnKi5XGEjjHAat0fXZR76Hj6/NDyKUq03ll5V+YvJOwIDAQAB";
@@ -278,24 +337,27 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     private void initImage() {
         if (getIntent() != null) {
             selfieImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
-            byte[] data = selfieImage.getResult();
+            // byte[] data = selfieImage.getResult();
             w = getIntent().getIntExtra("w", 0);
             h = getIntent().getIntExtra("h", 0);
-            if (data != null) {
-                try {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPurgeable = true;
-                    options.inJustDecodeBounds = false;
-                    // options.inPreferredConfig = Config.RGB_565;
-                    options.inDither = true;
-                    // options.inSampleSize = 2;
-                    image = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-                } catch (OutOfMemoryError e) {
-                    Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
-                }
-            } else {
-                Log.d(TAG, "data is null");
+            // if (data != null) {
+            try {
+                // BitmapFactory.Options options = new BitmapFactory.Options();
+                // options.inPurgeable = true;
+                // options.inJustDecodeBounds = false;
+                // // options.inPreferredConfig = Config.RGB_565;
+                // options.inDither = true;
+                // // options.inSampleSize = 2;
+                // image = BitmapFactory.decodeByteArray(data, 0, data.length,
+                // options);
+                image = ShareActivity.loadImageFromStorage(selfieImage.getPath());
+                image = Bitmap.createScaledBitmap(image, w, h, false);
+            } catch (OutOfMemoryError e) {
+                Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
             }
+            // } else {
+            // Log.d(TAG, "data is null");
+            // }
             resultImageView.setScaleType(ScaleType.MATRIX);
             // image = Bitmap.createScaledBitmap(image, w, h, true);
 
@@ -329,8 +391,9 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 res = menuListCurrent.get(position);
-                if (res != null)
+                if (res != null) {
                     setBack(res.getBitmap());
+                }
             }
         });
     }
@@ -380,7 +443,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         // }
         // outputFileUri = Uri.fromFile(photoFile);
         i.setType("image/*");
-        i.putExtra("crop", true);
+        // i.putExtra("crop", true);
         i.setAction(Intent.ACTION_GET_CONTENT);
         i.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         startActivityForResult(i, RESULT_GALLERY);
@@ -418,40 +481,68 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
     }
 
     private void gotoFeed() {
-        new AsyncTask<Void, Void, Intent>() {
-            protected void onPreExecute() {
-                dialog = ProgressDialog.show(MakeSelfieActivity.this, "", "");
-                dialog.setContentView(new ProgressBar(MakeSelfieActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            };
+        if (selfieImage.getBackground() == null) {
+            Toast.makeText(this, "Please choose background", Toast.LENGTH_LONG).show();
 
-            @Override
-            protected Intent doInBackground(Void... params) {
-                Intent intent = getAddFilterActivityIntent();
-                return intent;
-            }
+        } else {
 
-            protected void onPostExecute(Intent result) {
-                startActivity(result);
-                if (dialog != null) {
-                    dialog.cancel();
+            new AsyncTask<Void, Void, Intent>() {
+                protected void onPreExecute() {
+                    dialog = ProgressDialog.show(MakeSelfieActivity.this, "", "");
+                    dialog.setContentView(new ProgressBar(MakeSelfieActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                };
+
+                @Override
+                protected Intent doInBackground(Void... params) {
+                    Intent intent = getAddFilterActivityIntent();
+                    return intent;
                 }
-            };
-        }.execute();
+
+                protected void onPostExecute(Intent result) {
+                    startActivity(result);
+                    if (dialog != null) {
+                        dialog.cancel();
+                    }
+                };
+            }.execute();
+        }
     }
 
     private Intent getAddFilterActivityIntent() {
         Intent intent = new Intent(getApplicationContext(), AddFilterActivity.class);
         selfieImage.setMatrix(matrix);
-        selfieImage.getSelfieWithBackground();
+        selfieImage.setPath(saveToInternalSorage(selfieImage.getSelfieWithBackground()));
         DatabaseManager.getInstance().updateSelfie(selfieImage);
         intent.putExtra("id", selfieImage.getId());
         return intent;
     }
 
+    public String saveToInternalSorage(Bitmap bitmapImage) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory, "profile.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+
+            // Use the compress method on the BitMap object to write image to
+            // the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return directory.getAbsolutePath();
+    }
+
     private void initBackgroundMenu() {
         Bitmap back = BitmapFactory.decodeResource(getResources(), R.drawable.easter_island);
-        backHeight = back.getHeight();
-        backWidth = back.getWidth();
+        backHeight = (int) (back.getHeight());
+        backWidth = (int) (back.getWidth());
 
         menuListCurrent.add(new MenuItem(BackGroundConstants.b1, ImageHelper.getRoundedCornerBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.colosseum), 100)));
         menuListCurrent.add(new MenuItem(BackGroundConstants.b2, back));
@@ -467,20 +558,10 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
         adapterCurrent.notifyDataSetChanged();
     }
 
-    private void setBack(String filePath) {
-        Bitmap back = FileManager.getBitmapFromAsset(filePath);
-        selfieImage.setBackground(back);
-        backImageView.setImageBitmap(selfieImage.getBackground());
-    }
-
     private void setBack(Bitmap bitmap) {
         Bitmap back = bitmap;
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            back.compress(Bitmap.CompressFormat.PNG, 50, out);
-            Bitmap decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()));
-            back = Bitmap.createBitmap(decoded);
-            // decoded.recycle();
+            back = Bitmap.createScaledBitmap(back, backWidth, backHeight, false);
         } catch (OutOfMemoryError e) {
             Log.d("tag", "OutOfMemoryError");
         }
@@ -637,6 +718,7 @@ public class MakeSelfieActivity extends Activity implements OnTouchListener {
             o.inPreferredConfig = Config.RGB_565;
             o.inDither = true;
             BitmapFactory.decodeStream(in, null, o);
+
             in.close();
 
             int scale = 1;

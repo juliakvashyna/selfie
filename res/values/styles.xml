@@ -61,6 +61,12 @@
         <item name="android:textColor">@color/textViewColor</item>
         <item name="android:padding">1dp</item>
     </style>
+        <style name="customTutorial">
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/textViewColorTutorial</item>
+        <item name="android:padding">1dp</item>
+    </style>
 
     <style name="customSignupEditText" parent="@android:style/Widget.EditText">
         <item name="android:background">@color/transparent</item>

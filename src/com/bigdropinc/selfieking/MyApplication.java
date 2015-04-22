@@ -67,7 +67,7 @@ public class MyApplication extends Application {
     private String getKey() {
         byte[] bytes = null;
         String user = "bigdrop";
-        String password = "Bigdrop01";
+        String password = "T5Vq0O7GUW";//"Bigdrop01";
         String separator = ":";
         String key = user + separator + password;
         try {

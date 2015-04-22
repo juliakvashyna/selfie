@@ -24,8 +24,8 @@
         <ImageView
             android:id="@+id/fimage"
             android:layout_width="match_parent"
-            android:layout_height="340dp"
-            android:scaleType="fitXY" >
+            android:layout_height="@dimen/sizeImageFeed"
+            android:scaleType="centerCrop" >
         </ImageView>
     </RelativeLayout>
 
@@ -49,6 +49,7 @@
                 android:layout_width="@dimen/sizeProfileIconFeed"
                 android:layout_height="@dimen/sizeProfileIconFeed"
                 android:layout_marginBottom="@dimen/sizeProfileIconHalfFeed"
+                android:src="@drawable/icon_picture_user"
                 android:layout_marginLeft="10dp" >
             </com.bigdropinc.selfieking.views.RoundedImageView>
 

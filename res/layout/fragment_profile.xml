@@ -24,6 +24,7 @@
             android:id="@+id/profileEditButton"
             style="@style/customImageButton"
             android:layout_width="wrap_content"
+                 android:layout_margin="5dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:src="@drawable/edit_selector" />
@@ -40,6 +41,7 @@
             android:id="@+id/avatar"
             android:layout_width="@dimen/sizeProfileIcon"
             android:layout_height="@dimen/sizeProfileIcon"
+            android:src="@drawable/icon_picture_user"
             android:layout_gravity="center" />
     </LinearLayout>
 
@@ -64,6 +66,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
+        android:text="0"
         android:background="@drawable/amount_bg"
         android:gravity="center" />
 

@@ -180,14 +180,14 @@ public class FileManager {
         }
     }
 
-    private static Uri getUriFromiImage(Bitmap inImage) {
-        Uri uri;
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
-        uri = Uri.parse(path);
-        return uri;
-    }
+//    private static Uri getUriFromiImage(Bitmap inImage) {
+//        Uri uri;
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+//        String path = Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+//        uri = Uri.parse(path);
+//        return uri;
+//    }
 
     public static String getRealPathFromURI(Uri contentUri, Context context) {
         Cursor cursor = null;

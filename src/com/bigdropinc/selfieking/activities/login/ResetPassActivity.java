@@ -30,6 +30,15 @@ public class ResetPassActivity extends Activity implements LoaderManager.LoaderC
         setContentView(R.layout.activity_reset_pass);
         final EditText email = (EditText) findViewById(R.id.resetEmailEditText);
         Button send = (Button) findViewById(R.id.resetPasswordSendButton);
+        Button close = (Button) findViewById(R.id.changePasswordBack);
+        close.setOnClickListener(new OnClickListener() {
+            
+            @Override
+            public void onClick(View v) {
+               onBackPressed();
+                
+            }
+        });
         initListeners(email, send);
     }
 

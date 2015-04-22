@@ -17,6 +17,7 @@
             android:id="@+id/favatar"
             android:layout_width="@dimen/sizeProfileIconFeed"
             android:layout_height="@dimen/sizeProfileIconFeed"
+             android:src="@drawable/icon_picture_user"
             android:layout_margin="10dp" >
         </com.bigdropinc.selfieking.views.RoundedImageView>
 

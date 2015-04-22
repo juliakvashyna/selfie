@@ -65,12 +65,16 @@ public class OneSelfieActivity extends Activity implements LoaderManager.LoaderC
     @Override
     public void onLoadFinished(Loader<StatusCode> loader, StatusCode statusCode) {
         if (loader.getId() == LOADER_ID_VOTE) {
-            updateGridView(loader);
-            Toast.makeText(this, "Thanks for vote!", Toast.LENGTH_SHORT).show();
-            if (getIntent() != null && getIntent().getExtras() != null) {
-                ContestFragment.vote = true;
-                ContestFragment.curMonthNumber = getIntent().getExtras().getInt("monthNumber");
-                ContestFragment.curOrder = getIntent().getExtras().getString("order");
+            if (statusCode.isSuccess()) {
+                updateGridView(loader);
+                Toast.makeText(this, "Thanks for vote!", Toast.LENGTH_SHORT).show();
+                if (getIntent() != null && getIntent().getExtras() != null) {
+                    ContestFragment.vote = true;
+                    ContestFragment.curMonthNumber = getIntent().getExtras().getInt("monthNumber");
+                    ContestFragment.curOrder = getIntent().getExtras().getString("order");
+                }
+            } else {
+                Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
             }
         } else {
             ContestFragment.vote = false;

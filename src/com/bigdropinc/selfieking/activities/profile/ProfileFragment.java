@@ -56,6 +56,7 @@ import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 import com.bigdropinc.selfieking.views.RoundedImageView;
 
 public class ProfileFragment extends Fragment implements LoaderManager.LoaderCallbacks<StatusCode> {
+    private static final int OFFSET = 20;
     public static final int REQUEST_CODE_ONE_SELFIE = 77;
     private static final int REQUEST_EDIT = 35;
     private static final int LOADER_ID = 1;
@@ -78,6 +79,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private Command command;
     private ImageAdapter adapter;
     private ArrayList<SelfieImage> more;
+
     private List<SelfieImage> drafts = new ArrayList<SelfieImage>();
     private List<SelfieImage> incontest = new ArrayList<SelfieImage>();
     private Uri outputFileUri;
@@ -90,10 +92,9 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         initViews();
-        // if (user == null) {
-        startUser();
+        if (user == null)
+            startUser();
         initFeed();
-        // }
         initListeners();
         return rootView;
     }
@@ -122,13 +123,24 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
             DatabaseManager.getInstance().updateUser(user);
         } else if (loader.getId() == LOADER_ID_USER) {
             user = ((CommandLoader) loader).getUser();
-            initUser();
+            if (user != null) {
+                initUser();
+            } else {
+                Log.d("tag", "user is null ProfileFragment");
+            }
         } else {
             updateGridview(responseListSelfie, statusCode);
 
         }
 
         getLoaderManager().destroyLoader(loader.getId());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (user == null)
+            startUser();
     }
 
     @Override
@@ -183,12 +195,12 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void updateAdapter() {
-        adapter.setNotifyOnChange(false); // Prevents 'clear()' from
-                                          // clearing/resetting the listview
+        // adapter.setNotifyOnChange(false); // Prevents 'clear()' from
+        // clearing/resetting the listview
         if (sortButton.getText().toString().equals("In contest")) {
-            adapter.setImages(incontest);
+            adapter.addAll(more);
         } else {
-            adapter.setImages(drafts);
+            adapter.addAll(more);
         }
 
         // note that a call to notifyDataSetChanged() implicitly sets the
@@ -231,25 +243,22 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
 
     private void initUser() {
         initUserNames();
-        String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
+        String url = "";
         String userAvatar = user.getAvatar();
-        if (userAvatar != null && userAvatar != "")
+        if (userAvatar != null && userAvatar != "") {
             url = UrlRequest.ADDRESS + userAvatar;
-        CustomPicasso.getImageLoader(getActivity()).load(url).into(avatar);
+            CustomPicasso.getImageLoader(getActivity()).load(url).into(avatar);
+        }
 
     }
 
     private void initUserNames() {
-        // user =
-        // DatabaseManager.getInstance().findUser(LoginManagerImpl.getInstance().getToken());
         nameTextView.setText(user.getUserName());
         emailTextView.setText(user.getEmail());
     }
 
     private void initViews() {
         avatar = (RoundedImageView) rootView.findViewById(R.id.avatar);
-
-        // CustomPicasso.getImageLoader(getActivity()).load("http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg").into(avatar);
         gridView = (GridView) rootView.findViewById(R.id.profileGridView);
 
         editProfileButton = (ImageButton) rootView.findViewById(R.id.profileEditButton);
@@ -264,7 +273,8 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
         editProfileButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                startEditActivity(user.getId());
+                if (user != null)
+                    startEditActivity(user.getId());
             }
         });
         backButton.setOnClickListener(new OnClickListener() {
@@ -291,6 +301,7 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     private void initGridview() {
         adapter = new ImageAdapter(getActivity(), R.layout.image_item_gridview, incontest);
         gridView.setAdapter(adapter);
+        adapter.setImages(incontest);
         initOnScrollListener();
         gridView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -300,11 +311,12 @@ public class ProfileFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void initOnScrollListener() {
+        adapter.notifyDataSetChanged();
         gridView.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 if (!end) {
-                    mypage = mypage + 5;
+                    mypage = mypage + OFFSET;
                     loadMore(mypage);
                 }
             }

@@ -65,7 +65,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
         }
         fillAvatar(holder, comment);
         initListeners(holder, comment);
-        String text = "<font color=#ffdfdd ><b>" + comment.getUserName() + "<b></font> <font color=#de8d8a> commented on your photo:</font> <font color=#ffdfdd> \"" + comment.getText() + "\"</font>";
+        String text = "<font color=#ffdfdd ><b>" + comment.getUserName() + "<b></font> <br></br> <font color=#ffdfdd> \"" + comment.getText() + "\"</font>";
         holder.dateTextView.setText(comment.getDate());
         holder.userTextView.setText(Html.fromHtml(text));
         return convertView;
@@ -81,7 +81,7 @@ public class CommentAdapter extends ArrayAdapter<Comment> {
     }
 
     private void fillAvatar(ViewHolder holder, final Comment feedItem) {
-        String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
+        String url = "";
         String userAvatar = feedItem.getUserAvatar();
         if (userAvatar != null && userAvatar != "")
             url = UrlRequest.ADDRESS + userAvatar;

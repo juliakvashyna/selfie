@@ -131,11 +131,12 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
     }
 
     private void fillAvatar(ViewHolder holder, final SelfieImage feedItem) {
-        String url = "http://i.dailymail.co.uk/i/pix/2014/03/10/article-0-1C2B325500000578-458_634x699.jpg";
+        String url = "";
         String userAvatar = feedItem.getUserAvatar();
-        if (userAvatar != null && userAvatar != "")
+        if (userAvatar != null && userAvatar != "") {
             url = UrlRequest.ADDRESS + userAvatar;
-        CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
+            CustomPicasso.getImageLoader(context).load(url).into(holder.avatar);
+        }
     }
 
     private void fillDescription(ViewHolder holder, final SelfieImage feedItem) {
@@ -149,7 +150,8 @@ public class FeedAdapter extends ArrayAdapter<SelfieImage> {
 
     private void fillImage(ViewHolder holder, final SelfieImage feedItem) {
         String imageUrl = getImageUrl(feedItem);
-        CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop().into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
+     //   resize(IMAGE_SIZE, IMAGE_SIZE).centerCrop()
+        CustomPicasso.getImageLoader(context).load(UrlRequest.ADDRESS + imageUrl).placeholder(R.drawable.placeholder).into(holder.imageView, new ImageLoadedCallback(holder.progressBar) {
             @Override
             public void onSuccess() {
                 if (this.progressBar != null) {

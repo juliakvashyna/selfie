@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -35,8 +36,18 @@ public class EditImage {
     private int height;
     private boolean filterclick;
     private Matrix matrix;
+    @DatabaseField
+    String path;
 
     // private PorterDuffColorFilter colorFilter;
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
 
     public EditImage(int id) {
         this.id = id;
@@ -219,7 +230,7 @@ public class EditImage {
                 // }
 
             } else {
-                bitmap = getSelfieWithOutBackground();  
+                bitmap = getSelfieWithOutBackground();
             }
             createBytes(bitmap);
         }
@@ -227,22 +238,24 @@ public class EditImage {
     }
 
     public void createBytes(Bitmap bitmap) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        // bitmap.recycle();
-        imageBytes = stream.toByteArray();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        //bitmap = Bitmap.createScaledBitmap(bitmap, 360, 360, false);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 0, out);
+        imageBytes = out.toByteArray();
         try {
-            stream.flush();
-            stream.close();
+            out.flush();
+            out.close();
         } catch (IOException e) {
 
             e.printStackTrace();
         }
-        stream = null;
+        out = null;
     }
-    public void createBytesFilter(Bitmap bitmap) {
+
+    public void createBytesFilter(Bitmap bitmap, int quality) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, stream);
+ 
+        bitmap.compress(Bitmap.CompressFormat.PNG, quality, stream);
         // bitmap.recycle();
         filterImageBytes = stream.toByteArray();
         try {

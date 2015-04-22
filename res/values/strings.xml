@@ -120,5 +120,21 @@
     <string name="title_activity_tutorial">TutorialActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="tutorialTitle1">Welcome to SelfieKing! Get started with our app by taking a photo of yourself.</string>
+    <string name="firstStep">First step</string>
+    <string name="firstStepDesc">Use camera or upload a photo from a gallery.Crop the photo and cut a Selfie with a finger tool.</string>
+    <string name="secondStep">Second step</string>
+    <string name="SecondStepDesc">Choose a background (you can also upload it from camera gallery or take a new background photo). Position your Selfie on the background, play with the sizes and add our cool filters to finish your masterpiece.</string>
+    <string name="thirdStep">Final step</string>
+    <string name="thirdStepDesc">As the final step, put description next to your Selfie and it’s ready to go!</string>
+    <string name="tutorialTitle2">What’s next?</string>
+    <string name="tutorialTitle3">Contest Rules</string>
+    <string name="tutorialTitle2Desc">Publish your Selfie to our monthly Contest and win $1000 if it scores the greatest number of Crowns by the end of the month (see Contest rules on the next slide)</string>
+    <string name="tutorialTitle2Desc2">Share Selfie in social networks or just save it as a draft (you may choose to add it to the contest later) </string>
+    <string name="tutorialTitle3Desc">Our cool Contest takes place monthly and every SelfieKing user can join it by submitting a Selfie created with the help of our app (you must agree to the Terms and Conditions first).
+
+\n\nWhen you post a Selfie to the Contest, you are given 5 votes for each Selfie you add which you can use to rate other participant’s Selfies. Give each Selfie up to 5 crowns and encourage your friends to vote for you. 
+
+\n\nA Selfie which scores the greatest amount of Crowns during a month wins the Contest and $1000 prize goes to the winner’s PayPal account! </string>
 
 </resources>

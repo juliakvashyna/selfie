@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.ViewSwitcher;
 
@@ -67,6 +68,7 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
     NotificationtAdapter notificationtAdapter;
     public static boolean vote;
     private boolean was;
+    int checkedId;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -75,11 +77,15 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+        this.checkedId = checkedId;
         if (checkedId == R.id.button_one) {
             switcher.showNext();
         } else if (checkedId == R.id.button_two) {
             switcher.showPrevious();
-        }
+            if (notificationtAdapter != null && notificationtAdapter.getCount() == 0) {
+                Toast.makeText(getActivity(), "There is no information yet", Toast.LENGTH_LONG).show();
+            }
+        } 
     }
 
     @Override
@@ -222,6 +228,7 @@ public class ContestFragment extends Fragment implements OnCheckedChangeListener
             notificationtAdapter.addAll(notificationsList);
             notificationtAdapter.notifyDataSetChanged();
         }
+
     }
 
     private void addMoreOrEnd(ViewPagerItem itemfromlist, ArrayList<SelfieImage> more) {

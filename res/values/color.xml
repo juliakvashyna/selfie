@@ -10,5 +10,5 @@
     <color name="rosyLight">#efc0d2</color>
     <color name="rosyLightLight">#f6cccf</color>
     <color name="colorHint">#bb9aa6</color>
-
+<color name="textViewColorTutorial">#fec7ba</color>
 </resources>

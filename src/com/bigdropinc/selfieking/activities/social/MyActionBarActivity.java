@@ -93,7 +93,8 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         // getFragmentManager().beginTransaction().remove(f1);
         // Fragment f2=getFragmentManager().findFragmentByTag(TAB_PROFILE);
         // getFragmentManager().beginTransaction().remove(f2);
-        finish();
+        this.moveTaskToBack(true);
+        this.finish();
         // super.onBackPressed();
 
     }
@@ -334,6 +335,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
         }
         if (getIntent() != null && getIntent().getExtras() != null) {
             Boolean b = getIntent().getExtras().getBoolean(Command.ADD_CONTEST);
+
             if (b != false) {
                 mCurrentTab = TAB_PROFILE;
                 fromContest = true;
@@ -341,12 +343,21 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
                 mTabHost.setOnTabChangedListener(listener);
                 initializeTabs();
             }
+            Boolean b1 = getIntent().getExtras().getBoolean("signup");
+            if (b1 != false) {
+                fromCamera = true;
+                startActivity(new Intent(getApplicationContext(), SelectImageActivity.class));
+            }
+            mTabHost.setCurrentTabByTag(mCurrentTab);
+            mTabHost.setOnTabChangedListener(listener);
+            initializeTabs();
         } else {
             mTabHost.setCurrentTabByTag(mCurrentTab);
             mTabHost.setOnTabChangedListener(listener);
             initializeTabs();
         }
         mTabHost.setCurrentTabByTag(TAB_PROFILE);
+
     }
 
     @Override
@@ -355,6 +366,7 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
 
         if (fromCamera) {
             mTabHost.setCurrentTab(2);
+            fromCamera=false;
         } else if (fromContest) {
             fromContest = false;
             mTabHost.setCurrentTab(0);
@@ -467,32 +479,17 @@ public class MyActionBarActivity extends Activity implements LoaderManager.Loade
             GCMRegistrar.checkDevice(getApplicationContext());
             GCMRegistrar.checkManifest(getApplicationContext());
             GCMRegistrar.register(getApplicationContext(), GCMHelper.SENDER_ID);
-            while (regId.equals("")) {
-                regId = GCMRegistrar.getRegistrationId(getApplicationContext());
+            for (int i = 0; i < 10; i++) {
+                if (regId.equals("")) {
+                    regId = GCMRegistrar.getRegistrationId(getApplicationContext());
+
+                } else {
+                    break;
+                }
             }
             Log.v("gcm", "regid : " + regId);
             sendInfoToServer();
         }
-    }
-
-    private synchronized String initUUID(Context context) {
-        if (uniqueID == null) {
-            SharedPreferences sharedPrefs = context.getSharedPreferences(PREF_REQ_ID, Context.MODE_PRIVATE);
-            uniqueID = sharedPrefs.getString(PREF_REQ_ID, null);
-            if (uniqueID == null) {
-                uniqueID = generateUUID();
-                if (uniqueID.length() > 36) {
-                    while (uniqueID.length() > 36) {
-                        uniqueID = uniqueID.substring(0, uniqueID.length() - 1);
-                    }
-                }
-                Editor editor = sharedPrefs.edit();
-                editor.putString(PREF_REQ_ID, uniqueID);
-                editor.commit();
-            }
-            Log.v("GCM", "uniqueID : " + uniqueID + " unique.lemght " + uniqueID.length());
-        }
-        return uniqueID;
     }
 
     private String generateUUID() {

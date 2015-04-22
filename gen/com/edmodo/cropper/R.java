@@ -18,7 +18,7 @@ public final class R {
 		public static final int black_translucent = 0x7f070021;
 	}
 	public static final class drawable {
-		public static final int dot_size = 0x7f0200dc;
+		public static final int dot_size = 0x7f0200df;
 	}
 	public static final class id {
 		public static final int CropOverlayView = 0x7f0c00f0;

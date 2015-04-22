@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.activities.editimages.SelectImageActivity;
+import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
 import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
 import com.bigdropinc.selfieking.controller.managers.DialogManager;
@@ -158,7 +159,10 @@ public class SignUpActivity extends Activity implements LoaderManager.LoaderCall
 
     private void goSelectImage() {
         SignUpActivity.this.finish();
-        startActivity(new Intent(getApplicationContext(), SelectImageActivity.class));
+        Intent intent = new Intent(getApplicationContext(), TutorialActivity.class);
+     //   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); 
+     //   intent.putExtra("signup", true);
+        startActivity(intent);
     }
 
     private void registr() {

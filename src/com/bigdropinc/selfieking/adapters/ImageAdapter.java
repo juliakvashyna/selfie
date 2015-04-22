@@ -6,6 +6,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
@@ -52,7 +53,7 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         return 0;
     }
 
-    private static final int IMAGE_SIZE = 120;
+    private static final int IMAGE_SIZE = 250;
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -60,15 +61,18 @@ public class ImageAdapter extends ArrayAdapter<SelfieImage> {
         if (convertView == null) {
             imageView = new ImageView(mContext);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+          //  imageView.setLayoutParams(new LayoutParams(250, 250));
             imageView.setAdjustViewBounds(true);
-            imageView.setPadding(1, 1, 1, 1);
+            imageView.setPadding(4, 4, 4, 4);
+         
         } else {
             imageView = (ImageView) convertView;
         }
         SelfieImage image = getItem(position);
         if (image != null) {
             String imageUrl = getImageUrl(image);
-            CustomPicasso.getImageLoader(mContext).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).error(R.drawable.notfound).placeholder(R.drawable.placeholder).into(imageView);
+          // resize(IMAGE_SIZE, IMAGE_SIZE)
+            CustomPicasso.getImageLoader(mContext).load(UrlRequest.ADDRESS + imageUrl).resize(IMAGE_SIZE, IMAGE_SIZE).placeholder(R.drawable.icon_bg).error(R.drawable.notfound).into(imageView);
         }
         return imageView;
     }

@@ -44,6 +44,7 @@ public final class LoginManagerImpl implements LoginManager {
     @Override
     public void signOut() {
         editor.remove(TOKEN);
+        editor.remove(idKey);
         editor.commit();
         // moveTaskToBack(true);
         // Welcome.this.finish();
@@ -53,7 +54,8 @@ public final class LoginManagerImpl implements LoginManager {
     public boolean check() {
 
         String token = sharedpreferences.getString(TOKEN, "");
-        return !token.isEmpty();
+        int id = sharedpreferences.getInt(idKey, -1);
+        return !token.isEmpty() && id != -1;
     }
 
     @Override

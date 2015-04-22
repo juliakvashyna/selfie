@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/main_background"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
@@ -22,6 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
+                android:layout_margin="5dp"
                 android:alpha="90"
                 android:background="@drawable/close_button_selector" />
 
@@ -40,7 +41,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
                 android:background="@drawable/done_selector" />
         </RelativeLayout>
 
@@ -91,12 +94,12 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@color/transparent"
-                    android:textColorHint="#bb9aa6"
                     android:ems="10"
                     android:gravity="center"
                     android:hint="@string/userName"
                     android:inputType="textEmailAddress"
-                    android:textColor="#f4cad9" />
+                    android:textColor="#f4cad9"
+                    android:textColorHint="#bb9aa6" />
             </RelativeLayout>
 
             <ImageView
@@ -227,20 +230,18 @@
                     android:contentDescription="gender"
                     android:src="@drawable/icon_gender" />
 
-                <Spinner
+                <Button
                     android:id="@+id/editPofileMale"
-                    style="@style/customSpinner"
+                    style="@style/customEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_centerInParent="true"
                     android:layout_centerVertical="true"
                     android:layout_margin="5dp"
-                    android:layout_toRightOf="@id/genL"
                     android:ems="10"
                     android:gravity="center"
-                    android:popupBackground="@android:color/transparent"
-                    android:spinnerMode="dropdown" />
+                    android:text="Male" />
             </RelativeLayout>
 
             <ImageView
@@ -315,7 +316,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="10dp" >
+                android:padding="10dp"
+                android:visibility="gone" >
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -335,17 +337,18 @@
                     android:text="@string/deleteAccount" />
             </RelativeLayout>
 
+            <Button
+                android:id="@+id/signOut"
+                style="@style/customEditButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Sign Out" />
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/divider_01" />
-
-            <Button
-                android:id="@+id/signOut"
-                style="@style/customButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Sign Out" />
         </LinearLayout>
     </LinearLayout>
 

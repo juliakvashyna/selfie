@@ -3,6 +3,9 @@ package com.bigdropinc.selfieking.activities.editimages;
 import io.fabric.sdk.android.Fabric;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore.Images;
 import android.text.Layout;
@@ -63,6 +67,7 @@ import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallback
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
+import com.google.android.gms.internal.im;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.plus.Plus;
@@ -233,7 +238,7 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         setContentView(R.layout.activity_share);
         initView();
         initIabHelper();
-        initImage();
+        startInitImage();
         initListeners();
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
@@ -343,43 +348,63 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
 
     }
 
-    private void initImage() {
-        editImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
-        byteArray = editImage.getFilterImageBytes();
+    private void startInitImage() {
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected void onPreExecute() {
+                dialog = ProgressDialog.show(ShareActivity.this, "", "");
+                dialog.setContentView(new ProgressBar(ShareActivity.this), new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                return initImage();
+            }
+
+            protected void onPostExecute(Bitmap result) {
+                if (result != null) {
+                    imageView.setImageBitmap(image);
+                    myImageUri = getImageUri(getApplicationContext(), image);
+                } else {
+                    Toast.makeText(ShareActivity.this, "Sorry, too big image", Toast.LENGTH_LONG).show();
+                }
+                if (dialog != null)
+                    dialog.cancel();
+            };
+        }.execute();
+
+    }
+
+    public static Bitmap loadImageFromStorage(String path) {
+
         try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPurgeable = true;
-            options.inJustDecodeBounds = false;
-            // options.inSampleSize = 2;
-            options.inDither = true;
-            image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
-            imageOriginal = Bitmap.createBitmap(image);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
+            File f = new File(path, "profile.png");
+            return BitmapFactory.decodeStream(new FileInputStream(f));
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        addWaterMark();
-        DatabaseManager.getInstance().updateSelfie(editImage);
-        imageView.setImageBitmap(image);
-        myImageUri = getImageUri(getApplicationContext(), image);
+        return null;
 
     }
 
     private void addWaterMark() {
-        Bitmap res = Bitmap.createBitmap(image);
-        Bitmap mutableBitmap = res.copy(Bitmap.Config.ARGB_8888, true);
-        Bitmap watermark = BitmapFactory.decodeResource(getResources(), R.drawable.watermark);
-        watermark = Bitmap.createScaledBitmap(watermark, 450, 350, false);
-        Canvas canvas = new Canvas(mutableBitmap);
-        canvas.drawBitmap(watermark, 220, 290, null);
-        image = Bitmap.createBitmap(mutableBitmap);
-        imageView.setImageBitmap(image);
-        myImageUri = getImageUri(getApplicationContext(), image);
+        if (image != null) {
+            Bitmap res = Bitmap.createBitmap(image);
+            Bitmap mutableBitmap = res.copy(Bitmap.Config.ARGB_8888, true);
+            Bitmap watermark = BitmapFactory.decodeResource(getResources(), R.drawable.watermark);
+            watermark = Bitmap.createScaledBitmap(watermark, 800, 600, false);
+            Canvas canvas = new Canvas(mutableBitmap);
+            int left = mutableBitmap.getWidth() - watermark.getWidth() + 200;
+            int top = mutableBitmap.getHeight() - watermark.getHeight() + 160;
+            canvas.drawBitmap(watermark, left, top, null);
+            image = Bitmap.createBitmap(mutableBitmap);
+        //    imageView.setImageBitmap(image);
+         //   myImageUri = getImageUri(getApplicationContext(), image);
+        }
     }
 
     private void deleteMark() {
-
         image = Bitmap.createBitmap(imageOriginal);
         imageView.setImageBitmap(image);
         myImageUri = getImageUri(getApplicationContext(), image);
@@ -440,7 +465,6 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle bundle = new Bundle();
         bundle.putBoolean(Command.ADD_CONTEST, true);
-
         intent.putExtras(bundle);
         intent.putExtra(Command.ADD_CONTEST, true);
         DatabaseManager.getInstance().deleteSelfie(editImage.getId());
@@ -481,26 +505,10 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 
-    // private void startCommandLoader() {
-    // Bundle bundle = new Bundle();
-    // SelfieImage selfie = new SelfieImage();
-    // editImage.createBytesFilter(image);
-    // byteArray = editImage.getFilterImageBytes();
-    // selfie.setBytesImage(byteArray);
-    // selfie.setDescription(editText.getText().toString());
-    // selfie.setToken(LoginManagerImpl.getInstance().getToken());
-    // selfie.setLocation(countryName);
-    // Command command = new Command(Command.POST_SELFIE);
-    // command.setSelfieImage(selfie);
-    // bundle.putParcelable("command", command);
-    // getLoaderManager().initLoader(LOADER_ID, bundle,
-    // ShareActivity.this).forceLoad();
-    // }
-
     private void startCommandLoader(String commandName) {
         Bundle bundle = new Bundle();
         SelfieImage selfie = new SelfieImage();
-        editImage.createBytesFilter(image);
+        editImage.createBytesFilter(image, 100);
         byteArray = editImage.getFilterImageBytes();
         selfie.setBytesImage(byteArray);
         selfie.setDescription(editText.getText().toString());
@@ -516,12 +524,17 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         if (!fbSelected) {
             fbSelected = true;
             fbButton.setSelected(fbSelected);
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-            ArrayList<Bitmap> col = new ArrayList<Bitmap>();
-            col.add(image);
-            FacebookDialog shareDialog = new FacebookDialog.PhotoShareDialogBuilder(this).addPhotos(col).build();
-            uiHelper.trackPendingDialogCall(shareDialog.present());
+            // ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            if (image != null && uiHelper!=null) {
+                // image.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+                ArrayList<Bitmap> col = new ArrayList<Bitmap>();
+                col.add(image);
+                FacebookDialog shareDialog = new FacebookDialog.PhotoShareDialogBuilder(this).addPhotos(col).build();
+                uiHelper.trackPendingDialogCall(shareDialog.present());
+            }
+            else{
+                Toast.makeText(this, "Sorry, Facebook error!", Toast.LENGTH_LONG).show();
+            }
         }
 
     }
@@ -562,13 +575,26 @@ public class ShareActivity extends Activity implements LoaderManager.LoaderCallb
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        if (addresses.size() > 0) {
-            countryName = addresses.get(0).getCountryName();
-            countryTextView.setText(countryName + ", " + addresses.get(0).getLocality());
-        } else {
-            countryTextView.setText("Search...");
+        if (addresses != null) {
+            if (addresses.size() > 0) {
+                countryName = addresses.get(0).getCountryName();
+                countryTextView.setText(countryName + ", " + addresses.get(0).getLocality());
+            } else {
+                countryTextView.setText("Search...");
+            }
         }
+    }
+
+    private Bitmap initImage() {
+        editImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("idEditImage", 0));
+        if (editImage != null) {
+            image = loadImageFromStorage(editImage.getPath());
+            imageOriginal = Bitmap.createBitmap(image);
+            addWaterMark();
+        } else {
+            return null;
+        }
+        return image;
     }
 
 }

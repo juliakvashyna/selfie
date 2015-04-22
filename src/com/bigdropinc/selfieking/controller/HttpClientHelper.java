@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -331,7 +334,7 @@ public class HttpClientHelper {
         String content = convertStreamToString(inputStream);
         CommentSelfieImage selfie = jsonHelper.parseCommentSelfie(content);
         return selfie;
-    }
+    } 
 
     public StatusCode changePassword(Password password) throws ApiException {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
@@ -387,7 +390,7 @@ public class HttpClientHelper {
 
     }
 
-    public SelfieImage vote(int postId, int rate) throws ApiException {
+    public StatusCode vote(int postId, int rate) throws ApiException {
         List<NameValuePair> params = new ArrayList<NameValuePair>(5);
         params.add(new BasicNameValuePair(TOKEN, token));
         params.add(new BasicNameValuePair(POST_ID, String.valueOf(postId)));
@@ -395,8 +398,8 @@ public class HttpClientHelper {
 
         InputStream inputStream = postData(UrlRequest.VOTE, params);
         String content = convertStreamToString(inputStream);
-        StatusCode statusCode = jsonHelper.parseMessage(content);
-        return getSelfie(postId);
+        return jsonHelper.parseMessage(content);
+      
     }
 
     // private List<SelfieImage> getSelfies(String command, int offset) throws
@@ -438,7 +441,7 @@ public class HttpClientHelper {
         String content = convertStreamToString(inputStream);
         ResponseListSelfie list = jsonHelper.parseResponseListSelfie(content);
         Log.d(TAG, "responce from server  " + content);
-        return list;
+         return list;
 
     }
 
@@ -461,7 +464,7 @@ public class HttpClientHelper {
         params.add(new BasicNameValuePair(OFFSET, String.valueOf(offset)));
         params.add(new BasicNameValuePair(LIMIT, String.valueOf(LIMIT_COUNT)));
         InputStream inputStream = postData(UrlRequest.NOTIFICATIONS, params);
-      
+
         String content = convertStreamToString(inputStream);
         Log.d(TAG, "responce from server  " + content);
         List<Notification> list = jsonHelper.parseNotifications(content);
@@ -507,11 +510,21 @@ public class HttpClientHelper {
             HttpResponse response = httpclient.execute(httppost);
             inputStream = response.getEntity().getContent();
             return inputStream;
+        } catch (ConnectException e) {
+            List<ResponceError> error = new ArrayList<ResponceError>();
+            error.add(new ResponceError("Too slow internet connection", 1));
+            throw new ApiException("Failure", error);
         } catch (ClientProtocolException e) {
             e.printStackTrace();
             List<ResponceError> error = new ArrayList<ResponceError>();
             error.add(new ResponceError("Too slow internet connection", 1));
             throw new ApiException("Failure", error);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            List<ResponceError> error = new ArrayList<ResponceError>();
+            error.add(new ResponceError("Sorry, server error ", 1));
+            throw new ApiException("Failure", error);
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (OutOfMemoryError e) {

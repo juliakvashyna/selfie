@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigdrop.selfieking.db.DatabaseManager;
@@ -25,12 +27,14 @@ import com.bigdropinc.selfieking.model.User;
 import com.bigdropinc.selfieking.model.responce.StatusCode;
 
 public class ProfileEditActivity extends Activity implements LoaderManager.LoaderCallbacks<StatusCode>, OnClickListener {
+    private static final String FEMALE = "Female";
+    private static final String MALE = "Male";
     private EditText userNameEditText;
     private EditText jobEditText;
     private EditText siteEditText;
     private EditText emailEditText;
     private EditText phoneEditText;
-    private Spinner genderSpinner;
+    private Button genderSpinner;
     private Button editButton;
     private Button backButton;
     private Button changePassword;;
@@ -84,6 +88,9 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         case R.id.signOut:
             signOut();
             break;
+        case R.id.editPofileMale:
+            changeGender();
+            break;
 
         // case R.id.deleteAll:
         // deleteAll();
@@ -92,6 +99,14 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         default:
             break;
         }
+    }
+
+    private void changeGender() {
+        if (genderSpinner.getText().toString().equals(MALE)) {
+            genderSpinner.setText(FEMALE);
+        } else
+            genderSpinner.setText(MALE);
+        
     }
 
     @Override
@@ -104,15 +119,15 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         initUser();
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-////        if (!LoginManagerImpl.getInstance().check()) {
-////
-////            finish();
-////        }
-//
-//    }
+    // @Override
+    // protected void onResume() {
+    // super.onResume();
+    // // if (!LoginManagerImpl.getInstance().check()) {
+    // //
+    // // finish();
+    // // }
+    //
+    // }
 
     private void checkingCode(Loader<StatusCode> loader, StatusCode statusCode) {
         switch (loader.getId()) {
@@ -141,6 +156,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
 
     private void delete(StatusCode statusCode) {
         if (statusCode.isSuccess()) {
+            Toast.makeText(this, "Account was deleted", Toast.LENGTH_SHORT).show();
             signOut();
         } else {
             Toast.makeText(this, statusCode.getError().get(0).errorMessage, Toast.LENGTH_SHORT).show();
@@ -153,16 +169,8 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         siteEditText = (EditText) findViewById(R.id.editPofileSite);
         emailEditText = (EditText) findViewById(R.id.editPofileEmail);
         phoneEditText = (EditText) findViewById(R.id.editPofilePhone);
-        genderSpinner = (Spinner) findViewById(R.id.editPofileMale);
-        // SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this,
-        // android.R.layout.simple_list_item_1, );
+        genderSpinner = (Button) findViewById(R.id.editPofileMale);
 
-        String[] data = new String[] { "Female", "Male" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item, data);
-        adapter.setDropDownViewResource(R.layout.spinner_item);
-        genderSpinner.setAdapter(adapter);
-        genderSpinner.setSelection(0);
-        genderSpinner.setPrompt("Female");
         editButton = (Button) findViewById(R.id.editProfileButton);
         backButton = (Button) findViewById(R.id.editProfileBack);
         changePassword = (Button) findViewById(R.id.changePassword);
@@ -179,6 +187,7 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         deleteAccount.setOnClickListener(this);
         // deleteAll.setOnClickListener(this);
         signOut.setOnClickListener(this);
+        genderSpinner.setOnClickListener(this);
 
     }
 
@@ -189,7 +198,12 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         user.setPhone(phoneEditText.getText().toString());
         user.setJob(jobEditText.getText().toString());
         user.setSite(siteEditText.getText().toString());
-        user.setGender((byte) (genderSpinner.getSelectedItemPosition() + 1));
+        byte gender;
+        if (genderSpinner.getText().toString().equals(MALE)) {
+            gender = 2;
+        } else
+            gender = 1;
+        user.setGender(gender);
         return user;
     }
 
@@ -203,9 +217,11 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
 
     private void signOut() {
         LoginManagerImpl.getInstance().signOut();
-       // this.finishActivity(35);
-        this.moveTaskToBack(true);
-       this.finish();
+        DatabaseManager.getInstance().deleteUser(user);
+        // this.finishActivity(35);
+
+        moveTaskToBack(true);
+        finish();
         Intent intent = new Intent(getApplicationContext(), RegistrationActivity.class);
         startActivity(intent);
     }
@@ -225,9 +241,9 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
                 finish();
             }
         } else {
-            Toast.makeText(this, "User error", Toast.LENGTH_SHORT).show();
+            Log.d("tag", "user null ProfileEdit");
         }
-    } 
+    }
 
     private void fillUser() {
         userNameEditText.setText(user.getUserName());
@@ -235,6 +251,12 @@ public class ProfileEditActivity extends Activity implements LoaderManager.Loade
         siteEditText.setText(user.getSite());
         emailEditText.setText(user.getEmail());
         phoneEditText.setText(user.getPhone());
+        if(user.getGender()==2){
+            genderSpinner.setText(MALE);
+        }
+        else{
+            genderSpinner.setText(FEMALE);
+        }
     }
 
     private void deleteAll() {

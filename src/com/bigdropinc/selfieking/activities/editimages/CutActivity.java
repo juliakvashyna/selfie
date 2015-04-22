@@ -1,11 +1,15 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -79,23 +83,29 @@ public class CutActivity extends Activity {
     private void initImage() {
         if (getIntent() != null) {
             selfieImage = DatabaseManager.getInstance().findEditImage(getIntent().getIntExtra("id", 0));
-            byte[] byteArray = selfieImage.getResult();
-            w = getWindowManager().getDefaultDisplay().getWidth();
-            // w = getIntent().getIntExtra("w", 0);
-            h = getIntent().getIntExtra("h", 0);
-            if (byteArray != null) {
+            if (selfieImage != null) {
+                // byte[] byteArray = selfieImage.getResult();
+                w = getWindowManager().getDefaultDisplay().getWidth();
+                // w = getIntent().getIntExtra("w", 0);
+                h = getIntent().getIntExtra("h", 0);
+                // if (byteArray != null) {
                 try {
-                    image = getImage(byteArray);
+                    // image = getImage(byteArray);
+                    image = ShareActivity.loadImageFromStorage(selfieImage.getPath());
+                    image = Bitmap.createScaledBitmap(image, w, h, true);
                     rotating();
                 } catch (OutOfMemoryError e) {
                     Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
                 }
 
+                // }
+                original = image;
+                mainImageView.setMyWidth(w);
+                mainImageView.setMyHeight(h);
+                mainImageView.setBitmap(image);
+            } else {
+                Toast.makeText(this, "Sorry, too big image", Toast.LENGTH_LONG).show();
             }
-            original = image;
-            mainImageView.setMyWidth(w);
-            mainImageView.setMyHeight(h);
-            mainImageView.setBitmap(image);
         } else {
             Log.e(TAG, "intent is null ");
         }
@@ -174,7 +184,7 @@ public class CutActivity extends Activity {
 
     private void cropping() {
         isCrop = true;
-      //  mainImageView.zooming = false;
+        // mainImageView.zooming = false;
         List<Point> points = mainImageView.getPoints();
         if (points.size() > 0) {
             Bitmap resultingImage;
@@ -228,25 +238,46 @@ public class CutActivity extends Activity {
      * @return EditImage
      */
     private EditImage getEditImage() {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        image.compress(Bitmap.CompressFormat.PNG, 0, stream);
-        // image.recycle();
-        byte[] byteArray = stream.toByteArray();
-
-        selfieImage.setResult(byteArray);
-        try {
-            stream.flush();
-            stream.close();
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-        stream = null;
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//
+//        image.compress(Bitmap.CompressFormat.PNG, 0, stream);
+//        // image.recycle();
+//        byte[] byteArray = stream.toByteArray();
+//
+//        selfieImage.setResult(byteArray);
+//        try {
+//            stream.flush();
+//            stream.close();
+//        } catch (IOException e) {
+//
+//            e.printStackTrace();
+//        }
+//        stream = null;
+        selfieImage.setPath(saveToInternalSorage(image));
         DatabaseManager.getInstance().updateSelfie(selfieImage);
         return selfieImage;
     }
+    public String saveToInternalSorage(Bitmap bitmapImage) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory, "profile.png");
 
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+
+            // Use the compress method on the BitMap object to write image to
+            // the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return directory.getAbsolutePath();
+    }
     private Bitmap rotateBitmap(Bitmap source, int angle) {
         Matrix matrix = new Matrix();
         matrix.postRotate(angle);

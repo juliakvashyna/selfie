@@ -23,6 +23,7 @@ import com.bigdrop.selfieking.db.DatabaseManager;
 import com.bigdropinc.selfieking.R;
 import com.bigdropinc.selfieking.activities.editimages.CropActivity;
 import com.bigdropinc.selfieking.activities.editimages.SelectImageActivity;
+import com.bigdropinc.selfieking.activities.social.MyActionBarActivity;
 import com.bigdropinc.selfieking.controller.InternetChecker;
 import com.bigdropinc.selfieking.controller.loaders.Command;
 import com.bigdropinc.selfieking.controller.loaders.CommandLoader;
@@ -185,7 +186,11 @@ public class RegistrationActivity extends Activity implements OnClickListener, L
         loginManager.signIn(user.getId(), user.getToken());
         DatabaseManager databaseManager = DatabaseManager.getInstance();
         databaseManager.addUser(user);
-        Intent intent = new Intent(getApplicationContext(), SelectImageActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MyActionBarActivity.class);
+      //  intent.putExtra("signup", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); 
+      //  intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      //  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         this.finish();
     }

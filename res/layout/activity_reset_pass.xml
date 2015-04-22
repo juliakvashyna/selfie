@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/main_background"
     android:orientation="vertical"
     tools:context="com.bigdropinc.selfieking.activities.login.ResetPassActivity" >
 
@@ -24,6 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
+                android:layout_margin="5dp"
                 android:background="@drawable/close_button_selector"
                 android:gravity="center" />
 

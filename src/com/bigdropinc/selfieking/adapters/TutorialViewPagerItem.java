@@ -10,14 +10,24 @@ import com.bigdropinc.selfieking.model.selfie.Contest;
 import com.bigdropinc.selfieking.model.selfie.SelfieImage;
 
 public class TutorialViewPagerItem {
-    public TutorialViewPagerItem(int page, int imageRes) {
-        super();
-        this.page = page;
-        this.imageRes = imageRes;
-    }
 
     int page;
-    int imageRes;
+    int layoutRes;
+    int resTitle;
+
+    public TutorialViewPagerItem(int page, int layoutRes) {
+        super();
+        this.page = page;
+        this.layoutRes = layoutRes;
+    }
+
+    public int getTitle() {
+        return resTitle;
+    }
+
+    public void setTitle(int title) {
+        this.resTitle = title;
+    }
 
     public int getPage() {
         return page;
@@ -27,12 +37,12 @@ public class TutorialViewPagerItem {
         this.page = page;
     }
 
-    public int getImageRes() {
-        return imageRes;
+    public int getLayoutRes() {
+        return layoutRes;
     }
 
-    public void setImageRes(int imageRes) {
-        this.imageRes = imageRes;
+    public void setLayoutRes(int layoutRes) {
+        this.layoutRes = layoutRes;
     }
 
 }

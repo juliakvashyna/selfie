@@ -53,6 +53,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
+            android:src="@drawable/icon_picture_user"
             android:layout_margin="4dp"
             app:riv_corner_radius="5dp" />
     </RelativeLayout>

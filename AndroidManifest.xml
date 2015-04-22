@@ -123,6 +123,8 @@
         </activity>
         <activity
             android:name=".activities.social.MyActionBarActivity"
+            android:clearTaskOnLaunch="true"
+            android:finishOnTaskLaunch="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Light.NoTitleBar"

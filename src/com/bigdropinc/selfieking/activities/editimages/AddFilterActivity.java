@@ -1,10 +1,9 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImage3x3TextureSamplingFilter;
@@ -39,10 +38,13 @@ import jp.co.cyberagent.android.gpuimage.GPUImageVignetteFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageWhiteBalanceFilter;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,7 +65,6 @@ import com.bigdropinc.selfieking.adapters.MenuItem;
 import com.bigdropinc.selfieking.model.constants.FilterConstants;
 import com.bigdropinc.selfieking.model.selfie.EditImage;
 import com.devsmart.android.ui.HorizontalListView;
-import com.google.android.gms.internal.im;
 
 public class AddFilterActivity extends Activity {
     private static final String TAG = "tag";
@@ -72,7 +73,6 @@ public class AddFilterActivity extends Activity {
     private HorizontalListView horizontalListViewCurrent;
     private BottomMenuAdapter adapterCurrent;
     private List<MenuItem> menuListCurrent;
-    private byte[] byteArray;
     private Bitmap image;
     private Bitmap original;
     final FilterList filters = new FilterList();
@@ -121,33 +121,15 @@ public class AddFilterActivity extends Activity {
     private void initImage() {
         int id = getIntent().getIntExtra("id", 0);
         selfieImage = DatabaseManager.getInstance().findEditImage(id);
-        byteArray = selfieImage.getResult();
         try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPurgeable = true;
-            options.inJustDecodeBounds = false;
-            options.inSampleSize = 2;
-            options.inDither = true;
-            image = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, options);
-            image = Bitmap.createScaledBitmap(image, selfieImage.getWidth(), selfieImage.getHeight(), true);
+            image = ShareActivity.loadImageFromStorage(selfieImage.getPath());
             original = image;
-         
         } catch (OutOfMemoryError e) {
             Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
         } catch (NullPointerException e) {
             Toast.makeText(this, "Sorry, image error null ", Toast.LENGTH_LONG).show();
         }
         mGPUImageView.setImage(image);
-    }
-
-    private void addWaterMark() {
-        Bitmap res = Bitmap.createBitmap(image);
-        Bitmap mutableBitmap = res.copy(Bitmap.Config.ARGB_8888, true);
-        Bitmap watermark = BitmapFactory.decodeResource(getResources(), R.drawable.watermark);
-        watermark = Bitmap.createScaledBitmap(watermark, 800, 600, false);
-        Canvas canvas = new Canvas(mutableBitmap);
-        canvas.drawBitmap(watermark, 500, 700, null);
-        image = Bitmap.createBitmap(mutableBitmap);
     }
 
     private void initListeners() {
@@ -199,28 +181,34 @@ public class AddFilterActivity extends Activity {
 
     private Intent getShareActivityIntent() {
         Intent intent = new Intent(getApplicationContext(), ShareActivity.class);
-        Bitmap res = null;
-        try {
-            createImage();
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPurgeable = true;
-            options.inJustDecodeBounds = false;
-            options.inSampleSize = 2;
-            options.inDither = true;
-            res = Bitmap.createBitmap(image);
-            res.compress(Bitmap.CompressFormat.PNG, 0, out);
-            res = BitmapFactory.decodeStream(new ByteArrayInputStream(out.toByteArray()), null, options);
-
-            // image = Bitmap.createBitmap(decoded);
-            // decoded.recycle();
-        } catch (OutOfMemoryError e) {
-            Log.d("tag", "OutOfMemoryError getShareActivityIntent");
-        }
-        selfieImage.createBytesFilter(res);
+        createImage();
+        selfieImage.setPath(saveToInternalSorage(image));
         DatabaseManager.getInstance().updateSelfie(selfieImage);
-        intent.putExtra("id", selfieImage.getId());
+        intent.putExtra("idEditImage", selfieImage.getId());
         return intent;
+    }
+
+    public String saveToInternalSorage(Bitmap bitmapImage) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory, "profile.png");
+
+        FileOutputStream fos = null;
+        try {
+
+            fos = new FileOutputStream(mypath);
+
+            // Use the compress method on the BitMap object to write image to
+            // the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return directory.getAbsolutePath();
     }
 
     private void createImage() {
@@ -228,7 +216,6 @@ public class AddFilterActivity extends Activity {
             gpuImage.setImage(original);
             gpuImage.setFilter(mFilter);
             image = gpuImage.getBitmapWithFilterApplied();
-          //  addWaterMark();
         }
 
     }

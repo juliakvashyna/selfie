@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigdropinc.selfieking.R;
+import com.bigdropinc.selfieking.activities.login.TutorialActivity;
 import com.bigdropinc.selfieking.activities.profile.ProfileActivity;
 import com.bigdropinc.selfieking.activities.social.ContestFragment;
 import com.bigdropinc.selfieking.activities.social.OneSelfieActivity;
@@ -46,15 +47,13 @@ public class TutorialViewPagerAdapter extends PagerAdapter {
 
     private final ArrayList<TutorialViewPagerItem> mItems;
     private final LayoutInflater mInflator;
-    private final int mResourceId;
-    private final Activity context;
+    private final TutorialActivity context;
     private ViewPager mViewPager;
 
-    public TutorialViewPagerAdapter(Activity context, int viewRes, List<TutorialViewPagerItem> list) {
+    public TutorialViewPagerAdapter(Activity context, List<TutorialViewPagerItem> list) {
         this.mItems = (ArrayList<TutorialViewPagerItem>) list;
-        this.context = context;
+        this.context = (TutorialActivity) context;
         mInflator = LayoutInflater.from(context);
-        mResourceId = viewRes;
 
     }
 
@@ -94,7 +93,7 @@ public class TutorialViewPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View child = mDiscardedViews.isEmpty() ? mInflator.inflate(mResourceId, container, false) : mDiscardedViews.remove(0);
+        View child = mDiscardedViews.isEmpty() ? mInflator.inflate(mItems.get(position).getLayoutRes(), container, false) : mDiscardedViews.remove(0);
         TutorialViewPagerItem data = mItems.get(position);
         initView(child, data);
         mBindedViews.append(position, child);
@@ -118,8 +117,15 @@ public class TutorialViewPagerAdapter extends PagerAdapter {
      * Initiate the view here.
      */
     public void initView(View v, final TutorialViewPagerItem item) {
-        ImageView image = (ImageView) v.findViewById(R.id.topRecentImageButton);
-        image.setImageResource(item.imageRes);
+        Button bt = (Button) v.findViewById(R.id.getStarted);
+        if (bt != null) {
+            bt.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    context.goSelectImage();
+                }
+            });
+        }
 
     }
 

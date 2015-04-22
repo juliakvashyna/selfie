@@ -207,7 +207,10 @@ public class CommandLoader extends Loader<StatusCode> {
                     setResponseListSelfie(responseListSelfie);
                 } else if (Command.VOTE.equals(commandName)) {
                     Vote vote = command.getVote();
-                    selfieImage = helper.vote(vote.getPostId(), vote.getRate());
+                    statusCode = helper.vote(vote.getPostId(), vote.getRate());
+                    if (statusCode.isSuccess()) {
+                        selfieImage = helper.getSelfie(vote.getPostId());
+                    }
                 } else if (Command.REGISTR_DEVICE.equals(commandName)) {
                     statusCode = helper.registrDevice(command.getDeviceInfo());
                 } else if (Command.GET_NOTIFICATIONS.equals(commandName)) {

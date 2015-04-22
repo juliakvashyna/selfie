@@ -1,21 +1,24 @@
 package com.bigdropinc.selfieking.activities.editimages;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +43,7 @@ public class CropActivity extends Activity {
     private ProgressDialog dialog;
     private int w;
     private int h;
+    private boolean fromBG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,14 @@ public class CropActivity extends Activity {
         initViews();
         initListeners();
         initImage();
-      
+        initFromBG();
+
+    }
+
+    private void initFromBG() {
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            fromBG = getIntent().getExtras().getBoolean("fromBG");
+        }
     }
 
     @Override
@@ -62,7 +73,17 @@ public class CropActivity extends Activity {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToMainActivity();
+                if (fromBG) {
+                    Intent data = new Intent();
+                    int h = (int) (imageView.getHeight() - imageView.getHeight() / 3);
+                    data.putExtra("w", imageView.getCroppedImage().getWidth());
+                    data.putExtra("h", h);
+                    data.setData(getImageUri(getApplicationContext(), imageView.getCroppedImage()));
+                    CropActivity.this.setResult(MakeSelfieActivity.PIC_CROP, data);
+                    CropActivity.this.finish();
+                } else {
+                    goToMainActivity();
+                }
             }
         });
         back.setOnClickListener(new OnClickListener() {
@@ -72,6 +93,13 @@ public class CropActivity extends Activity {
                 onBackPressed();
             }
         });
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
     private void goToMainActivity() {
@@ -98,7 +126,7 @@ public class CropActivity extends Activity {
 
     private Intent getCutActivityIntent() {
         Intent intent = new Intent(getApplicationContext(), CutActivity.class);
-        // int w = imageView.getWidth();
+         int w = imageView.getWidth();
         int h = (int) (imageView.getHeight() - imageView.getHeight() / 3);
         intent.putExtra("w", imageView.getCroppedImage().getWidth());
         intent.putExtra("h", h);
@@ -108,24 +136,48 @@ public class CropActivity extends Activity {
     }
 
     private EditImage getEditImage() {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        // ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        imageView.getCroppedImage().compress(Bitmap.CompressFormat.PNG, 0, stream);
+        // imageView.getCroppedImage().compress(Bitmap.CompressFormat.PNG, 0,
+        // stream);
 
-        imageView.getCroppedImage().recycle();
-        byte[] byteArray = stream.toByteArray();
-
-        selfieImage.setResult(byteArray);
-        try {
-            stream.flush();
-            stream.close();
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-        stream = null;
+        // imageView.getCroppedImage().recycle();
+        selfieImage.setPath(saveToInternalSorage(imageView.getCroppedImage()));
+        // byte[] byteArray = stream.toByteArray();
+        //
+        // selfieImage.setResult(byteArray);
+        // try {
+        // stream.flush();
+        // stream.close();
+        // } catch (IOException e) {
+        //
+        // e.printStackTrace();
+        // }
+        // stream = null;
         DatabaseManager.getInstance().updateSelfie(selfieImage);
         return selfieImage;
+    }
+
+    public String saveToInternalSorage(Bitmap bitmapImage) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory, "profile.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+
+            // Use the compress method on the BitMap object to write image to
+            // the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return directory.getAbsolutePath();
     }
 
     private void initViews() {
@@ -142,11 +194,12 @@ public class CropActivity extends Activity {
 
             // Decode image size
             BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true; 
+            o.inJustDecodeBounds = true;
             o.inPurgeable = true;
             o.inPreferredConfig = Config.RGB_565;
             o.inDither = true;
             BitmapFactory.decodeStream(in, null, o);
+
             in.close();
 
             int scale = 1;
@@ -206,14 +259,16 @@ public class CropActivity extends Activity {
                 byte[] byteArray = selfieImage.getResult();
                 w = getIntent().getIntExtra("w", 0);
                 h = getIntent().getIntExtra("h", 0);
-                if (byteArray != null) {
-                    try {
+                try {
+                    if (selfieImage.getPath() != null && selfieImage.getPath() != "") {
+                        image = ShareActivity.loadImageFromStorage(selfieImage.getPath());
+                    } else if (byteArray != null) {
                         image = getImage(byteArray);
                         rotating();
-                    } catch (OutOfMemoryError e) {
-                        Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
                     }
-
+                    // image= Bitmap.createScaledBitmap(image, w, h, false);
+                } catch (OutOfMemoryError e) {
+                    Toast.makeText(this, "Sorry, image error ", Toast.LENGTH_LONG).show();
                 }
             }
         }

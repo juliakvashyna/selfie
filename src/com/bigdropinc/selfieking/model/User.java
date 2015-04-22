@@ -31,6 +31,7 @@ public class User implements Parcelable {
     @DatabaseField
     @JsonProperty("website")
     private String site;
+    @JsonProperty("gender")
     @DatabaseField
     private byte gender;
     @DatabaseField
